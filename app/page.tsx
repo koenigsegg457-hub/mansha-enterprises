@@ -1,16 +1,18 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ShoppingBag,
   Sparkles,
   Heart,
   Leaf,
-  MessageCircle,
   Star,
   Gift,
   Menu,
+  X,
+  Search,
+  MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,6 +28,7 @@ const products = [
       "Neem leaves, tulsi leaves, aloe vera gel, vitamin E, coconut oil, essential oils",
     price: "₹100",
     image: "/Neem Tulsi Soap.jpeg",
+    bestFor: "Daily freshness, oily skin feel, and a clean natural bathing routine.",
   },
   {
     name: "Rice Potato Soap",
@@ -37,6 +40,7 @@ const products = [
       "Rice powder, potato juice, aloe vera, coconut oil, vitamin E, essential oil",
     price: "₹100",
     image: "/Rice Potato Soap.jpeg",
+    bestFor: "Smooth skin feel, gentle care, and everyday glow-focused bathing.",
   },
   {
     name: "Papaya Soap",
@@ -48,6 +52,7 @@ const products = [
       "Papaya juice, rice powder, aloe vera, glycerine, coconut oil, essential oil",
     price: "₹100",
     image: "/Papaya Soap.jpeg",
+    bestFor: "A fresh glow feel, gentle hydration, and soft daily skincare.",
   },
   {
     name: "Haldi Chandan Soap",
@@ -59,6 +64,7 @@ const products = [
       "Kasturi haldi, chandan powder, multani mitti, aloe vera, vitamin E, glycerine, coconut oil, essential oil",
     price: "₹100",
     image: "/Haldi Chandan Soap.jpeg",
+    bestFor: "Traditional care, natural radiance, and a refreshing herbal bathing experience.",
   },
   {
     name: "Coffee Soap",
@@ -70,10 +76,11 @@ const products = [
       "Coffee powder, rice powder, aloe vera, glycerine, coconut oil, essential oil",
     price: "₹100",
     image: "/Coffee Soap.jpeg",
+    bestFor: "Refreshing bath feel, mild exfoliating texture, and a rich coffee aroma.",
   },
 ];
 
-const categories = [
+const offerings = [
   {
     title: "Handmade Soaps",
     icon: Leaf,
@@ -97,12 +104,35 @@ const testimonials = [
   "The products feel fresh, natural, and thoughtfully made.",
 ];
 
+const WHATSAPP_NUMBER = "919599481871";
+
+const createWhatsAppLink = (message: string) => {
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+};
+
 export default function ManshaEnterprisesWebsite() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] =
+    useState<(typeof products)[0] | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredProducts = products.filter((product) => {
+    const value = `${product.name} ${product.benefit} ${product.ingredients}`.toLowerCase();
+    return value.includes(searchTerm.toLowerCase());
+  });
+
+  const navLinks = [
+    { label: "Products", href: "#products" },
+    { label: "What We Offer", href: "#offerings" },
+    { label: "About", href: "#about" },
+    { label: "Contact", href: "#contact" },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#fffaf3] text-[#3f2e24]">
+    <div className="min-h-screen scroll-smooth bg-[#fffaf3] text-[#3f2e24]">
       <header className="sticky top-0 z-50 border-b border-[#eadfce] bg-[#fffaf3]/90 backdrop-blur-md">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
-          <div className="flex items-center gap-3">
+          <a href="#" className="flex items-center gap-3">
             <img
               src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
               alt="Mansha Enterprises logo"
@@ -112,38 +142,82 @@ export default function ManshaEnterprisesWebsite() {
               <p className="text-lg font-bold tracking-wide">
                 Mansha Enterprises
               </p>
-              <p className="text-xs text-[#7c6655]">
-                Faridabad • Handmade with love
-              </p>
+              <p className="text-xs text-[#7c6655]">Handmade with love</p>
             </div>
-          </div>
+          </a>
 
           <div className="hidden items-center gap-8 text-sm font-medium md:flex">
-            <a href="#products" className="hover:text-[#8b5e3c]">
-              Products
-            </a>
-            <a href="#categories" className="hover:text-[#8b5e3c]">
-              Categories
-            </a>
-            <a href="#about" className="hover:text-[#8b5e3c]">
-              About
-            </a>
-            <a href="#contact" className="hover:text-[#8b5e3c]">
-              Contact
-            </a>
+            {navLinks.map((link) => (
+              <a key={link.href} href={link.href} className="hover:text-[#8b5e3c]">
+                {link.label}
+              </a>
+            ))}
           </div>
 
           <Button
             className="hidden rounded-full bg-[#8b5e3c] px-5 text-white hover:bg-[#70472b] md:flex"
             asChild
           >
-            <a href="#products">View Collection</a>
+            <a
+              href={createWhatsAppLink(
+                "Hi, I want to place an order from Mansha Enterprises."
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Order on WhatsApp
+            </a>
           </Button>
 
-          <button className="md:hidden">
+          <button
+            className="md:hidden"
+            onClick={() => setMobileMenuOpen(true)}
+            aria-label="Open menu"
+          >
             <Menu />
           </button>
         </nav>
+
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-[#3f2e24]/40 md:hidden"
+            >
+              <motion.div
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "spring", damping: 24, stiffness: 220 }}
+                className="ml-auto h-full w-[82%] max-w-sm bg-[#fffaf3] p-6 shadow-2xl"
+              >
+                <div className="mb-8 flex items-center justify-between">
+                  <p className="text-lg font-bold">Menu</p>
+                  <button
+                    onClick={() => setMobileMenuOpen(false)}
+                    aria-label="Close menu"
+                  >
+                    <X />
+                  </button>
+                </div>
+
+                <div className="flex flex-col gap-5 text-lg font-medium">
+                  {navLinks.map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       <main>
@@ -163,12 +237,11 @@ export default function ManshaEnterprisesWebsite() {
               </div>
 
               <h1 className="max-w-2xl text-4xl font-bold leading-tight tracking-tight md:text-6xl">
-                Handmade soaps crafted with natural ingredients and everyday
-                care.
+                Handmade soaps crafted with natural ingredients and everyday care.
               </h1>
 
               <p className="mt-6 max-w-xl text-lg leading-8 text-[#6f5a49]">
-                Mansha Enterprises creates home-made soaps and handmade items
+                Mansha Enterprises creates homemade soaps and handmade essentials
                 with care, comfort, and a personal touch. Perfect for daily use,
                 thoughtful gifting, and small celebrations.
               </p>
@@ -178,9 +251,15 @@ export default function ManshaEnterprisesWebsite() {
                   className="rounded-full bg-[#8b5e3c] px-7 py-6 text-base text-white hover:bg-[#70472b]"
                   asChild
                 >
-                  <a href="#products">
-                    <ShoppingBag className="mr-2" size={19} />
-                    Explore Soaps
+                  <a
+                    href={createWhatsAppLink(
+                      "Hi, I want to place an order from Mansha Enterprises."
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <MessageCircle className="mr-2" size={19} />
+                    Order on WhatsApp
                   </a>
                 </Button>
 
@@ -200,11 +279,11 @@ export default function ManshaEnterprisesWebsite() {
               transition={{ duration: 0.8 }}
               className="relative"
             >
-              <div className="aspect-[4/5] overflow-hidden rounded-[2rem] shadow-2xl ring-1 ring-[#eadfce]">
+              <div className="aspect-[4/5] overflow-hidden rounded-[2rem] bg-white shadow-2xl ring-1 ring-[#eadfce]">
                 <img
                   src="/Neem Tulsi Soap.jpeg"
                   alt="Mansha Enterprises handmade soaps"
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain"
                 />
               </div>
 
@@ -216,7 +295,7 @@ export default function ManshaEnterprisesWebsite() {
                   <div>
                     <p className="font-bold">Handcrafted with care</p>
                     <p className="text-sm text-[#7c6655]">
-                      Made for family, friends & neighbours
+                      Made with care for every home
                     </p>
                   </div>
                 </div>
@@ -225,19 +304,19 @@ export default function ManshaEnterprisesWebsite() {
           </div>
         </section>
 
-        <section id="categories" className="px-5 py-16">
+        <section id="offerings" className="px-5 py-16">
           <div className="mx-auto max-w-7xl">
             <div className="mb-10 text-center">
               <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#8b5e3c]">
-                Categories
+                What We Offer
               </p>
               <h2 className="mt-3 text-3xl font-bold md:text-4xl">
-                Explore our handmade collection
+                Handmade care with a personal touch
               </h2>
             </div>
 
             <div className="grid gap-6 md:grid-cols-3">
-              {categories.map((item) => {
+              {offerings.map((item) => {
                 const Icon = item.icon;
                 return (
                   <Card
@@ -271,15 +350,23 @@ export default function ManshaEnterprisesWebsite() {
                   Handmade soaps collection
                 </h2>
               </div>
-              <p className="max-w-md text-[#6f5a49]">
-                Each soap is made in small batches, so availability may change.
-                Contact details can be added later for orders and custom
-                requests.
-              </p>
+
+              <div className="relative w-full max-w-md">
+                <Search
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8b5e3c]"
+                  size={18}
+                />
+                <input
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="Search soaps, ingredients, benefits..."
+                  className="w-full rounded-full border border-[#e0cdb4] bg-white py-3 pl-11 pr-4 text-sm outline-none transition focus:border-[#8b5e3c] focus:ring-2 focus:ring-[#eadfce]"
+                />
+              </div>
             </div>
 
             <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
-              {products.map((product) => (
+              {filteredProducts.map((product) => (
                 <motion.div
                   key={product.name}
                   initial={{ opacity: 0, y: 20 }}
@@ -288,11 +375,11 @@ export default function ManshaEnterprisesWebsite() {
                   transition={{ duration: 0.45 }}
                 >
                   <Card className="h-full overflow-hidden rounded-[2rem] border-0 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
-                    <div className="h-64 overflow-hidden">
+                    <div className="h-72 overflow-hidden bg-[#fffaf3] p-2">
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="h-full w-full object-cover transition duration-500 hover:scale-105"
+                        className="h-full w-full object-contain transition duration-500 hover:scale-105"
                       />
                     </div>
 
@@ -327,6 +414,7 @@ export default function ManshaEnterprisesWebsite() {
                         </span>
                         <Button
                           size="sm"
+                          onClick={() => setSelectedProduct(product)}
                           className="rounded-full bg-[#8b5e3c] text-white hover:bg-[#70472b]"
                         >
                           View Details
@@ -337,6 +425,13 @@ export default function ManshaEnterprisesWebsite() {
                 </motion.div>
               ))}
             </div>
+
+            {filteredProducts.length === 0 && (
+              <div className="mt-10 rounded-3xl bg-white p-8 text-center text-[#6f5a49] shadow-sm">
+                No soaps found. Try searching by product name, ingredient, or
+                benefit.
+              </div>
+            )}
           </div>
         </section>
 
@@ -352,18 +447,34 @@ export default function ManshaEnterprisesWebsite() {
 
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#8b5e3c]">
-                Our story
+                Our Story
               </p>
               <h2 className="mt-3 text-3xl font-bold md:text-4xl">
-                Made in Faridabad, shared with care.
+                Homemade and shared with care.
               </h2>
 
-              <p className="mt-5 text-lg leading-8 text-[#6f5a49]">
-                Mansha Enterprises began as a small home-run business, creating
-                handmade items for people nearby. Every product carries the
-                warmth of personal effort, thoughtful design, and the joy of
-                making something beautiful by hand.
-              </p>
+              <div className="mt-5 space-y-5 text-lg leading-8 text-[#6f5a49]">
+                <p>
+                  Mansha Enterprises is a small handmade skincare and home-crafted
+                  brand built with care, simplicity, and creativity. What started
+                  from making products for family and close circles slowly grew
+                  into creating thoughtful handmade soaps and self-care products
+                  for people who value natural ingredients and a personal touch.
+                </p>
+
+                <p>
+                  Every product is prepared in small batches with attention to
+                  quality, fragrance, texture, and presentation. We believe
+                  handmade products feel more personal, more meaningful, and more
+                  comforting than mass-produced alternatives.
+                </p>
+
+                <p>
+                  Our goal is simple, to create beautiful handmade essentials
+                  that bring freshness, warmth, and everyday care into your
+                  routine.
+                </p>
+              </div>
 
               <div className="mt-7 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-3xl bg-white p-5 shadow-sm">
@@ -391,7 +502,7 @@ export default function ManshaEnterprisesWebsite() {
         <section className="bg-white px-5 py-16">
           <div className="mx-auto max-w-7xl text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#8b5e3c]">
-              Customer love
+              Customer Love
             </p>
             <h2 className="mt-3 text-3xl font-bold md:text-4xl">
               Simple things, made beautifully
@@ -418,23 +529,27 @@ export default function ManshaEnterprisesWebsite() {
         <section id="contact" className="px-5 py-16">
           <div className="mx-auto max-w-5xl rounded-[2rem] bg-[#8b5e3c] p-8 text-center text-white shadow-xl md:p-12">
             <ShoppingBag className="mx-auto mb-4" size={38} />
-
             <h2 className="text-3xl font-bold md:text-4xl">
               Want to place an order?
             </h2>
-
             <p className="mx-auto mt-4 max-w-2xl leading-8 text-[#f7eadb]">
-              Contact details will be added soon. For now, explore the handmade
-              soap collection and check product details.
+              Click the WhatsApp button to message us directly for orders,
+              availability, prices, and custom handmade product requests.
             </p>
 
             <Button
               className="mt-7 rounded-full bg-white px-8 py-6 text-base text-[#8b5e3c] hover:bg-[#f7eadb]"
               asChild
             >
-              <a href="#products">
-                <ShoppingBag className="mr-2" size={19} />
-                View Soap Collection
+              <a
+                href={createWhatsAppLink(
+                  "Hi, I want to place an order from Mansha Enterprises."
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <MessageCircle className="mr-2" size={19} />
+                Order on WhatsApp
               </a>
             </Button>
           </div>
@@ -443,13 +558,107 @@ export default function ManshaEnterprisesWebsite() {
 
       <footer className="border-t border-[#eadfce] px-5 py-8">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 text-center text-sm text-[#7c6655] md:flex-row">
-          <p>
-            © 2026 Mansha Enterprises • Faridabad • Handmade soaps, candles, and
-            gifts.
-          </p>
-          <p>Made with warmth for local homes and thoughtful gifting.</p>
+          <p>© 2026 Mansha Enterprises • Handmade soaps & candles.</p>
+          <p>Elevated essentials for cozy homes.</p>
         </div>
       </footer>
+
+      <AnimatePresence>
+        {selectedProduct && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-[#3f2e24]/50 p-4 backdrop-blur-sm"
+            onClick={() => setSelectedProduct(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 24, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 24, scale: 0.96 }}
+              transition={{ duration: 0.25 }}
+              className="max-h-[90vh] w-full max-w-3xl overflow-auto rounded-[2rem] bg-[#fffaf3] shadow-2xl"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="grid md:grid-cols-2">
+                <div className="bg-[#fffaf3] p-3">
+                  <img
+                    src={selectedProduct.image}
+                    alt={selectedProduct.name}
+                    className="h-80 w-full object-contain md:h-full"
+                  />
+                </div>
+
+                <div className="p-7">
+                  <div className="mb-4 flex items-start justify-between gap-4">
+                    <div>
+                      <p className="mb-2 inline-flex rounded-full bg-[#f1f7ed] px-3 py-1 text-xs font-semibold text-[#56743f]">
+                        {selectedProduct.benefit}
+                      </p>
+                      <h3 className="text-2xl font-bold">
+                        {selectedProduct.name}
+                      </h3>
+                    </div>
+
+                    <button
+                      onClick={() => setSelectedProduct(null)}
+                      className="rounded-full bg-white p-2 shadow-sm"
+                      aria-label="Close details"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+
+                  <p className="leading-7 text-[#6f5a49]">
+                    {selectedProduct.description}
+                  </p>
+
+                  <div className="mt-5 rounded-2xl bg-white p-4">
+                    <p className="mb-1 text-xs font-bold uppercase tracking-[0.18em] text-[#8b5e3c]">
+                      Ingredients
+                    </p>
+                    <p className="text-sm leading-6 text-[#6f5a49]">
+                      {selectedProduct.ingredients}
+                    </p>
+                  </div>
+
+                  <div className="mt-5 rounded-2xl bg-white p-4">
+                    <p className="mb-1 text-xs font-bold uppercase tracking-[0.18em] text-[#8b5e3c]">
+                      Best for
+                    </p>
+                    <p className="text-sm leading-6 text-[#6f5a49]">
+                      {selectedProduct.bestFor}
+                    </p>
+                  </div>
+
+                  <div className="mt-6 flex items-center justify-between rounded-2xl bg-[#8b5e3c] p-4 text-white">
+                    <span className="text-sm">Price</span>
+                    <span className="text-xl font-bold">
+                      {selectedProduct.price}
+                    </span>
+                  </div>
+
+                  <Button
+                    className="mt-5 w-full rounded-full bg-[#25D366] py-6 text-base text-white hover:bg-[#1ebe5d]"
+                    asChild
+                  >
+                    <a
+                      href={createWhatsAppLink(
+                        `Hi, I want to order ${selectedProduct.name} from Mansha Enterprises.`
+                      )}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <MessageCircle className="mr-2" size={19} />
+                      Order this on WhatsApp
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
