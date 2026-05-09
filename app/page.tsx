@@ -179,45 +179,73 @@ export default function ManshaEnterprisesWebsite() {
         </nav>
 
         <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-[#3f2e24]/40 md:hidden"
-            >
-              <motion.div
-                initial={{ x: "100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "100%" }}
-                transition={{ type: "spring", damping: 24, stiffness: 220 }}
-                className="ml-auto h-full w-[82%] max-w-sm bg-[#fffaf3] p-6 shadow-2xl"
-              >
-                <div className="mb-8 flex items-center justify-between">
-                  <p className="text-lg font-bold">Menu</p>
-                  <button
-                    onClick={() => setMobileMenuOpen(false)}
-                    aria-label="Close menu"
-                  >
-                    <X />
-                  </button>
-                </div>
+  {mobileMenuOpen && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[999] bg-[#3f2e24]/50 md:hidden"
+      onClick={() => setMobileMenuOpen(false)}
+    >
+      <motion.div
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ type: "spring", damping: 25, stiffness: 220 }}
+        className="ml-auto flex h-screen w-[82%] max-w-sm flex-col bg-[#fffaf3] p-6 shadow-2xl"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img
+              src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
+              alt="Mansha Enterprises logo"
+              className="h-12 w-12 rounded-full object-cover ring-1 ring-[#d8b777]"
+            />
+            <p className="text-xl font-bold">Menu</p>
+          </div>
 
-                <div className="flex flex-col gap-5 text-lg font-medium">
-                  {navLinks.map((link) => (
-                    <a
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {link.label}
-                    </a>
-                  ))}
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+          <button
+            onClick={() => setMobileMenuOpen(false)}
+            aria-label="Close menu"
+            className="rounded-full bg-white p-2 shadow-sm"
+          >
+            <X size={22} />
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-4 text-lg font-medium">
+          {navLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              onClick={() => setMobileMenuOpen(false)}
+              className="rounded-2xl px-4 py-3 transition hover:bg-[#f7eadb]"
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
+
+        <Button
+          className="mt-8 rounded-full bg-[#8b5e3c] py-6 text-white hover:bg-[#70472b]"
+          asChild
+        >
+          <a
+            href={createWhatsAppLink(
+              "Hi, I want to place an order from Mansha Enterprises."
+            )}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <MessageCircle className="mr-2" size={19} />
+            Order on WhatsApp
+          </a>
+        </Button>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
       </header>
 
       <main>
