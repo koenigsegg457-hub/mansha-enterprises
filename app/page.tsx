@@ -261,7 +261,7 @@ export default function ManshaEnterprisesWebsite() {
             >
               <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-[#7c6655] shadow-sm">
                 <Heart size={16} className="text-[#b66b55]" />
-                Natural handmade skincare
+                Natural Handmade Skincare
               </div>
 
               <h1 className="max-w-2xl text-4xl font-bold leading-tight tracking-tight md:text-6xl">
