@@ -307,13 +307,13 @@ export default function ManshaEnterprisesWebsite() {
               transition={{ duration: 0.8 }}
               className="relative"
             >
-              <div className="aspect-[4/5] overflow-hidden rounded-[2rem] bg-white shadow-2xl ring-1 ring-[#eadfce]">
-                <img
-                  src="/Neem Tulsi Soap.jpeg"
-                  alt="Mansha Enterprises handmade soaps"
-                  className="h-full w-full object-contain"
-                />
-              </div>
+              <div className="flex aspect-square items-center justify-center rounded-[2.5rem] bg-gradient-to-br from-[#fffaf3] to-[#f7eadb] p-10 shadow-2xl ring-1 ring-[#eadfce]">
+  <img
+    src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
+    alt="Mansha Enterprises Logo"
+    className="w-[85%] object-contain drop-shadow-2xl"
+  />
+</div>
 
               <div className="absolute -bottom-6 -left-4 rounded-3xl bg-white p-5 shadow-xl md:-left-8">
                 <div className="flex items-center gap-3">
