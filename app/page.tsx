@@ -264,11 +264,11 @@ export default function ManshaEnterprisesWebsite() {
                 Natural Handmade Skincare
               </div>
 
-              <h1 className="max-w-2xl text-4xl font-bold leading-tight tracking-tight md:text-6xl">
+              <h1 className="max-w-2xl text-4xl font-bold leading-tight tracking-tight md:text-7xl">
                 Handmade soaps crafted with natural ingredients and everyday care.
               </h1>
 
-              <p className="mt-6 max-w-xl text-lg leading-8 text-[#6f5a49]">
+              <p className="mt-6 max-w-2xl text-lg leading-8 md:text-xl md:leading-9 text-[#6f5a49]">
                 Mansha Enterprises creates homemade soaps and handmade essentials
                 with care, comfort, and a personal touch. Perfect for daily use,
                 thoughtful gifting, and small celebrations.
@@ -307,12 +307,12 @@ export default function ManshaEnterprisesWebsite() {
               transition={{ duration: 0.8 }}
               className="relative"
             >
-              <div className="flex aspect-square items-center justify-center rounded-[2.5rem] bg-gradient-to-br from-[#fffaf3] to-[#f7eadb] p-10 shadow-2xl ring-1 ring-[#eadfce]">
+              <div className="aspect-square overflow-hidden rounded-[2.5rem] bg-white shadow-2xl ring-1 ring-[#eadfce]">
   <img
-    src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
-    alt="Mansha Enterprises Logo"
-    className="w-[85%] object-contain drop-shadow-2xl"
-  />
+  src="/hero-soaps.png"
+  alt="Handmade soaps with Natural Ingredients"
+  className="h-full w-full object-cover rounded-[2rem]"
+/>
 </div>
 
               <div className="absolute -bottom-6 -left-4 rounded-3xl bg-white p-5 shadow-xl md:-left-8">
