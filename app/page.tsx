@@ -104,7 +104,7 @@ const testimonials = [
   "The products feel fresh, natural, and thoughtfully made.",
 ];
 
-const WHATSAPP_NUMBER = "919599481871";
+const WHATSAPP_NUMBER = "918130511871";
 
 const createWhatsAppLink = (message: string) => {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
