@@ -264,11 +264,11 @@ export default function ManshaEnterprisesWebsite() {
                 Natural Handmade Skincare
               </div>
 
-              <h1 className="max-w-2xl text-4xl font-bold leading-tight tracking-tight md:text-7xl">
+              <h1 className="max-w-2xl text-4xl font-bold leading-tight tracking-tight md:text-6xl">
                 Handmade soaps crafted with natural ingredients and everyday care.
               </h1>
 
-              <p className="mt-6 max-w-2xl text-lg leading-8 md:text-xl md:leading-9 text-[#6f5a49]">
+              <p className="mt-6 max-w-xl text-lg leading-8 text-[#6f5a49]">
                 Mansha Enterprises creates homemade soaps and handmade essentials
                 with care, comfort, and a personal touch. Perfect for daily use,
                 thoughtful gifting, and small celebrations.
@@ -307,13 +307,13 @@ export default function ManshaEnterprisesWebsite() {
               transition={{ duration: 0.8 }}
               className="relative"
             >
-              <div className="aspect-square overflow-hidden rounded-[2.5rem] bg-white shadow-2xl ring-1 ring-[#eadfce]">
-  <img
-  src="/hero-soaps.png"
-  alt="Handmade soaps with Natural Ingredients"
-  className="h-full w-full object-cover rounded-[2rem]"
-/>
-</div>
+              <div className="aspect-[4/5] overflow-hidden rounded-[2rem] bg-white shadow-2xl ring-1 ring-[#eadfce]">
+                <img
+                  src="/Neem Tulsi Soap.jpeg"
+                  alt="Mansha Enterprises handmade soaps"
+                  className="h-full w-full object-contain"
+                />
+              </div>
 
               <div className="absolute -bottom-6 -left-4 rounded-3xl bg-white p-5 shadow-xl md:-left-8">
                 <div className="flex items-center gap-3">
