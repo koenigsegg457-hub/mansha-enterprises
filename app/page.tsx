@@ -131,23 +131,24 @@ export default function ManshaEnterprisesWebsite() {
   return (
     <div className="min-h-screen scroll-smooth bg-[#fffaf3] text-[#3f2e24]">
       <header className="sticky top-0 z-50 border-b border-[#eadfce] bg-[#fffaf3]/90 backdrop-blur-md">
-        <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
-          <a href="#" className="flex items-center gap-3">
-            <img
-              src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
-              alt="Mansha Enterprises logo"
-              className="h-12 w-12 rounded-full object-cover shadow-sm ring-1 ring-[#d8b777]"
-            />
-            <div>
-  <p className="text-2xl font-bold tracking-wide md:text-3xl">
-    Mansha Enterprises
-  </p>
+        <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
+          <a href="#" className="flex items-center gap-4">
+  <img
+    src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
+    alt="Mansha Enterprises logo"
+    className="h-16 w-16 rounded-full object-contain shadow-md ring-1 ring-[#d8b777]"
+  />
 
-  <p className="mt-1 flex items-center gap-1 text-sm text-[#7c6655] md:text-base">
-    Handmade with love
-  </p>
-</div>
-          </a>
+  <div className="leading-tight">
+    <h1 className="text-3xl font-bold tracking-tight text-[#3f2e24] md:text-4xl">
+      Mansha Enterprises
+    </h1>
+
+    <p className="mt-1 text-sm font-medium tracking-wide text-[#8b6f5c] md:text-base">
+      Handmade with love
+    </p>
+  </div>
+</a>
 
           <div className="hidden items-center gap-10 text-base font-medium md:flex">
             {navLinks.map((link) => (
