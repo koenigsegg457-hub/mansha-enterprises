@@ -307,7 +307,7 @@ export default function ManshaEnterprisesWebsite() {
               transition={{ duration: 0.8 }}
               className="relative"
             >
-              <div className="flex h-[420px] items-center justify-center overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#fffaf3] to-[#f7eadb] p-6 shadow-2xl ring-1 ring-[#eadfce] md:h-[520px] xl:h-[620px]">
+              <div className="flex h-[520px] items-center justify-center overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#fffaf3] to-[#f7eadb] p-8 shadow-2xl ring-1 ring-[#eadfce] lg:h-[560px]">
   <img
     src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
     alt="Mansha Enterprises Logo"
