@@ -249,11 +249,11 @@ export default function ManshaEnterprisesWebsite() {
       </header>
 
       <main>
-        <section className="relative overflow-hidden px-5 py-16 md:py-24">
+        <section className="relative overflow-hidden px-5 py-10 md:min-h-[calc(100vh-88px)] md:py-8">
           <div className="absolute left-[-120px] top-[-120px] h-72 w-72 rounded-full bg-[#efd7b8] blur-3xl" />
           <div className="absolute bottom-[-160px] right-[-120px] h-80 w-80 rounded-full bg-[#f4cfc3] blur-3xl" />
 
-          <div className="relative mx-auto grid max-w-7xl items-center gap-12 md:grid-cols-2">
+          <div className="relative mx-auto grid max-w-7xl items-center gap-10 md:min-h-[calc(100vh-130px)] md:grid-cols-2">
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
