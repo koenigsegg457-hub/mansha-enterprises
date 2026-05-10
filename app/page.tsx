@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Script from "next/script";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ShoppingBag,
@@ -110,11 +111,27 @@ const testimonials = [
 
 export default function ManshaEnterprisesWebsite() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const [selectedProduct, setSelectedProduct] =
     useState<(typeof products)[0] | null>(null);
+    
   const [searchTerm, setSearchTerm] = useState("");
+
   const [cartProduct, setCartProduct] =
-    useState<(typeof products)[0] | null>(null);
+  useState<(typeof products)[0] | null>(null);
+
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+
+const [checkoutDetails, setCheckoutDetails] = useState({
+  name: "",
+  phone: "",
+  email: "",
+  address: "",
+  city: "",
+  state: "",
+  pincode: "",
+  quantity: 1,
+});
 
   const filteredProducts = products.filter((product) => {
     const value =
@@ -128,9 +145,103 @@ export default function ManshaEnterprisesWebsite() {
     { label: "About", href: "#about" },
     { label: "Contact", href: "#contact" },
   ];
+  const handlePayment = async () => {
+  if (!cartProduct) return;
+
+  if (
+    !checkoutDetails.name ||
+    !checkoutDetails.phone ||
+    !checkoutDetails.address ||
+    !checkoutDetails.city ||
+    !checkoutDetails.pincode
+  ) {
+    alert("Please fill all required delivery details.");
+    return;
+  }
+
+  try {
+    const productAmount = Number(cartProduct.price.replace("₹", ""));
+    const totalAmount = productAmount * checkoutDetails.quantity;
+
+    const orderResponse = await fetch("/api/razorpay/create-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ amount: totalAmount }),
+    });
+
+    const order = await orderResponse.json();
+
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      name: "Mansha Enterprises",
+      description: cartProduct.name,
+      order_id: order.id,
+
+      handler: async function (response: any) {
+        const verifyResponse = await fetch("/api/razorpay/verify-payment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(response),
+        });
+
+        const verifyResult = await verifyResponse.json();
+
+        if (verifyResult.success) {
+          alert("Payment successful! Your order is confirmed.");
+
+          console.log("ORDER DETAILS:", {
+            product: cartProduct,
+            customer: checkoutDetails,
+            totalAmount,
+            paymentId: response.razorpay_payment_id,
+            razorpayOrderId: response.razorpay_order_id,
+          });
+
+          setCheckoutOpen(false);
+          setCartProduct(null);
+
+          setCheckoutDetails({
+            name: "",
+            phone: "",
+            email: "",
+            address: "",
+            city: "",
+            state: "",
+            pincode: "",
+            quantity: 1,
+          });
+        } else {
+          alert("Payment verification failed.");
+        }
+      },
+
+      prefill: {
+        name: checkoutDetails.name,
+        email: checkoutDetails.email,
+        contact: checkoutDetails.phone,
+      },
+
+      theme: {
+        color: "#8b5e3c",
+      },
+    };
+
+    const razorpay = new (window as any).Razorpay(options);
+    razorpay.open();
+  } catch (error) {
+    alert("Something went wrong while opening payment.");
+  }
+};
 
   return (
     <div className="min-h-screen scroll-smooth bg-[#fffaf3] text-[#3f2e24]">
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
       <header className="sticky top-0 z-50 border-b border-[#eadfce] bg-[#fffaf3]/90 backdrop-blur-md">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
           <a href="#" className="flex items-center gap-3">
@@ -732,17 +843,186 @@ export default function ManshaEnterprisesWebsite() {
               </div>
 
               <Button
-                className="mt-5 w-full rounded-full bg-[#8b5e3c] py-6 text-base font-semibold text-white hover:bg-[#70472b]"
-                onClick={() =>
-                  alert("Next step: Checkout form will open here.")
-                }
-              >
-                Proceed to Checkout
-              </Button>
+  className="mt-5 w-full rounded-full bg-[#8b5e3c] py-6 text-base font-semibold text-white hover:bg-[#70472b]"
+  onClick={() => setCheckoutOpen(true)}
+>
+  Proceed to Checkout
+</Button>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+      <AnimatePresence>
+  {checkoutOpen && cartProduct && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[90] flex items-center justify-center bg-[#3f2e24]/60 p-4 backdrop-blur-sm"
+      onClick={() => setCheckoutOpen(false)}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 24, scale: 0.96 }}
+        transition={{ duration: 0.25 }}
+        className="max-h-[90vh] w-full max-w-2xl overflow-auto rounded-[2rem] bg-[#fffaf3] p-6 shadow-2xl"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="mb-5 flex items-start justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#8b5e3c]">
+              Checkout
+            </p>
+
+            <h3 className="mt-2 text-2xl font-bold">
+              Delivery Details
+            </h3>
+
+            <p className="mt-1 text-[#6f5a49]">
+              {cartProduct.name} • {cartProduct.price}
+            </p>
+          </div>
+
+          <button
+            onClick={() => setCheckoutOpen(false)}
+            className="rounded-full bg-white p-2 shadow-sm"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <input
+            placeholder="Full Name *"
+            value={checkoutDetails.name}
+            onChange={(e) =>
+              setCheckoutDetails({
+                ...checkoutDetails,
+                name: e.target.value,
+              })
+            }
+            className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 outline-none focus:border-[#8b5e3c]"
+          />
+
+          <input
+            placeholder="Phone Number *"
+            value={checkoutDetails.phone}
+            onChange={(e) =>
+              setCheckoutDetails({
+                ...checkoutDetails,
+                phone: e.target.value,
+              })
+            }
+            className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 outline-none focus:border-[#8b5e3c]"
+          />
+
+          <input
+            placeholder="Email"
+            value={checkoutDetails.email}
+            onChange={(e) =>
+              setCheckoutDetails({
+                ...checkoutDetails,
+                email: e.target.value,
+              })
+            }
+            className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 outline-none focus:border-[#8b5e3c]"
+          />
+
+          <input
+            type="number"
+            min="1"
+            placeholder="Quantity *"
+            value={checkoutDetails.quantity}
+            onChange={(e) =>
+              setCheckoutDetails({
+                ...checkoutDetails,
+                quantity: Number(e.target.value),
+              })
+            }
+            className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 outline-none focus:border-[#8b5e3c]"
+          />
+
+          <input
+            placeholder="City *"
+            value={checkoutDetails.city}
+            onChange={(e) =>
+              setCheckoutDetails({
+                ...checkoutDetails,
+                city: e.target.value,
+              })
+            }
+            className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 outline-none focus:border-[#8b5e3c]"
+          />
+
+          <input
+            placeholder="State *"
+            value={checkoutDetails.state}
+            onChange={(e) =>
+              setCheckoutDetails({
+                ...checkoutDetails,
+                state: e.target.value,
+              })
+            }
+            className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 outline-none focus:border-[#8b5e3c]"
+          />
+
+          <input
+            placeholder="Pincode *"
+            value={checkoutDetails.pincode}
+            onChange={(e) =>
+              setCheckoutDetails({
+                ...checkoutDetails,
+                pincode: e.target.value,
+              })
+            }
+            className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 outline-none focus:border-[#8b5e3c]"
+          />
+
+          <textarea
+            placeholder="Full Address *"
+            value={checkoutDetails.address}
+            onChange={(e) =>
+              setCheckoutDetails({
+                ...checkoutDetails,
+                address: e.target.value,
+              })
+            }
+            className="min-h-[110px] rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 outline-none focus:border-[#8b5e3c] sm:col-span-2"
+          />
+        </div>
+
+        <div className="mt-6 rounded-2xl bg-white p-4">
+          <div className="flex justify-between text-sm text-[#6f5a49]">
+            <span>Product</span>
+            <span>{cartProduct.name}</span>
+          </div>
+
+          <div className="mt-2 flex justify-between text-sm text-[#6f5a49]">
+            <span>Quantity</span>
+            <span>{checkoutDetails.quantity}</span>
+          </div>
+
+          <div className="mt-3 flex justify-between border-t border-[#eadfce] pt-3 text-lg font-bold text-[#8b5e3c]">
+            <span>Total</span>
+            <span>
+              ₹
+              {Number(cartProduct.price.replace("₹", "")) *
+                checkoutDetails.quantity}
+            </span>
+          </div>
+        </div>
+
+        <Button
+          className="mt-5 w-full rounded-full bg-[#25D366] py-6 text-base font-semibold text-white hover:bg-[#1ebe5d]"
+          onClick={handlePayment}
+        >
+          Continue to Payment
+        </Button>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
     </div>
   );
 }
