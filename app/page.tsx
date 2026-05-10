@@ -139,14 +139,17 @@ export default function ManshaEnterprisesWebsite() {
               className="h-12 w-12 rounded-full object-cover shadow-sm ring-1 ring-[#d8b777]"
             />
             <div>
-              <p className="text-lg font-bold tracking-wide">
-                Mansha Enterprises
-              </p>
-              <p className="text-xs text-[#7c6655]">Handmade with love</p>
-            </div>
+  <p className="text-2xl font-bold tracking-wide md:text-3xl">
+    Mansha Enterprises
+  </p>
+
+  <p className="mt-1 flex items-center gap-1 text-sm text-[#7c6655] md:text-base">
+    Handmade with love
+  </p>
+</div>
           </a>
 
-          <div className="hidden items-center gap-8 text-sm font-medium md:flex">
+          <div className="hidden items-center gap-10 text-base font-medium md:flex">
             {navLinks.map((link) => (
               <a key={link.href} href={link.href} className="hover:text-[#8b5e3c]">
                 {link.label}
@@ -155,7 +158,7 @@ export default function ManshaEnterprisesWebsite() {
           </div>
 
           <Button
-            className="hidden rounded-full bg-[#8b5e3c] px-5 text-white hover:bg-[#70472b] md:flex"
+            className="hidden rounded-full bg-[#8b5e3c] px-7 py-6 text-lg text-white hover:bg-[#70472b] md:flex"
             asChild
           >
             <a
