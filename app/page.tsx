@@ -307,11 +307,11 @@ export default function ManshaEnterprisesWebsite() {
               transition={{ duration: 0.8 }}
               className="relative"
             >
-              <div className="flex aspect-square items-center justify-center rounded-[2.5rem] bg-gradient-to-br from-[#fffaf3] to-[#f7eadb] p-10 shadow-2xl ring-1 ring-[#eadfce]">
+              <div className="flex h-[520px] items-center justify-center overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#fffaf3] to-[#f7eadb] p-8 shadow-2xl ring-1 ring-[#eadfce] lg:h-[560px]">
   <img
     src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
     alt="Mansha Enterprises Logo"
-    className="w-[85%] object-contain drop-shadow-2xl"
+    className="max-h-[78%] max-w-[78%] object-contain drop-shadow-2xl"
   />
 </div>
               <div className="absolute -bottom-6 -left-4 rounded-3xl bg-white p-5 shadow-xl md:-left-8">
