@@ -112,9 +112,12 @@ const createWhatsAppLink = (message: string) => {
 
 export default function ManshaEnterprisesWebsite() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] =
-    useState<(typeof products)[0] | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
+const [selectedProduct, setSelectedProduct] =
+  useState<(typeof products)[0] | null>(null);
+const [searchTerm, setSearchTerm] = useState("");
+
+const [cartProduct, setCartProduct] =
+  useState<(typeof products)[0] | null>(null);
 
   const filteredProducts = products.filter((product) => {
     const value = `${product.name} ${product.benefit} ${product.ingredients}`.toLowerCase();
@@ -276,20 +279,11 @@ export default function ManshaEnterprisesWebsite() {
 
               <div className="mt-8 flex flex-col gap-4 sm:flex-row">
                 <Button
-                  className="rounded-full bg-[#8b5e3c] px-7 py-6 text-base text-white hover:bg-[#70472b]"
-                  asChild
-                >
-                  <a
-                    href={createWhatsAppLink(
-                      "Hi, I want to place an order from Mansha Enterprises."
-                    )}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <MessageCircle className="mr-2" size={19} />
-                    Order on WhatsApp
-                  </a>
-                </Button>
+  className="hidden rounded-full bg-[#8b5e3c] px-5 text-white hover:bg-[#70472b] md:flex"
+  asChild
+>
+  <a href="#products">View Products</a>
+</Button>
 
                 <Button
                   variant="outline"
@@ -439,13 +433,23 @@ export default function ManshaEnterprisesWebsite() {
                         <span className="font-bold text-[#8b5e3c]">
                           {product.price}
                         </span>
-                        <Button
-                          size="sm"
-                          onClick={() => setSelectedProduct(product)}
-                          className="rounded-full bg-[#8b5e3c] text-white hover:bg-[#70472b]"
-                        >
-                          View Details
-                        </Button>
+                        <div className="flex gap-2">
+  <Button
+    size="sm"
+    onClick={() => setSelectedProduct(product)}
+    className="rounded-full bg-[#8b5e3c] text-white hover:bg-[#70472b]"
+  >
+    View Details
+  </Button>
+
+  <Button
+    size="sm"
+    onClick={() => setCartProduct(product)}
+    className="rounded-full bg-[#25D366] text-white hover:bg-[#1ebe5d]"
+  >
+    Add to Cart
+  </Button>
+</div>
                       </div>
                     </CardContent>
                   </Card>
@@ -686,6 +690,66 @@ export default function ManshaEnterprisesWebsite() {
           </motion.div>
         )}
       </AnimatePresence>
+      <AnimatePresence>
+  {cartProduct && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[80] flex items-center justify-center bg-[#3f2e24]/50 p-4 backdrop-blur-sm"
+      onClick={() => setCartProduct(null)}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 24, scale: 0.96 }}
+        transition={{ duration: 0.25 }}
+        className="w-full max-w-md rounded-[2rem] bg-[#fffaf3] p-6 shadow-2xl"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="mb-5 flex items-start justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#8b5e3c]">
+              Cart
+            </p>
+            <h3 className="mt-2 text-2xl font-bold">
+              {cartProduct.name}
+            </h3>
+            <p className="mt-1 text-[#6f5a49]">
+              {cartProduct.price}
+            </p>
+          </div>
+
+          <button
+            onClick={() => setCartProduct(null)}
+            className="rounded-full bg-white p-2 shadow-sm"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="rounded-2xl bg-white p-4">
+          <img
+            src={cartProduct.image}
+            alt={cartProduct.name}
+            className="mx-auto h-48 object-contain"
+          />
+
+          <p className="mt-4 text-sm leading-6 text-[#6f5a49]">
+            {cartProduct.description}
+          </p>
+        </div>
+
+        <Button
+          className="mt-5 w-full rounded-full bg-[#8b5e3c] py-6 text-base text-white hover:bg-[#70472b]"
+          onClick={() => alert("Next step: Checkout form will open here.")}
+        >
+          Proceed to Checkout
+        </Button>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
     </div>
   );
 }
