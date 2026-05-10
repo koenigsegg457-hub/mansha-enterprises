@@ -264,7 +264,7 @@ export default function ManshaEnterprisesWebsite() {
                 Natural Handmade Skincare
               </div>
 
-              <h1 className="max-w-2xl text-4xl font-bold leading-tight tracking-tight md:text-7xl">
+              <h1 className="max-w-3xl text-4xl font-bold leading-tight tracking-tight md:text-7xl">
                 Handmade soaps crafted with natural ingredients and everyday care.
               </h1>
 
@@ -480,7 +480,7 @@ export default function ManshaEnterprisesWebsite() {
                 Homemade and shared with care.
               </h2>
 
-              <div className="mt-5 space-y-5 text-lg leading-8 text-[#6f5a49]">
+              <div className="mt-6 max-w-2xl text-lg leading-8 text-[#6f5a49] md:text-xl md:leading-9">
                 <p>
                   Mansha Enterprises is a small handmade skincare and home-crafted
                   brand built with care, simplicity, and creativity. What started
