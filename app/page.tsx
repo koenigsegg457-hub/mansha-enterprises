@@ -131,26 +131,22 @@ export default function ManshaEnterprisesWebsite() {
   return (
     <div className="min-h-screen scroll-smooth bg-[#fffaf3] text-[#3f2e24]">
       <header className="sticky top-0 z-50 border-b border-[#eadfce] bg-[#fffaf3]/90 backdrop-blur-md">
-        <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-          <a href="#" className="flex items-center gap-4">
-  <img
-    src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
-    alt="Mansha Enterprises logo"
-    className="h-16 w-16 rounded-full object-contain shadow-md ring-1 ring-[#d8b777]"
-  />
+        <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
+          <a href="#" className="flex items-center gap-3">
+            <img
+              src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
+              alt="Mansha Enterprises logo"
+              className="h-12 w-12 rounded-full object-cover shadow-sm ring-1 ring-[#d8b777]"
+            />
+            <div>
+              <p className="text-xl font-bold tracking-wide sm:text-2xl">
+                Mansha Enterprises
+              </p>
+              <p className="text-sm text-[#7c6655]">Handmade with love</p>
+            </div>
+          </a>
 
-  <div className="leading-tight">
-    <h1 className="text-3xl font-bold tracking-tight text-[#3f2e24] md:text-4xl">
-      Mansha Enterprises
-    </h1>
-
-    <p className="mt-1 text-sm font-medium tracking-wide text-[#8b6f5c] md:text-base">
-      Handmade with love
-    </p>
-  </div>
-</a>
-
-          <div className="hidden items-center gap-10 text-base font-medium md:flex">
+          <div className="hidden items-center gap-8 text-base font-medium md:flex">
             {navLinks.map((link) => (
               <a key={link.href} href={link.href} className="hover:text-[#8b5e3c]">
                 {link.label}
@@ -159,7 +155,7 @@ export default function ManshaEnterprisesWebsite() {
           </div>
 
           <Button
-            className="hidden rounded-full bg-[#8b5e3c] px-7 py-6 text-lg text-white hover:bg-[#70472b] md:flex"
+            className="hidden rounded-full bg-[#8b5e3c] px-5 text-white hover:bg-[#70472b] md:flex"
             asChild
           >
             <a
@@ -218,7 +214,7 @@ export default function ManshaEnterprisesWebsite() {
           </button>
         </div>
 
-        <div className="flex flex-col gap-4 text-lg font-medium">
+        <div className="flex flex-col gap-4 text-xl font-medium">
           {navLinks.map((link) => (
             <a
               key={link.href}
@@ -253,11 +249,11 @@ export default function ManshaEnterprisesWebsite() {
       </header>
 
       <main>
-        <section className="relative overflow-hidden px-5 py-10 md:min-h-[calc(100vh-88px)] md:py-8">
+        <section className="relative overflow-hidden px-5 py-16 md:py-24">
           <div className="absolute left-[-120px] top-[-120px] h-72 w-72 rounded-full bg-[#efd7b8] blur-3xl" />
           <div className="absolute bottom-[-160px] right-[-120px] h-80 w-80 rounded-full bg-[#f4cfc3] blur-3xl" />
 
-          <div className="relative mx-auto grid max-w-7xl items-center gap-10 md:min-h-[calc(100vh-130px)] md:grid-cols-2">
+          <div className="relative mx-auto grid max-w-7xl items-center gap-12 md:grid-cols-2">
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
@@ -268,11 +264,11 @@ export default function ManshaEnterprisesWebsite() {
                 Natural Handmade Skincare
               </div>
 
-              <h1 className="max-w-3xl text-4xl font-bold leading-tight tracking-tight md:text-7xl">
+              <h1 className="max-w-3xl text-[2.35rem] font-bold leading-[1.12] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
                 Handmade soaps crafted with natural ingredients and everyday care.
               </h1>
 
-              <p className="mt-6 max-w-2xl text-lg leading-8 md:text-xl md:leading-9 text-[#6f5a49]">
+              <p className="mt-6 max-w-2xl text-base leading-7 sm:text-lg sm:leading-8 md:text-xl md:leading-9 text-[#6f5a49]">
                 Mansha Enterprises creates homemade soaps and handmade essentials
                 with care, comfort, and a personal touch. Perfect for daily use,
                 thoughtful gifting, and small celebrations.
@@ -311,11 +307,11 @@ export default function ManshaEnterprisesWebsite() {
               transition={{ duration: 0.8 }}
               className="relative"
             >
-              <div className="flex h-[520px] items-center justify-center overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#fffaf3] to-[#f7eadb] p-8 shadow-2xl ring-1 ring-[#eadfce] lg:h-[560px]">
+              <div className="flex aspect-square items-center justify-center rounded-[2.5rem] bg-gradient-to-br from-[#fffaf3] to-[#f7eadb] p-10 shadow-2xl ring-1 ring-[#eadfce]">
   <img
     src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
     alt="Mansha Enterprises Logo"
-    className="max-h-[78%] max-w-[78%] object-contain drop-shadow-2xl"
+    className="w-[85%] object-contain drop-shadow-2xl"
   />
 </div>
               <div className="absolute -bottom-6 -left-4 rounded-3xl bg-white p-5 shadow-xl md:-left-8">
@@ -341,7 +337,7 @@ export default function ManshaEnterprisesWebsite() {
               <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#8b5e3c]">
                 What We Offer
               </p>
-              <h2 className="mt-3 text-3xl font-bold md:text-4xl">
+              <h2 className="text-[1.8rem] font-bold leading-tight sm:text-3xl md:text-4xl">
                 Handmade care with a personal touch
               </h2>
             </div>
@@ -358,8 +354,8 @@ export default function ManshaEnterprisesWebsite() {
                       <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f7eadb] text-[#8b5e3c]">
                         <Icon size={26} />
                       </div>
-                      <h3 className="text-xl font-bold">{item.title}</h3>
-                      <p className="mt-3 leading-7 text-[#6f5a49]">
+                      <h3 className="text-[1.35rem] font-bold leading-snug sm:text-xl md:text-2xl">{item.title}</h3>
+                      <p className="mt-3 text-[15.5px] leading-7 text-[#6f5a49] sm:text-base">
                         {item.text}
                       </p>
                     </CardContent>
@@ -426,7 +422,7 @@ export default function ManshaEnterprisesWebsite() {
 
                       <h3 className="text-xl font-bold">{product.name}</h3>
 
-                      <p className="mt-3 min-h-[112px] leading-7 text-[#6f5a49]">
+                      <p className="mt-3 min-h-[96px] leading-7 text-[#6f5a49]">
                         {product.description}
                       </p>
 
@@ -484,7 +480,7 @@ export default function ManshaEnterprisesWebsite() {
                 Homemade and shared with care.
               </h2>
 
-              <div className="mt-6 max-w-2xl text-lg leading-8 text-[#6f5a49] md:text-xl md:leading-9">
+              <div className="mt-6 max-w-2xl text-base leading-8 sm:text-lg text-[#6f5a49] md:text-xl md:leading-9">
                 <p>
                   Mansha Enterprises is a small handmade skincare and home-crafted
                   brand built with care, simplicity, and creativity. What started
@@ -588,7 +584,7 @@ export default function ManshaEnterprisesWebsite() {
       </main>
 
       <footer className="border-t border-[#eadfce] px-5 py-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 text-center text-sm text-[#7c6655] md:flex-row">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 text-center text-[15px] text-[#7c6655] md:text-sm md:flex-row">
           <p>© 2026 Mansha Enterprises • Handmade soaps & candles.</p>
           <p>Elevated essentials for cozy homes.</p>
         </div>
