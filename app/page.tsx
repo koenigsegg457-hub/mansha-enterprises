@@ -309,7 +309,7 @@ export default function ManshaEnterprisesWebsite() {
             >
               <div className="flex aspect-square items-center justify-center rounded-[2.5rem] bg-gradient-to-br from-[#fffaf3] to-[#f7eadb] p-10 shadow-2xl ring-1 ring-[#eadfce]">
   <img
-    src="hero-soaps.png"
+    src="/hero-soaps.png"
     alt="Handmade soaps with Natural Ingredients"
     className="h-full w-full object-cover"
   />
