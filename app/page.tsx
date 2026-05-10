@@ -309,9 +309,9 @@ export default function ManshaEnterprisesWebsite() {
             >
               <div className="flex aspect-square items-center justify-center rounded-[2.5rem] bg-gradient-to-br from-[#fffaf3] to-[#f7eadb] p-10 shadow-2xl ring-1 ring-[#eadfce]">
   <img
-    src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
-    alt="Mansha Enterprises Logo"
-    className="w-[85%] object-contain drop-shadow-2xl"
+    src="hero-soaps.png"
+    alt="Handmade soaps with Natural Ingredients"
+    className="h-full w-full object-cover"
   />
 </div>
               <div className="absolute -bottom-6 -left-4 rounded-3xl bg-white p-5 shadow-xl md:-left-8">
