@@ -28,7 +28,8 @@ const products = [
       "Neem leaves, tulsi leaves, aloe vera gel, vitamin E, coconut oil, essential oils",
     price: "₹100",
     image: "/Neem Tulsi Soap.jpeg",
-    bestFor: "Daily freshness, oily skin feel, and a clean natural bathing routine.",
+    bestFor:
+      "Daily freshness, oily skin feel, and a clean natural bathing routine.",
   },
   {
     name: "Rice Potato Soap",
@@ -40,7 +41,8 @@ const products = [
       "Rice powder, potato juice, aloe vera, coconut oil, vitamin E, essential oil",
     price: "₹100",
     image: "/Rice Potato Soap.jpeg",
-    bestFor: "Smooth skin feel, gentle care, and everyday glow-focused bathing.",
+    bestFor:
+      "Smooth skin feel, gentle care, and everyday glow-focused bathing.",
   },
   {
     name: "Papaya Soap",
@@ -64,7 +66,8 @@ const products = [
       "Kasturi haldi, chandan powder, multani mitti, aloe vera, vitamin E, glycerine, coconut oil, essential oil",
     price: "₹100",
     image: "/Haldi Chandan Soap.jpeg",
-    bestFor: "Traditional care, natural radiance, and a refreshing herbal bathing experience.",
+    bestFor:
+      "Traditional care, natural radiance, and a refreshing herbal bathing experience.",
   },
   {
     name: "Coffee Soap",
@@ -76,7 +79,8 @@ const products = [
       "Coffee powder, rice powder, aloe vera, glycerine, coconut oil, essential oil",
     price: "₹100",
     image: "/Coffee Soap.jpeg",
-    bestFor: "Refreshing bath feel, mild exfoliating texture, and a rich coffee aroma.",
+    bestFor:
+      "Refreshing bath feel, mild exfoliating texture, and a rich coffee aroma.",
   },
 ];
 
@@ -104,23 +108,17 @@ const testimonials = [
   "The products feel fresh, natural, and thoughtfully made.",
 ];
 
-const WHATSAPP_NUMBER = "918130511871";
-
-const createWhatsAppLink = (message: string) => {
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-};
-
 export default function ManshaEnterprisesWebsite() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-const [selectedProduct, setSelectedProduct] =
-  useState<(typeof products)[0] | null>(null);
-const [searchTerm, setSearchTerm] = useState("");
-
-const [cartProduct, setCartProduct] =
-  useState<(typeof products)[0] | null>(null);
+  const [selectedProduct, setSelectedProduct] =
+    useState<(typeof products)[0] | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [cartProduct, setCartProduct] =
+    useState<(typeof products)[0] | null>(null);
 
   const filteredProducts = products.filter((product) => {
-    const value = `${product.name} ${product.benefit} ${product.ingredients}`.toLowerCase();
+    const value =
+      `${product.name} ${product.benefit} ${product.ingredients}`.toLowerCase();
     return value.includes(searchTerm.toLowerCase());
   });
 
@@ -141,6 +139,7 @@ const [cartProduct, setCartProduct] =
               alt="Mansha Enterprises logo"
               className="h-12 w-12 rounded-full object-cover shadow-sm ring-1 ring-[#d8b777]"
             />
+
             <div>
               <p className="text-xl font-bold tracking-wide sm:text-2xl">
                 Mansha Enterprises
@@ -151,25 +150,21 @@ const [cartProduct, setCartProduct] =
 
           <div className="hidden items-center gap-8 text-base font-medium md:flex">
             {navLinks.map((link) => (
-              <a key={link.href} href={link.href} className="hover:text-[#8b5e3c]">
+              <a
+                key={link.href}
+                href={link.href}
+                className="hover:text-[#8b5e3c]"
+              >
                 {link.label}
               </a>
             ))}
           </div>
 
           <Button
-            className="hidden rounded-full bg-[#8b5e3c] px-5 text-white hover:bg-[#70472b] md:flex"
+            className="hidden h-12 rounded-full bg-[#8b5e3c] px-7 text-base font-semibold text-white hover:bg-[#70472b] md:flex"
             asChild
           >
-            <a
-              href={createWhatsAppLink(
-                "Hi, I want to place an order from Mansha Enterprises."
-              )}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Order on WhatsApp
-            </a>
+            <a href="#products">View Products</a>
           </Button>
 
           <button
@@ -182,73 +177,66 @@ const [cartProduct, setCartProduct] =
         </nav>
 
         <AnimatePresence>
-  {mobileMenuOpen && (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[999] bg-[#3f2e24]/50 md:hidden"
-      onClick={() => setMobileMenuOpen(false)}
-    >
-      <motion.div
-        initial={{ x: "100%" }}
-        animate={{ x: 0 }}
-        exit={{ x: "100%" }}
-        transition={{ type: "spring", damping: 25, stiffness: 220 }}
-        className="ml-auto flex h-screen w-[82%] max-w-sm flex-col bg-[#fffaf3] p-6 shadow-2xl"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="mb-8 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img
-              src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
-              alt="Mansha Enterprises logo"
-              className="h-12 w-12 rounded-full object-cover ring-1 ring-[#d8b777]"
-            />
-            <p className="text-xl font-bold">Menu</p>
-          </div>
-
-          <button
-            onClick={() => setMobileMenuOpen(false)}
-            aria-label="Close menu"
-            className="rounded-full bg-white p-2 shadow-sm"
-          >
-            <X size={22} />
-          </button>
-        </div>
-
-        <div className="flex flex-col gap-4 text-xl font-medium">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[999] bg-[#3f2e24]/50 md:hidden"
               onClick={() => setMobileMenuOpen(false)}
-              className="rounded-2xl px-4 py-3 transition hover:bg-[#f7eadb]"
             >
-              {link.label}
-            </a>
-          ))}
-        </div>
+              <motion.div
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 220 }}
+                className="ml-auto flex h-screen w-[82%] max-w-sm flex-col bg-[#fffaf3] p-6 shadow-2xl"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div className="mb-8 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
+                      alt="Mansha Enterprises logo"
+                      className="h-12 w-12 rounded-full object-cover ring-1 ring-[#d8b777]"
+                    />
+                    <p className="text-xl font-bold">Menu</p>
+                  </div>
 
-        <Button
-          className="mt-8 rounded-full bg-[#8b5e3c] py-6 text-white hover:bg-[#70472b]"
-          asChild
-        >
-          <a
-            href={createWhatsAppLink(
-              "Hi, I want to place an order from Mansha Enterprises."
-            )}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <MessageCircle className="mr-2" size={19} />
-            Order on WhatsApp
-          </a>
-        </Button>
-      </motion.div>
-    </motion.div>
-  )}
-</AnimatePresence>
+                  <button
+                    onClick={() => setMobileMenuOpen(false)}
+                    aria-label="Close menu"
+                    className="rounded-full bg-white p-2 shadow-sm"
+                  >
+                    <X size={22} />
+                  </button>
+                </div>
+
+                <div className="flex flex-col gap-4 text-xl font-medium">
+                  {navLinks.map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="rounded-2xl px-4 py-3 transition hover:bg-[#f7eadb]"
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+
+                <Button
+                  className="mt-8 h-14 rounded-full bg-[#8b5e3c] text-base font-semibold text-white hover:bg-[#70472b]"
+                  asChild
+                >
+                  <a href="#products" onClick={() => setMobileMenuOpen(false)}>
+                    View Products
+                  </a>
+                </Button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       <main>
@@ -268,10 +256,11 @@ const [cartProduct, setCartProduct] =
               </div>
 
               <h1 className="max-w-3xl text-[2.35rem] font-bold leading-[1.12] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-                Handmade soaps crafted with natural ingredients and everyday care.
+                Handmade soaps crafted with natural ingredients and everyday
+                care.
               </h1>
 
-              <p className="mt-6 max-w-2xl text-base leading-7 sm:text-lg sm:leading-8 md:text-xl md:leading-9 text-[#6f5a49]">
+              <p className="mt-6 max-w-2xl text-base leading-7 text-[#6f5a49] sm:text-lg sm:leading-8 md:text-xl md:leading-9">
                 Mansha Enterprises creates homemade soaps and handmade essentials
                 with care, comfort, and a personal touch. Perfect for daily use,
                 thoughtful gifting, and small celebrations.
@@ -279,15 +268,15 @@ const [cartProduct, setCartProduct] =
 
               <div className="mt-8 flex flex-col gap-4 sm:flex-row">
                 <Button
-  className="hidden rounded-full bg-[#8b5e3c] px-5 text-white hover:bg-[#70472b] md:flex"
-  asChild
->
-  <a href="#products">View Products</a>
-</Button>
+                  className="h-[72px] rounded-full bg-[#4b4b4b] px-12 text-xl font-semibold text-white shadow-lg transition hover:scale-105 hover:bg-[#3f3f3f]"
+                  asChild
+                >
+                  <a href="#products">View Products</a>
+                </Button>
 
                 <Button
                   variant="outline"
-                  className="rounded-full border-[#8b5e3c] px-7 py-6 text-base text-[#8b5e3c] hover:bg-[#f7eadb]"
+                  className="h-[72px] rounded-full border-2 border-[#9b6a42] px-12 text-xl font-semibold text-[#9b6a42] transition hover:bg-[#f7eadb]"
                   asChild
                 >
                   <a href="#about">Our Story</a>
@@ -302,17 +291,19 @@ const [cartProduct, setCartProduct] =
               className="relative"
             >
               <div className="flex h-[520px] items-center justify-center overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#fffaf3] to-[#f7eadb] p-8 shadow-2xl ring-1 ring-[#eadfce] lg:h-[560px]">
-  <img
-    src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
-    alt="Mansha Enterprises Logo"
-    className="max-h-[78%] max-w-[78%] object-contain drop-shadow-2xl"
-  />
-</div>
+                <img
+                  src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
+                  alt="Mansha Enterprises Logo"
+                  className="max-h-[78%] max-w-[78%] object-contain drop-shadow-2xl"
+                />
+              </div>
+
               <div className="absolute -bottom-6 -left-4 rounded-3xl bg-white p-5 shadow-xl md:-left-8">
                 <div className="flex items-center gap-3">
                   <div className="rounded-full bg-[#f7eadb] p-3">
                     <Star className="text-[#8b5e3c]" />
                   </div>
+
                   <div>
                     <p className="font-bold">Handcrafted with care</p>
                     <p className="text-sm text-[#7c6655]">
@@ -339,6 +330,7 @@ const [cartProduct, setCartProduct] =
             <div className="grid gap-6 md:grid-cols-3">
               {offerings.map((item) => {
                 const Icon = item.icon;
+
                 return (
                   <Card
                     key={item.title}
@@ -348,7 +340,11 @@ const [cartProduct, setCartProduct] =
                       <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f7eadb] text-[#8b5e3c]">
                         <Icon size={26} />
                       </div>
-                      <h3 className="text-[1.35rem] font-bold leading-snug sm:text-xl md:text-2xl">{item.title}</h3>
+
+                      <h3 className="text-[1.35rem] font-bold leading-snug sm:text-xl md:text-2xl">
+                        {item.title}
+                      </h3>
+
                       <p className="mt-3 text-[15.5px] leading-7 text-[#6f5a49] sm:text-base">
                         {item.text}
                       </p>
@@ -367,7 +363,7 @@ const [cartProduct, setCartProduct] =
                 <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#8b5e3c]">
                   Products
                 </p>
-                <h2 className="mt-3 text-3xl font-bold md:text-4xl">
+                <h2 className="mt-3 text-[1.8rem] font-bold leading-tight sm:text-3xl md:text-4xl">
                   Handmade soaps collection
                 </h2>
               </div>
@@ -409,14 +405,17 @@ const [cartProduct, setCartProduct] =
                         <div className="inline-flex rounded-full bg-[#fff4e7] px-3 py-1 text-xs font-semibold text-[#8b5e3c]">
                           {product.category}
                         </div>
+
                         <div className="inline-flex rounded-full bg-[#f1f7ed] px-3 py-1 text-xs font-semibold text-[#56743f]">
                           {product.benefit}
                         </div>
                       </div>
 
-                      <h3 className="text-xl font-bold">{product.name}</h3>
+                      <h3 className="text-[1.35rem] font-bold leading-snug sm:text-xl md:text-2xl">
+                        {product.name}
+                      </h3>
 
-                      <p className="mt-3 min-h-[96px] leading-7 text-[#6f5a49]">
+                      <p className="mt-3 min-h-[96px] text-[15.5px] leading-7 text-[#6f5a49] sm:text-base">
                         {product.description}
                       </p>
 
@@ -429,27 +428,28 @@ const [cartProduct, setCartProduct] =
                         </p>
                       </div>
 
-                      <div className="mt-5 flex items-center justify-between">
-                        <span className="font-bold text-[#8b5e3c]">
+                      <div className="mt-5 flex flex-col gap-4">
+                        <span className="text-xl font-bold text-[#8b5e3c]">
                           {product.price}
                         </span>
-                        <div className="flex gap-2">
-  <Button
-    size="sm"
-    onClick={() => setSelectedProduct(product)}
-    className="rounded-full bg-[#8b5e3c] text-white hover:bg-[#70472b]"
-  >
-    View Details
-  </Button>
 
-  <Button
-    size="sm"
-    onClick={() => setCartProduct(product)}
-    className="rounded-full bg-[#25D366] text-white hover:bg-[#1ebe5d]"
-  >
-    Add to Cart
-  </Button>
-</div>
+                        <div className="flex flex-wrap gap-3">
+                          <Button
+                            size="sm"
+                            onClick={() => setSelectedProduct(product)}
+                            className="h-11 rounded-full bg-[#8b5e3c] px-5 text-white hover:bg-[#70472b]"
+                          >
+                            View Details
+                          </Button>
+
+                          <Button
+                            size="sm"
+                            onClick={() => setCartProduct(product)}
+                            className="h-11 rounded-full bg-[#25D366] px-5 text-white hover:bg-[#1ebe5d]"
+                          >
+                            Add to Cart
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -480,17 +480,18 @@ const [cartProduct, setCartProduct] =
               <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#8b5e3c]">
                 Our Story
               </p>
-              <h2 className="mt-3 text-3xl font-bold md:text-4xl">
+              <h2 className="mt-3 text-[1.8rem] font-bold leading-tight sm:text-3xl md:text-4xl">
                 Homemade and shared with care.
               </h2>
 
-              <div className="mt-6 max-w-2xl text-base leading-8 sm:text-lg text-[#6f5a49] md:text-xl md:leading-9">
+              <div className="mt-6 max-w-2xl space-y-4 text-base leading-8 text-[#6f5a49] sm:text-lg md:text-xl md:leading-9">
                 <p>
-                  Mansha Enterprises is a small handmade skincare and home-crafted
-                  brand built with care, simplicity, and creativity. What started
-                  from making products for family and close circles slowly grew
-                  into creating thoughtful handmade soaps and self-care products
-                  for people who value natural ingredients and a personal touch.
+                  Mansha Enterprises is a small handmade skincare and
+                  home-crafted brand built with care, simplicity, and creativity.
+                  What started from making products for family and close circles
+                  slowly grew into creating thoughtful handmade soaps and
+                  self-care products for people who value natural ingredients and
+                  a personal touch.
                 </p>
 
                 <p>
@@ -535,7 +536,7 @@ const [cartProduct, setCartProduct] =
             <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#8b5e3c]">
               Customer Love
             </p>
-            <h2 className="mt-3 text-3xl font-bold md:text-4xl">
+            <h2 className="mt-3 text-[1.8rem] font-bold leading-tight sm:text-3xl md:text-4xl">
               Simple things, made beautifully
             </h2>
 
@@ -550,7 +551,9 @@ const [cartProduct, setCartProduct] =
                       <Star key={index} size={17} fill="currentColor" />
                     ))}
                   </div>
-                  <p className="leading-7 text-[#6f5a49]">“{text}”</p>
+                  <p className="text-[15.5px] leading-7 text-[#6f5a49] sm:text-base">
+                    “{text}”
+                  </p>
                 </div>
               ))}
             </div>
@@ -560,35 +563,27 @@ const [cartProduct, setCartProduct] =
         <section id="contact" className="px-5 py-16">
           <div className="mx-auto max-w-5xl rounded-[2rem] bg-[#8b5e3c] p-8 text-center text-white shadow-xl md:p-12">
             <ShoppingBag className="mx-auto mb-4" size={38} />
-            <h2 className="text-3xl font-bold md:text-4xl">
+            <h2 className="text-[1.8rem] font-bold leading-tight sm:text-3xl md:text-4xl">
               Want to place an order?
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl leading-8 text-[#f7eadb]">
-              Click the WhatsApp button to message us directly for orders,
-              availability, prices, and custom handmade product requests.
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-[#f7eadb] sm:text-lg">
+              Choose your handmade product, add it to cart, and proceed to
+              checkout. Online payment and courier delivery can be added in the
+              next step.
             </p>
 
             <Button
-              className="mt-7 rounded-full bg-white px-8 py-6 text-base text-[#8b5e3c] hover:bg-[#f7eadb]"
+              className="mt-7 h-14 rounded-full bg-white px-8 text-base font-semibold text-[#8b5e3c] hover:bg-[#f7eadb]"
               asChild
             >
-              <a
-                href={createWhatsAppLink(
-                  "Hi, I want to place an order from Mansha Enterprises."
-                )}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <MessageCircle className="mr-2" size={19} />
-                Order on WhatsApp
-              </a>
+              <a href="#products">Shop Products</a>
             </Button>
           </div>
         </section>
       </main>
 
       <footer className="border-t border-[#eadfce] px-5 py-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 text-center text-[15px] text-[#7c6655] md:text-sm md:flex-row">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 text-center text-[15px] text-[#7c6655] md:flex-row md:text-sm">
           <p>© 2026 Mansha Enterprises • Handmade soaps & candles.</p>
           <p>Elevated essentials for cozy homes.</p>
         </div>
@@ -626,7 +621,7 @@ const [cartProduct, setCartProduct] =
                       <p className="mb-2 inline-flex rounded-full bg-[#f1f7ed] px-3 py-1 text-xs font-semibold text-[#56743f]">
                         {selectedProduct.benefit}
                       </p>
-                      <h3 className="text-2xl font-bold">
+                      <h3 className="text-[1.8rem] font-bold leading-tight sm:text-3xl">
                         {selectedProduct.name}
                       </h3>
                     </div>
@@ -640,7 +635,7 @@ const [cartProduct, setCartProduct] =
                     </button>
                   </div>
 
-                  <p className="leading-7 text-[#6f5a49]">
+                  <p className="text-[15.5px] leading-7 text-[#6f5a49] sm:text-base">
                     {selectedProduct.description}
                   </p>
 
@@ -670,19 +665,14 @@ const [cartProduct, setCartProduct] =
                   </div>
 
                   <Button
-                    className="mt-5 w-full rounded-full bg-[#25D366] py-6 text-base text-white hover:bg-[#1ebe5d]"
-                    asChild
+                    onClick={() => {
+                      setCartProduct(selectedProduct);
+                      setSelectedProduct(null);
+                    }}
+                    className="mt-5 w-full rounded-full bg-[#25D366] py-6 text-base font-semibold text-white hover:bg-[#1ebe5d]"
                   >
-                    <a
-                      href={createWhatsAppLink(
-                        `Hi, I want to order ${selectedProduct.name} from Mansha Enterprises.`
-                      )}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <MessageCircle className="mr-2" size={19} />
-                      Order this on WhatsApp
-                    </a>
+                    <MessageCircle className="mr-2" size={19} />
+                    Add to Cart
                   </Button>
                 </div>
               </div>
@@ -690,66 +680,69 @@ const [cartProduct, setCartProduct] =
           </motion.div>
         )}
       </AnimatePresence>
+
       <AnimatePresence>
-  {cartProduct && (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[80] flex items-center justify-center bg-[#3f2e24]/50 p-4 backdrop-blur-sm"
-      onClick={() => setCartProduct(null)}
-    >
-      <motion.div
-        initial={{ opacity: 0, y: 24, scale: 0.96 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 24, scale: 0.96 }}
-        transition={{ duration: 0.25 }}
-        className="w-full max-w-md rounded-[2rem] bg-[#fffaf3] p-6 shadow-2xl"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="mb-5 flex items-start justify-between">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#8b5e3c]">
-              Cart
-            </p>
-            <h3 className="mt-2 text-2xl font-bold">
-              {cartProduct.name}
-            </h3>
-            <p className="mt-1 text-[#6f5a49]">
-              {cartProduct.price}
-            </p>
-          </div>
-
-          <button
+        {cartProduct && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[80] flex items-center justify-center bg-[#3f2e24]/50 p-4 backdrop-blur-sm"
             onClick={() => setCartProduct(null)}
-            className="rounded-full bg-white p-2 shadow-sm"
           >
-            <X size={18} />
-          </button>
-        </div>
+            <motion.div
+              initial={{ opacity: 0, y: 24, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 24, scale: 0.96 }}
+              transition={{ duration: 0.25 }}
+              className="w-full max-w-md rounded-[2rem] bg-[#fffaf3] p-6 shadow-2xl"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="mb-5 flex items-start justify-between">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#8b5e3c]">
+                    Cart
+                  </p>
+                  <h3 className="mt-2 text-2xl font-bold">
+                    {cartProduct.name}
+                  </h3>
+                  <p className="mt-1 text-lg font-semibold text-[#8b5e3c]">
+                    {cartProduct.price}
+                  </p>
+                </div>
 
-        <div className="rounded-2xl bg-white p-4">
-          <img
-            src={cartProduct.image}
-            alt={cartProduct.name}
-            className="mx-auto h-48 object-contain"
-          />
+                <button
+                  onClick={() => setCartProduct(null)}
+                  className="rounded-full bg-white p-2 shadow-sm"
+                >
+                  <X size={18} />
+                </button>
+              </div>
 
-          <p className="mt-4 text-sm leading-6 text-[#6f5a49]">
-            {cartProduct.description}
-          </p>
-        </div>
+              <div className="rounded-2xl bg-white p-4">
+                <img
+                  src={cartProduct.image}
+                  alt={cartProduct.name}
+                  className="mx-auto h-48 object-contain"
+                />
 
-        <Button
-          className="mt-5 w-full rounded-full bg-[#8b5e3c] py-6 text-base text-white hover:bg-[#70472b]"
-          onClick={() => alert("Next step: Checkout form will open here.")}
-        >
-          Proceed to Checkout
-        </Button>
-      </motion.div>
-    </motion.div>
-  )}
-</AnimatePresence>
+                <p className="mt-4 text-sm leading-6 text-[#6f5a49]">
+                  {cartProduct.description}
+                </p>
+              </div>
+
+              <Button
+                className="mt-5 w-full rounded-full bg-[#8b5e3c] py-6 text-base font-semibold text-white hover:bg-[#70472b]"
+                onClick={() =>
+                  alert("Next step: Checkout form will open here.")
+                }
+              >
+                Proceed to Checkout
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
