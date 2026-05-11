@@ -26,7 +26,8 @@ const products = [
       "A refreshing handmade soap made with neem leaves, tulsi leaves, aloe vera gel, vitamin E, coconut oil, and essential oils.",
     ingredients:
       "Neem leaves, tulsi leaves, aloe vera gel, vitamin E, coconut oil, essential oils",
-    price: "₹100",
+    price: 100,
+priceLabel: "₹100/- per item",
     image: "/Neem Tulsi Soap.jpeg",
     bestFor: "Daily freshness, oily skin feel, and a clean natural bathing routine.",
   },
@@ -38,7 +39,8 @@ const products = [
       "A gentle handmade soap prepared with rice powder, potato juice, aloe vera, coconut oil, vitamin E, and essential oil.",
     ingredients:
       "Rice powder, potato juice, aloe vera, coconut oil, vitamin E, essential oil",
-    price: "₹100",
+    price: 100,
+priceLabel: "₹100/- per item",
     image: "/Rice Potato Soap.jpeg",
     bestFor: "Smooth skin feel, gentle care, and everyday glow-focused bathing.",
   },
@@ -50,7 +52,8 @@ const products = [
       "A bright handmade soap made with papaya juice, rice powder, aloe vera, glycerine, coconut oil, and essential oil.",
     ingredients:
       "Papaya juice, rice powder, aloe vera, glycerine, coconut oil, essential oil",
-    price: "₹100",
+    price: 100,
+priceLabel: "₹100/- per item",
     image: "/Papaya Soap.jpeg",
     bestFor: "A fresh glow feel, gentle hydration, and soft daily skincare.",
   },
@@ -62,7 +65,8 @@ const products = [
       "A traditional handmade soap crafted with kasturi haldi, chandan powder, multani mitti, aloe vera, vitamin E, glycerine, coconut oil, and essential oil.",
     ingredients:
       "Kasturi haldi, chandan powder, multani mitti, aloe vera, vitamin E, glycerine, coconut oil, essential oil",
-    price: "₹100",
+    price: 100,
+priceLabel: "₹100/- per item",
     image: "/Haldi Chandan Soap.jpeg",
     bestFor: "Traditional care, natural radiance, and a refreshing herbal bathing experience.",
   },
@@ -74,7 +78,8 @@ const products = [
       "A rich handmade soap made with coffee powder, rice powder, aloe vera, glycerine, coconut oil, and essential oil.",
     ingredients:
       "Coffee powder, rice powder, aloe vera, glycerine, coconut oil, essential oil",
-    price: "₹100",
+    price: 100,
+priceLabel: "₹100/- per item",
     image: "/Coffee Soap.jpeg",
     bestFor: "Refreshing bath feel, mild exfoliating texture, and a rich coffee aroma.",
   },
@@ -112,9 +117,16 @@ const createWhatsAppLink = (message: string) => {
 
 export default function ManshaEnterprisesWebsite() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const [selectedProduct, setSelectedProduct] =
     useState<(typeof products)[0] | null>(null);
+
   const [searchTerm, setSearchTerm] = useState("");
+
+  const [cartItems, setCartItems] = useState<
+  Array<(typeof products)[0] & { quantity: number }>
+>([]);
+const [cartMessage, setCartMessage] = useState("");
 
   const filteredProducts = products.filter((product) => {
     const value = `${product.name} ${product.benefit} ${product.ingredients}`.toLowerCase();
@@ -127,7 +139,88 @@ export default function ManshaEnterprisesWebsite() {
     { label: "About", href: "#about" },
     { label: "Contact", href: "#contact" },
   ];
+  const addToCart = (product: (typeof products)[0]) => {
+  setCartItems((prevItems) => {
+    const existingItem = prevItems.find(
+      (item) => item.name === product.name
+    );
 
+    if (existingItem) {
+      return prevItems.map((item) =>
+        item.name === product.name
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+    }
+
+    return [...prevItems, { ...product, quantity: 1 }];
+  });
+
+  setCartMessage(`${product.name} added to your cart`);
+
+  setTimeout(() => {
+    setCartMessage("");
+  }, 2200);
+};
+
+const increaseQuantity = (productName: string) => {
+  setCartItems((prevItems) =>
+    prevItems.map((item) =>
+      item.name === productName
+        ? { ...item, quantity: item.quantity + 1 }
+        : item
+    )
+  );
+};
+
+const decreaseQuantity = (productName: string) => {
+  setCartItems((prevItems) =>
+    prevItems
+      .map((item) =>
+        item.name === productName
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
+      )
+      .filter((item) => item.quantity > 0)
+  );
+};
+
+const removeFromCart = (productName: string) => {
+  setCartItems((prevItems) =>
+    prevItems.filter((item) => item.name !== productName)
+  );
+};
+
+const cartTotal = cartItems.reduce(
+  (total, item) => total + item.price * item.quantity,
+  0
+);
+
+const cartCount = cartItems.reduce(
+  (total, item) => total + item.quantity,
+  0
+);
+
+const createCartWhatsAppMessage = () => {
+  const orderLines = cartItems
+    .map(
+      (item, index) =>
+        `${index + 1}. ${item.name} - Qty: ${item.quantity} - ₹${
+          item.price * item.quantity
+        }`
+    )
+    .join("\n");
+
+  return `Hi, I want to place an order from Mansha Enterprises.
+
+Order Details:
+${orderLines}
+
+Total Amount: ₹${cartTotal}
+
+Please confirm availability and delivery details.`;
+};
+    
   return (
     <div className="min-h-screen scroll-smooth bg-[#fffaf3] text-[#3f2e24]">
       <header className="sticky top-0 z-50 border-b border-[#eadfce] bg-[#fffaf3]/90 backdrop-blur-md">
@@ -154,20 +247,7 @@ export default function ManshaEnterprisesWebsite() {
             ))}
           </div>
 
-          <Button
-            className="hidden rounded-full bg-[#8b5e3c] px-5 text-white hover:bg-[#70472b] md:flex"
-            asChild
-          >
-            <a
-              href={createWhatsAppLink(
-                "Hi, I want to place an order from Mansha Enterprises."
-              )}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Order on WhatsApp
-            </a>
-          </Button>
+      
 
           <button
             className="md:hidden"
@@ -246,6 +326,16 @@ export default function ManshaEnterprisesWebsite() {
     </motion.div>
   )}
 </AnimatePresence>
+      <Button
+  className="fixed bottom-6 right-6 z-[999] h-14 rounded-full bg-[#8b5e3c] px-6 text-base font-bold text-white shadow-2xl hover:bg-[#70472b]"
+  onClick={() => {
+    const cartSection = document.getElementById("cart");
+    cartSection?.scrollIntoView({ behavior: "smooth" });
+  }}
+>
+  Cart ({cartCount})
+</Button>
+
       </header>
 
       <main>
@@ -437,15 +527,15 @@ export default function ManshaEnterprisesWebsite() {
 
                       <div className="mt-5 flex items-center justify-between">
                         <span className="font-bold text-[#8b5e3c]">
-                          {product.price}
+                          {product.priceLabel}
                         </span>
                         <Button
-                          size="sm"
-                          onClick={() => setSelectedProduct(product)}
-                          className="rounded-full bg-[#8b5e3c] text-white hover:bg-[#70472b]"
-                        >
-                          View Details
-                        </Button>
+  size="sm"
+  onClick={() => addToCart(product)}
+  className="h-12 rounded-full bg-[#8b5e3c] px-6 text-[15px] font-bold text-white shadow-md transition hover:scale-105 hover:bg-[#70472b]"
+>
+  Add to Cart
+</Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -552,7 +642,107 @@ export default function ManshaEnterprisesWebsite() {
             </div>
           </div>
         </section>
+<section id="cart" className="bg-[#fffaf3] px-5 py-16">
+  <div className="mx-auto max-w-5xl">
+    <div className="mb-8 text-center">
+      <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#8b5e3c]">
+        Your Cart
+      </p>
+      <h2 className="mt-3 text-[1.8rem] font-bold leading-tight sm:text-3xl md:text-4xl">
+        Review your handmade order
+      </h2>
+    </div>
 
+    {cartItems.length === 0 ? (
+      <div className="rounded-[2rem] bg-white p-8 text-center shadow-sm">
+        <ShoppingBag className="mx-auto mb-4 text-[#8b5e3c]" size={40} />
+        <p className="text-lg font-semibold">Your cart is empty</p>
+        <p className="mt-2 text-[#6f5a49]">
+          Add your favourite handmade soaps to create an order.
+        </p>
+      </div>
+    ) : (
+      <div className="rounded-[2rem] bg-white p-5 shadow-xl md:p-7">
+        <div className="space-y-4">
+          {cartItems.map((item) => (
+            <div
+              key={item.name}
+              className="flex flex-col gap-4 rounded-3xl bg-[#fffaf3] p-4 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div className="flex items-center gap-4">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="h-20 w-20 rounded-2xl bg-white object-contain p-2"
+                />
+
+                <div>
+                  <h3 className="font-bold">{item.name}</h3>
+                  <p className="mt-1 text-sm text-[#6f5a49]">
+                    ₹{item.price}/- per item
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-[#8b5e3c]">
+                    Subtotal: ₹{item.price * item.quantity}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 sm:justify-end">
+                <div className="flex items-center rounded-full bg-white p-1 shadow-sm">
+                  <button
+                    onClick={() => decreaseQuantity(item.name)}
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f7eadb] font-bold text-[#8b5e3c]"
+                  >
+                    -
+                  </button>
+
+                  <span className="min-w-10 text-center font-bold">
+                    {item.quantity}
+                  </span>
+
+                  <button
+                    onClick={() => increaseQuantity(item.name)}
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-[#8b5e3c] font-bold text-white"
+                  >
+                    +
+                  </button>
+                </div>
+
+                <button
+                  onClick={() => removeFromCart(item.name)}
+                  className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#b66b55] shadow-sm"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 rounded-3xl bg-[#8b5e3c] p-5 text-white">
+          <div className="flex items-center justify-between text-lg font-bold">
+            <span>Total Amount</span>
+            <span>₹{cartTotal}</span>
+          </div>
+
+          <Button
+            className="mt-5 w-full rounded-full bg-white py-6 text-base font-bold text-[#8b5e3c] hover:bg-[#f7eadb]"
+            asChild
+          >
+            <a
+              href={createWhatsAppLink(createCartWhatsAppMessage())}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <MessageCircle className="mr-2" size={19} />
+              Book Order on WhatsApp
+            </a>
+          </Button>
+        </div>
+      </div>
+    )}
+  </div>
+</section>
         <section id="contact" className="px-5 py-16">
           <div className="mx-auto max-w-5xl rounded-[2rem] bg-[#8b5e3c] p-8 text-center text-white shadow-xl md:p-12">
             <ShoppingBag className="mx-auto mb-4" size={38} />
@@ -686,6 +876,19 @@ export default function ManshaEnterprisesWebsite() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
-  );
+<AnimatePresence>
+  {cartMessage && (
+    <motion.div
+      initial={{ opacity: 0, y: 30, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 30, scale: 0.9 }}
+      className="fixed bottom-24 left-1/2 z-[9999] -translate-x-1/2 rounded-full bg-[#3f2e24] px-6 py-4 text-sm font-semibold text-white shadow-2xl"
+    >
+      {cartMessage}
+    </motion.div>
+  )}
+</AnimatePresence>
+
+</div>
+);
 }
