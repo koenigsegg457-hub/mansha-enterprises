@@ -239,7 +239,7 @@ Please confirm availability and delivery details.`;
             </div>
           </a>
 
-          <div className="hidden items-center gap-8 text-base font-medium md:flex">
+          <div className="hidden items-center gap-6 text-base font-medium md:flex">
             {navLinks.map((link) => (
               <a key={link.href} href={link.href} className="hover:text-[#8b5e3c]">
                 {link.label}
@@ -366,7 +366,7 @@ Please confirm availability and delivery details.`;
 
               <div className="mt-8 flex flex-col gap-4 sm:flex-row">
                 <Button
-                  className="rounded-full bg-[#8b5e3c] px-7 py-6 text-base text-white hover:bg-[#70472b]"
+                  className="fixed bottom-6 right-6 z-[9999] h-14 rounded-full bg-[#9b6a42] px-7 text-base font-bold text-white shadow-2xl transition hover:scale-105 hover:bg-[#7e5332]"
                   asChild
                 >
                   <a
