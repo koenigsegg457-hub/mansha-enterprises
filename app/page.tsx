@@ -272,7 +272,7 @@ export default function ManshaEnterprisesWebsite() {
 
   return (
     <div
-      className="min-h-screen scroll-smooth bg-[#fffaf3] text-[#3f2e24]"
+      className="min-h-dvh overflow-x-hidden scroll-smooth bg-[#fffaf3] text-[#3f2e24]"
       style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
     >
       <header
@@ -460,7 +460,7 @@ export default function ManshaEnterprisesWebsite() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 240 }}
-              className="ml-auto flex h-screen w-full max-w-md flex-col bg-[#fffaf3] shadow-2xl"
+              className="ml-auto flex h-dvh w-full max-w-md flex-col bg-[#fffaf3] shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between border-b border-[#eadfce] px-6 py-5">
@@ -600,14 +600,14 @@ export default function ManshaEnterprisesWebsite() {
       </AnimatePresence>
 
       <main>
-        <section className="relative overflow-hidden px-5 py-14 md:min-h-[calc(100vh-68px)] md:py-0">
+        <section className="relative overflow-hidden px-4 py-10 sm:px-5 sm:py-14 md:min-h-[calc(100dvh-68px)] md:py-0">
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
             <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-[#f5d9b8] opacity-60 blur-[80px]" />
             <div className="absolute -bottom-24 right-0 h-80 w-80 rounded-full bg-[#f4cfc3] opacity-50 blur-[70px]" />
             <div className="absolute left-1/2 top-1/3 h-64 w-64 -translate-x-1/2 rounded-full bg-[#fce7c8] opacity-40 blur-[60px]" />
           </div>
 
-          <div className="relative mx-auto grid max-w-7xl items-center gap-12 md:min-h-[calc(100vh-100px)] md:grid-cols-2">
+          <div className="relative mx-auto grid max-w-7xl items-center gap-10 md:min-h-[calc(100dvh-100px)] md:grid-cols-2">
             <motion.div
               variants={stagger}
               initial="hidden"
@@ -624,7 +624,7 @@ export default function ManshaEnterprisesWebsite() {
 
               <motion.h1
                 variants={fadeUp}
-                className="max-w-3xl text-[2.4rem] font-bold leading-[1.1] tracking-tight sm:text-5xl md:text-6xl lg:text-[4.2rem]"
+                className="max-w-3xl text-[2.15rem] font-bold leading-[1.08] tracking-tight sm:text-5xl md:text-6xl lg:text-[4.2rem]"
               >
                 Handmade soaps crafted with{" "}
                 <span className="italic text-[#8b5e3c]">
@@ -700,7 +700,7 @@ export default function ManshaEnterprisesWebsite() {
               }}
               className="relative flex justify-center"
             >
-              <div className="relative h-[480px] w-[480px] max-w-full">
+              <div className="relative mx-auto h-[300px] w-[300px] max-w-full sm:h-[380px] sm:w-[380px] lg:h-[480px] lg:w-[480px]">
                 <div
                   className="absolute inset-0 rounded-full border-2 border-dashed border-[#e8d5b8] opacity-60"
                   style={{ transform: "scale(1.08)" }}
@@ -722,7 +722,7 @@ export default function ManshaEnterprisesWebsite() {
                   initial={{ opacity: 0, x: -20, y: 10 }}
                   animate={{ opacity: 1, x: 0, y: 0 }}
                   transition={{ delay: 0.6, duration: 0.5 }}
-                  className="absolute -bottom-4 -left-4 rounded-2xl bg-white p-4 shadow-xl ring-1 ring-[#eadfce]"
+                  className="absolute bottom-0 left-0 rounded-2xl bg-white p-3 shadow-xl ring-1 ring-[#eadfce] sm:-bottom-4 sm:-left-4 sm:p-4"
                 >
                   <div className="flex items-center gap-3">
                     <div className="rounded-xl bg-[#f7eadb] p-2.5">
@@ -745,7 +745,7 @@ export default function ManshaEnterprisesWebsite() {
                   initial={{ opacity: 0, x: 20, y: -10 }}
                   animate={{ opacity: 1, x: 0, y: 0 }}
                   transition={{ delay: 0.75, duration: 0.5 }}
-                  className="absolute -right-4 top-10 rounded-2xl bg-white p-4 shadow-xl ring-1 ring-[#eadfce]"
+                  className="absolute right-0 top-6 rounded-2xl bg-white p-3 shadow-xl ring-1 ring-[#eadfce] sm:-right-4 sm:top-10 sm:p-4"
                 >
                   <div className="flex items-center gap-3">
                     <div className="rounded-xl bg-[#edf7f0] p-2.5">
@@ -880,7 +880,7 @@ export default function ManshaEnterprisesWebsite() {
                     <button
                       type="button"
                       onClick={() => setSelectedProduct(product)}
-                      className="relative h-64 overflow-hidden p-4 text-left"
+                      className="relative h-56 overflow-hidden p-4 text-left sm:h-64"
                       style={{ background: product.bg }}
                     >
                       <img
@@ -956,7 +956,7 @@ export default function ManshaEnterprisesWebsite() {
           </div>
         </section>
 
-        <section id="about" className="px-5 py-20">
+        <section id="about" className="px-4 py-14 sm:px-5 sm:py-20">
           <div className="mx-auto grid max-w-7xl items-center gap-14 md:grid-cols-2">
             <motion.div
               initial={{ opacity: 0, x: -24 }}
@@ -1319,7 +1319,7 @@ export default function ManshaEnterprisesWebsite() {
         )}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-[100] flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-2xl transition hover:scale-110 md:hidden"
+        className="fixed bottom-5 right-5 z-[100] flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-2xl transition hover:scale-110 md:hidden"
         aria-label="WhatsApp Order"
       >
         <MessageCircle size={24} className="text-white" />
