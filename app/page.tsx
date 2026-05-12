@@ -250,6 +250,11 @@ export default function ManshaEnterprisesWebsite() {
     0
   );
 
+  const getProductQuantity = (name: string) => {
+  const item = cartItems.find((cartItem) => cartItem.name === name);
+  return item ? item.quantity : 0;
+};
+
   const cartWhatsAppMsg = () => {
     const lines = cartItems
       .map(
@@ -924,23 +929,50 @@ export default function ManshaEnterprisesWebsite() {
                         </p>
                       </div>
 
-                      <div className="mt-5 flex items-center justify-between">
-                        <span
-                          className="text-lg font-bold"
-                          style={{ color: product.accent }}
-                        >
-                          {product.priceLabel}
-                        </span>
+                      <div className="mt-5 flex items-center justify-between gap-3">
+  <span
+    className="text-lg font-bold"
+    style={{ color: product.accent }}
+  >
+    {product.priceLabel}
+  </span>
 
-                        <button
-                          onClick={() => addToCart(product)}
-                          className="flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:scale-105 hover:shadow-lg"
-                          style={{ background: product.accent }}
-                        >
-                          <ShoppingCart size={14} />
-                          Add to Cart
-                        </button>
-                      </div>
+  {getProductQuantity(product.name) === 0 ? (
+    <button
+      onClick={() => addToCart(product)}
+      className="flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:scale-105 hover:shadow-lg"
+      style={{ background: product.accent }}
+    >
+      <ShoppingCart size={14} />
+      Add to Cart
+    </button>
+  ) : (
+    <div
+      className="flex items-center gap-2 rounded-full px-3 py-2 shadow-md"
+      style={{ background: product.accent }}
+    >
+      <button
+        onClick={() => decreaseQty(product.name)}
+        className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#8b5e3c] transition hover:scale-105"
+        aria-label={`Decrease ${product.name}`}
+      >
+        <Minus size={15} />
+      </button>
+
+      <span className="min-w-[26px] text-center text-base font-bold text-white">
+        {getProductQuantity(product.name)}
+      </span>
+
+      <button
+        onClick={() => increaseQty(product.name)}
+        className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#8b5e3c] transition hover:scale-105"
+        aria-label={`Increase ${product.name}`}
+      >
+        <Plus size={15} />
+      </button>
+    </div>
+  )}
+</div>
                     </div>
                   </div>
                 </motion.div>
