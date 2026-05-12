@@ -129,17 +129,17 @@ const offerings = [
 const testimonials = [
   {
     text: "Loved the soaps. They look beautiful and feel very gentle.",
-    name: "Priya S.",
+    name: "Priya",
     stars: 5,
   },
   {
     text: "Perfect for small gifts. Simple, elegant, and handmade with care.",
-    name: "Ritu M.",
+    name: "Ritu",
     stars: 5,
   },
   {
     text: "The products feel fresh, natural, and thoughtfully made.",
-    name: "Ananya K.",
+    name: "Ananya",
     stars: 5,
   },
 ];
@@ -880,13 +880,13 @@ export default function ManshaEnterprisesWebsite() {
                     <button
                       type="button"
                       onClick={() => setSelectedProduct(product)}
-                      className="relative h-56 overflow-hidden p-4 text-left sm:h-64"
+                      className="relative flex h-56 items-center justify-center overflow-hidden bg-white p-2 text-left sm:h-64 md:h-[380px] lg:h-[420px] md:p-4"
                       style={{ background: product.bg }}
                     >
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="h-full w-full object-contain transition duration-500 group-hover:scale-105"
+                        className="h-full w-full object-contain p-2 md:p-0 transition duration-500 group-hover:scale-105"
                       />
 
                       <div
