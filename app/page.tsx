@@ -689,9 +689,9 @@ export default function ManshaEnterprisesWebsite() {
 
                 <div className="text-sm text-[#7a5d4a]">
                   <span className="font-bold text-[#8b5e3c]">
-                    Happy customers
+                    Happy Customers
                   </span>{" "}
-                  love our handmade soaps
+                  loved our handmade soaps
                 </div>
               </motion.div>
             </motion.div>
