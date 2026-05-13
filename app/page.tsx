@@ -751,7 +751,7 @@ export default function ManshaEnterprisesWebsite() {
                   initial={{ opacity: 0, x: 20, y: -10 }}
                   animate={{ opacity: 1, x: 0, y: 0 }}
                   transition={{ delay: 0.75, duration: 0.5 }}
-                  className="absolute -right-6 top-4 rounded-2xl bg-white p-3 shadow-xl ring-1 ring-[#eadfce] sm:-right-10 sm:top-8 sm:p-4"
+                  className="absolute -right-6 -top-4 rounded-2xl bg-white p-3 shadow-xl ring-1 ring-[#eadfce] sm:-right-10 sm:-top-6 sm:p-4"
 
                 >
                   <div className="flex items-center gap-3">
