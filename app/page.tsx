@@ -107,12 +107,12 @@ const products = [
     category: "Soaps" as Category,
     benefit: "Purifying & Healing",
     description:
-      "A sacred handmade soap rooted in Ayurvedic tradition, crafted with the five cow-derived ingredients — milk, curd, ghee, cow urine, and gobar — blended with coconut oil and natural herbs.",
+      "A sacred handmade soap rooted in Ayurvedic tradition, crafted with the five cow-derived ingredients - milk, curd, ghee, cow urine, and gobar - blended with coconut oil and natural herbs.",
     ingredients:
       "Cow milk, cow curd, cow ghee, gomutra (cow urine), gobar (cow dung), coconut oil, natural herbs",
     price: 100,
     priceLabel: "₹100/- per item",
-    image: "/panch soap.png",
+    image: "/Panchavya Soap.jpg",
     bestFor: "Deep Ayurvedic cleansing, skin nourishment, and a grounding, traditional bathing ritual.",
     accent: "#7a5c2e",
     bg: "#f7f0e4",
@@ -127,13 +127,13 @@ const products = [
       "Manjistha root powder, raw honey, aloe vera, coconut oil, vitamin E, essential oil",
     price: 100,
     priceLabel: "₹100/- per item",
-    image: "/honey soap.png",
+    image: "/Manjistha Honey Soap.jpg",
     bestFor: "Uneven skin tone, dry skin care, and a naturally radiant complexion.",
     accent: "#9b3a3a",
     bg: "#fdf0ee",
   },
   {
-    name: "lemon soap",
+    name: "Lemon Soap",
     category: "Soaps" as Category,
     benefit: "Refreshing & Oil Control",
     description:
@@ -142,7 +142,7 @@ const products = [
       "Lemon juice, lemon essential oil, aloe vera, glycerine, coconut oil",
     price: 100,
     priceLabel: "₹100/- per item",
-    image: "/Lemon Soap.png",
+    image: "/Lemon Soap.jpg",
     bestFor: "Oily skin, morning freshness, and a clean citrusy bathing boost.",
     accent: "#b5960a",
     bg: "#fefce8",
@@ -150,61 +150,61 @@ const products = [
 
   // ── CANDLES ────────────────────────────────────────────
   {
-    name: "Rise Candle — Bloom with Light",
+    name: "Rise Candle - Bloom with Light",
     category: "Candles" as Category,
     benefit: "Fresh & Floral",
     description:
-      "A handpoured wax candle that fills your space with a soft floral bloom. Made with natural wax and gentle floral fragrance — a beautiful reminder to grow and shine every day.",
+      "A handpoured wax candle that fills your space with a soft floral bloom. Made with natural wax and gentle floral fragrance - a beautiful reminder to grow and shine every day.",
     ingredients:
       "Natural wax, floral fragrance blend, cotton wick, dried flower petals",
     price: 100,
     priceLabel: "₹100/- per item",
-    image: "/bloom light.png",
+    image: "/Rise Candle Bloom.jpg",
     bestFor: "Morning routines, brightening any room, and gifting someone you want to uplift.",
     accent: "#b5405a",
     bg: "#fdf0f3",
   },
   {
-    name: "Rise Candle — Light with Love",
+    name: "Rise Candle - Light with Love",
     category: "Candles" as Category,
     benefit: "Warm & Heartfelt",
     description:
-      "A warm, comforting handpoured candle with a gentle rose and vanilla blend. Made with natural wax and a cotton wick — crafted to make every moment feel like a warm embrace.",
+      "A warm, comforting handpoured candle with a gentle rose and vanilla blend. Made with natural wax and a cotton wick - crafted to make every moment feel like a warm embrace.",
     ingredients:
       "Natural wax, rose & vanilla fragrance blend, cotton wick",
     price: 100,
     priceLabel: "₹100/- per item",
-    image: "/light love.png",
+    image: "/Rise Candle Love.jpg",
     bestFor: "Gifting loved ones, cozy evenings, anniversaries, and heartfelt celebrations.",
     accent: "#a0522d",
     bg: "#fdf4ef",
   },
   {
-    name: "Rise Candle — Light up the Season",
+    name: "Rise Candle - Light up the Season",
     category: "Candles" as Category,
     benefit: "Festive & Joyful",
     description:
-      "A handpoured festive candle blended with warm seasonal spices — cinnamon, clove, and a hint of citrus. Made with natural wax to celebrate every season with warmth and cheer.",
+      "A handpoured festive candle blended with warm seasonal spices - cinnamon, clove, and a hint of citrus. Made with natural wax to celebrate every season with warmth and cheer.",
     ingredients:
       "Natural wax, cinnamon & clove fragrance blend, orange peel, cotton wick",
     price: 100,
     priceLabel: "₹100/- per item",
-    image: "/light season.png",
+    image: "/Rise Candle Season.jpg",
     bestFor: "Festivals, Diwali, Christmas, home decoration, and gifting during celebrations.",
     accent: "#b8670a",
     bg: "#fef6e8",
   },
   {
-    name: "Rise Candle — Glow & Grow",
+    name: "Rise Tree Candle - Light up the Season",
     category: "Candles" as Category,
     benefit: "Uplifting & Inspiring",
     description:
-      "A handpoured candle with a clean jasmine and green tea fragrance — light, fresh, and uplifting. Made with natural wax to inspire your best self with every burn.",
+      "A handpoured candle with a clean jasmine and green tea fragrance - light, fresh, and uplifting. Made with natural wax to inspire your best self with every burn.",
     ingredients:
       "Natural wax, jasmine & green tea fragrance blend, cotton wick",
     price: 100,
     priceLabel: "₹100/- per item",
-    image: "/light season.jpeg",
+    image: "/Rise Candle Glow.jpg",
     bestFor: "Study spaces, workspaces, self-care rituals, and staying motivated every day.",
     accent: "#3a7d6e",
     bg: "#eaf5f3",
