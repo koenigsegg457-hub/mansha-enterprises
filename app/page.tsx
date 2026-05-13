@@ -612,12 +612,12 @@ export default function ManshaEnterprisesWebsite() {
             <div className="absolute left-1/2 top-1/3 h-64 w-64 -translate-x-1/2 rounded-full bg-[#fce7c8] opacity-40 blur-[60px]" />
           </div>
 
-          <div className="relative mx-auto grid max-w-7xl items-center gap-6 md:min-h-[calc(100dvh-100px)] md:grid-cols-[0.82fr_1.18fr]">
+          <div className="relative mx-auto grid max-w-7xl items-center gap-10 md:min-h-[calc(100dvh-100px)] md:grid-cols-2">
             <motion.div
               variants={stagger}
               initial="hidden"
               animate="show"
-              className="flex flex-col pt-2 md:pt-0"
+              className="flex flex-col"
             >
               <motion.div
                 variants={fadeUp}
@@ -629,7 +629,7 @@ export default function ManshaEnterprisesWebsite() {
 
               <motion.h1
                 variants={fadeUp}
-                className="max-w-xl text-[2rem] font-bold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-[4rem]"
+                className="max-w-3xl text-[2.15rem] font-bold leading-[1.08] tracking-tight sm:text-5xl md:text-6xl lg:text-[4.2rem]"
               >
                 Handmade soaps crafted with{" "}
                 <span className="italic text-[#8b5e3c]">
@@ -640,7 +640,7 @@ export default function ManshaEnterprisesWebsite() {
 
               <motion.p
                 variants={fadeUp}
-                className="mt-5 max-w-md text-[15px] leading-7 text-[#7a5d4a] sm:text-lg"
+                className="mt-6 max-w-xl text-base leading-8 text-[#7a5d4a] sm:text-lg"
               >
                 Mansha Enterprises creates homemade soaps and handmade essentials
                 with care, comfort, and a personal touch. Perfect for daily use,
@@ -730,29 +730,21 @@ export default function ManshaEnterprisesWebsite() {
                   transition={{ delay: 0.6, duration: 0.5 }}
                   className="absolute bottom-0 left-0 rounded-2xl bg-white p-3 shadow-xl ring-1 ring-[#eadfce] sm:-bottom-4 sm:-left-4 sm:p-4"
                 >
-                  {/* bottom card */}
-<div className="absolute bottom-[12%] right-[-10px] z-20 rounded-2xl bg-white/95 px-3 py-3 shadow-xl md:right-[-20px] md:px-5 md:py-4 lg:right-[-70px]">
-  <div className="flex items-center gap-3">
-
-    <div className="rounded-2xl bg-[#f7eadb] p-3">
-      <Star
-        size={18}
-        className="text-[#b67a3c] md:h-6 md:w-6"
-        fill="#b67a3c"
-      />
-    </div>
-
-    <div>
-      <p className="text-sm font-bold text-[#3f2e24] md:text-xl">
-        Handcrafted
-      </p>
-
-      <p className="text-xs text-[#8b6b52] md:text-base">
-        Made with care
-      </p>
-    </div>
-  </div>
-</div>
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-xl bg-[#f7eadb] p-2.5">
+                      <Star
+                        size={18}
+                        className="text-[#8b5e3c]"
+                        fill="#8b5e3c"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-[#3f2e24]">
+                        Handcrafted
+                      </p>
+                      <p className="text-xs text-[#a08060]">Made with care</p>
+                    </div>
+                  </div>
                 </motion.div>
 
                 <motion.div
@@ -761,25 +753,19 @@ export default function ManshaEnterprisesWebsite() {
                   transition={{ delay: 0.75, duration: 0.5 }}
                   className="absolute right-0 top-6 rounded-2xl bg-white p-3 shadow-xl ring-1 ring-[#eadfce] sm:-right-4 sm:top-10 sm:p-4"
                 >
-                  {/* top card */}
-<div className="absolute left-[-10px] top-[18%] z-20 rounded-2xl bg-white/95 px-3 py-3 shadow-xl md:left-[-30px] md:px-5 md:py-4 lg:left-[-70px]">
-  <div className="flex items-center gap-3">
-    
-    <div className="rounded-2xl bg-[#edf7f0] p-3">
-      <Leaf size={18} className="text-[#4a7c59] md:h-6 md:w-6" />
-    </div>
-
-    <div>
-      <p className="text-sm font-bold text-[#3f2e24] md:text-xl">
-        100% Natural
-      </p>
-
-      <p className="text-xs text-[#8b6b52] md:text-base">
-        No harsh chemicals
-      </p>
-    </div>
-  </div>
-</div>
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-xl bg-[#edf7f0] p-2.5">
+                      <Leaf size={18} className="text-[#4a7c59]" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-[#3f2e24]">
+                        100% Natural
+                      </p>
+                      <p className="text-xs text-[#a08060]">
+                        No harsh chemicals
+                      </p>
+                    </div>
+                  </div>
                 </motion.div>
               </div>
             </motion.div>
