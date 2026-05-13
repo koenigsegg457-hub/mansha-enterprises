@@ -17,12 +17,16 @@ import {
   Minus,
   Plus,
   Trash2,
+  Flame,
 } from "lucide-react";
 
+type Category = "All" | "Soaps" | "Candles";
+
 const products = [
+  // ── SOAPS ──────────────────────────────────────────────
   {
     name: "Neem Tulsi Soap",
-    category: "Soaps",
+    category: "Soaps" as Category,
     benefit: "Deep Cleansing & Purifying",
     description:
       "A refreshing handmade soap made with neem leaves, tulsi leaves, aloe vera gel, vitamin E, coconut oil, and essential oils.",
@@ -37,7 +41,7 @@ const products = [
   },
   {
     name: "Rice Potato Soap",
-    category: "Soaps",
+    category: "Soaps" as Category,
     benefit: "Brightening & Smooth Skin",
     description:
       "A gentle handmade soap prepared with rice powder, potato juice, aloe vera, coconut oil, vitamin E, and essential oil.",
@@ -52,7 +56,7 @@ const products = [
   },
   {
     name: "Papaya Soap",
-    category: "Soaps",
+    category: "Soaps" as Category,
     benefit: "Glow & Hydration",
     description:
       "A bright handmade soap made with papaya juice, rice powder, aloe vera, glycerine, coconut oil, and essential oil.",
@@ -67,7 +71,7 @@ const products = [
   },
   {
     name: "Haldi Chandan Soap",
-    category: "Soaps",
+    category: "Soaps" as Category,
     benefit: "Tan Care & Radiance",
     description:
       "A traditional handmade soap crafted with kasturi haldi, chandan powder, multani mitti, aloe vera, vitamin E, glycerine, coconut oil, and essential oil.",
@@ -83,7 +87,7 @@ const products = [
   },
   {
     name: "Coffee Soap",
-    category: "Soaps",
+    category: "Soaps" as Category,
     benefit: "Exfoliating & Refreshing",
     description:
       "A rich handmade soap made with coffee powder, rice powder, aloe vera, glycerine, coconut oil, and essential oil.",
@@ -97,10 +101,124 @@ const products = [
     accent: "#5c3d2e",
     bg: "#f5ede8",
   },
+
+  {
+    name: "Panchavya Soap",
+    category: "Soaps" as Category,
+    benefit: "Purifying & Healing",
+    description:
+      "A sacred handmade soap rooted in Ayurvedic tradition, crafted with the five cow-derived ingredients — milk, curd, ghee, cow urine, and gobar — blended with coconut oil and natural herbs.",
+    ingredients:
+      "Cow milk, cow curd, cow ghee, gomutra (cow urine), gobar (cow dung), coconut oil, natural herbs",
+    price: 100,
+    priceLabel: "₹100/- per item",
+    image: "/panch soap.png",
+    bestFor: "Deep Ayurvedic cleansing, skin nourishment, and a grounding, traditional bathing ritual.",
+    accent: "#7a5c2e",
+    bg: "#f7f0e4",
+  },
+  {
+    name: "Manjistha & Honey Soap",
+    category: "Soaps" as Category,
+    benefit: "Brightening & Nourishing",
+    description:
+      "A luxurious handmade soap combining the brightening power of manjistha root with raw honey, aloe vera, coconut oil, and vitamin E for deeply nourished, glowing skin.",
+    ingredients:
+      "Manjistha root powder, raw honey, aloe vera, coconut oil, vitamin E, essential oil",
+    price: 100,
+    priceLabel: "₹100/- per item",
+    image: "/honey soap.png",
+    bestFor: "Uneven skin tone, dry skin care, and a naturally radiant complexion.",
+    accent: "#9b3a3a",
+    bg: "#fdf0ee",
+  },
+  {
+    name: "lemon soap",
+    category: "Soaps" as Category,
+    benefit: "Refreshing & Oil Control",
+    description:
+      "A zesty, uplifting handmade soap made with fresh lemon juice, lemon essential oil, aloe vera, glycerine, and coconut oil. Leaves skin feeling clean, bright, and refreshed.",
+    ingredients:
+      "Lemon juice, lemon essential oil, aloe vera, glycerine, coconut oil",
+    price: 100,
+    priceLabel: "₹100/- per item",
+    image: "/Lemon Soap.png",
+    bestFor: "Oily skin, morning freshness, and a clean citrusy bathing boost.",
+    accent: "#b5960a",
+    bg: "#fefce8",
+  },
+
+  // ── CANDLES ────────────────────────────────────────────
+  {
+    name: "Rise Candle — Bloom with Light",
+    category: "Candles" as Category,
+    benefit: "Fresh & Floral",
+    description:
+      "A handpoured wax candle that fills your space with a soft floral bloom. Made with natural wax and gentle floral fragrance — a beautiful reminder to grow and shine every day.",
+    ingredients:
+      "Natural wax, floral fragrance blend, cotton wick, dried flower petals",
+    price: 100,
+    priceLabel: "₹100/- per item",
+    image: "/bloom light.png",
+    bestFor: "Morning routines, brightening any room, and gifting someone you want to uplift.",
+    accent: "#b5405a",
+    bg: "#fdf0f3",
+  },
+  {
+    name: "Rise Candle — Light with Love",
+    category: "Candles" as Category,
+    benefit: "Warm & Heartfelt",
+    description:
+      "A warm, comforting handpoured candle with a gentle rose and vanilla blend. Made with natural wax and a cotton wick — crafted to make every moment feel like a warm embrace.",
+    ingredients:
+      "Natural wax, rose & vanilla fragrance blend, cotton wick",
+    price: 100,
+    priceLabel: "₹100/- per item",
+    image: "/light love.png",
+    bestFor: "Gifting loved ones, cozy evenings, anniversaries, and heartfelt celebrations.",
+    accent: "#a0522d",
+    bg: "#fdf4ef",
+  },
+  {
+    name: "Rise Candle — Light up the Season",
+    category: "Candles" as Category,
+    benefit: "Festive & Joyful",
+    description:
+      "A handpoured festive candle blended with warm seasonal spices — cinnamon, clove, and a hint of citrus. Made with natural wax to celebrate every season with warmth and cheer.",
+    ingredients:
+      "Natural wax, cinnamon & clove fragrance blend, orange peel, cotton wick",
+    price: 100,
+    priceLabel: "₹100/- per item",
+    image: "/light season.png",
+    bestFor: "Festivals, Diwali, Christmas, home decoration, and gifting during celebrations.",
+    accent: "#b8670a",
+    bg: "#fef6e8",
+  },
+  {
+    name: "Rise Candle — Glow & Grow",
+    category: "Candles" as Category,
+    benefit: "Uplifting & Inspiring",
+    description:
+      "A handpoured candle with a clean jasmine and green tea fragrance — light, fresh, and uplifting. Made with natural wax to inspire your best self with every burn.",
+    ingredients:
+      "Natural wax, jasmine & green tea fragrance blend, cotton wick",
+    price: 100,
+    priceLabel: "₹100/- per item",
+    image: "/light season.jpeg",
+    bestFor: "Study spaces, workspaces, self-care rituals, and staying motivated every day.",
+    accent: "#3a7d6e",
+    bg: "#eaf5f3",
+  },
 ];
 
 type Product = (typeof products)[number];
 type CartItem = Product & { quantity: number };
+
+const CATEGORY_TABS: { label: string; value: Category | "All"; icon?: React.ElementType }[] = [
+  { label: "All Products", value: "All" },
+  { label: "Soaps", value: "Soaps", icon: Leaf },
+  { label: "Candles", value: "Candles", icon: Flame },
+];
 
 const offerings = [
   {
@@ -111,18 +229,25 @@ const offerings = [
     bg: "#edf7f0",
   },
   {
+    title: "Scented Candles",
+    icon: Flame,
+    text: "Handpoured soy wax candles with natural fragrances for every mood.",
+    color: "#b8861b",
+    bg: "#fef9e7",
+  },
+  {
     title: "Gifting",
     icon: Gift,
     text: "Thoughtful handmade products for festivals, birthdays, and small celebrations.",
-    color: "#b8861b",
-    bg: "#fef9e7",
+    color: "#8b5e3c",
+    bg: "#f7eadb",
   },
   {
     title: "Custom Orders",
     icon: Sparkles,
     text: "Personalized combinations can be prepared based on availability.",
-    color: "#8b5e3c",
-    bg: "#f7eadb",
+    color: "#7b5ea7",
+    bg: "#f3edf9",
   },
 ];
 
@@ -174,6 +299,7 @@ export default function ManshaEnterprisesWebsite() {
   const [cartOpen, setCartOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeCategory, setActiveCategory] = useState<Category | "All">("All");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartMessage, setCartMessage] = useState("");
   const [cartBounce, setCartBounce] = useState(false);
@@ -181,23 +307,23 @@ export default function ManshaEnterprisesWebsite() {
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
-
     onScroll();
     window.addEventListener("scroll", onScroll);
-
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const filteredProducts = products.filter((product) =>
-    `${product.name} ${product.benefit} ${product.ingredients}`
+  const filteredProducts = products.filter((product) => {
+    const matchesCategory =
+      activeCategory === "All" || product.category === activeCategory;
+    const matchesSearch = `${product.name} ${product.benefit} ${product.ingredients}`
       .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+      .includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   const addToCart = (product: Product) => {
     setCartItems((prev) => {
       const existing = prev.find((item) => item.name === product.name);
-
       if (existing) {
         return prev.map((item) =>
           item.name === product.name
@@ -205,13 +331,10 @@ export default function ManshaEnterprisesWebsite() {
             : item
         );
       }
-
       return [...prev, { ...product, quantity: 1 }];
     });
-
     setCartMessage(`${product.name} has been added to your cart.`);
     setCartBounce(true);
-
     window.setTimeout(() => {
       setCartMessage("");
       setCartBounce(false);
@@ -251,9 +374,9 @@ export default function ManshaEnterprisesWebsite() {
   );
 
   const getProductQuantity = (name: string) => {
-  const item = cartItems.find((cartItem) => cartItem.name === name);
-  return item ? item.quantity : 0;
-};
+    const item = cartItems.find((cartItem) => cartItem.name === name);
+    return item ? item.quantity : 0;
+  };
 
   const cartWhatsAppMsg = () => {
     const lines = cartItems
@@ -264,7 +387,6 @@ export default function ManshaEnterprisesWebsite() {
           }`
       )
       .join("\n");
-
     return `Hi, I want to place an order from Mansha Enterprises.\n\nOrder Details:\n${lines}\n\nTotal Amount: ₹${cartTotal}\n\nPlease confirm availability and delivery details.`;
   };
 
@@ -275,11 +397,15 @@ export default function ManshaEnterprisesWebsite() {
     { label: "Contact", href: "#contact" },
   ];
 
+  const soapCount = products.filter((p) => p.category === "Soaps").length;
+  const candleCount = products.filter((p) => p.category === "Candles").length;
+
   return (
     <div
       className="min-h-dvh overflow-x-hidden scroll-smooth bg-[#fffaf3] text-[#3f2e24]"
       style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
     >
+      {/* ── HEADER ─────────────────────────────────────────── */}
       <header
         className="sticky top-0 z-50 transition-all duration-300"
         style={{
@@ -335,9 +461,7 @@ export default function ManshaEnterprisesWebsite() {
               >
                 <ShoppingCart size={17} />
               </motion.div>
-
               <span className="hidden sm:inline">Cart</span>
-
               {cartCount > 0 && (
                 <motion.span
                   key={cartCount}
@@ -373,6 +497,7 @@ export default function ManshaEnterprisesWebsite() {
         </nav>
       </header>
 
+      {/* ── MOBILE MENU ────────────────────────────────────── */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
@@ -399,7 +524,6 @@ export default function ManshaEnterprisesWebsite() {
                   />
                   <p className="text-lg font-bold">Menu</p>
                 </div>
-
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   className="rounded-full bg-white p-2 shadow-sm"
@@ -433,7 +557,6 @@ export default function ManshaEnterprisesWebsite() {
                   <ShoppingCart size={18} />
                   View Cart {cartCount > 0 ? `(${cartCount})` : ""}
                 </button>
-
                 <a
                   href={createWhatsAppLink(
                     "Hi, I want to place an order from Mansha Enterprises."
@@ -451,6 +574,7 @@ export default function ManshaEnterprisesWebsite() {
         )}
       </AnimatePresence>
 
+      {/* ── CART DRAWER ────────────────────────────────────── */}
       <AnimatePresence>
         {cartOpen && (
           <motion.div
@@ -472,14 +596,12 @@ export default function ManshaEnterprisesWebsite() {
                 <div className="flex items-center gap-3">
                   <ShoppingCart size={20} className="text-[#8b5e3c]" />
                   <h2 className="text-xl font-bold">Your Cart</h2>
-
                   {cartCount > 0 && (
                     <span className="rounded-full bg-[#8b5e3c] px-2.5 py-0.5 text-xs font-bold text-white">
                       {cartCount}
                     </span>
                   )}
                 </div>
-
                 <button
                   onClick={() => setCartOpen(false)}
                   className="rounded-full bg-white p-2 shadow-sm transition hover:bg-[#f7eadb]"
@@ -495,15 +617,12 @@ export default function ManshaEnterprisesWebsite() {
                     <div className="mb-4 rounded-full bg-[#f7eadb] p-6">
                       <ShoppingBag size={36} className="text-[#c4a47e]" />
                     </div>
-
                     <p className="text-lg font-semibold text-[#5a4030]">
                       Your cart is empty
                     </p>
-
                     <p className="mt-2 text-sm text-[#a08060]">
-                      Add your favourite handmade soaps to get started.
+                      Add your favourite handmade products to get started.
                     </p>
-
                     <button
                       onClick={() => setCartOpen(false)}
                       className="mt-6 rounded-full bg-[#8b5e3c] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#70472b]"
@@ -527,7 +646,6 @@ export default function ManshaEnterprisesWebsite() {
                           alt={item.name}
                           className="h-16 w-16 flex-shrink-0 rounded-xl bg-[#fffaf3] object-contain p-1"
                         />
-
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-bold text-[#3f2e24]">
                             {item.name}
@@ -539,7 +657,6 @@ export default function ManshaEnterprisesWebsite() {
                             ₹{item.price * item.quantity}
                           </p>
                         </div>
-
                         <div className="flex flex-col items-end gap-2">
                           <button
                             onClick={() => removeItem(item.name)}
@@ -548,7 +665,6 @@ export default function ManshaEnterprisesWebsite() {
                           >
                             <Trash2 size={14} />
                           </button>
-
                           <div className="flex items-center gap-2 rounded-full bg-[#f7eadb] p-1">
                             <button
                               onClick={() => decreaseQty(item.name)}
@@ -557,11 +673,9 @@ export default function ManshaEnterprisesWebsite() {
                             >
                               <Minus size={12} />
                             </button>
-
                             <span className="min-w-[20px] text-center text-sm font-bold">
                               {item.quantity}
                             </span>
-
                             <button
                               onClick={() => increaseQty(item.name)}
                               className="flex h-7 w-7 items-center justify-center rounded-full bg-[#8b5e3c] text-white shadow-sm transition hover:bg-[#70472b]"
@@ -587,7 +701,6 @@ export default function ManshaEnterprisesWebsite() {
                       ₹{cartTotal}
                     </span>
                   </div>
-
                   <a
                     href={createWhatsAppLink(cartWhatsAppMsg())}
                     target="_blank"
@@ -605,6 +718,7 @@ export default function ManshaEnterprisesWebsite() {
       </AnimatePresence>
 
       <main>
+        {/* ── HERO ───────────────────────────────────────────── */}
         <section className="relative overflow-hidden px-4 py-10 sm:px-5 sm:py-14 md:min-h-[calc(100dvh-68px)] md:py-0">
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
             <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-[#f5d9b8] opacity-60 blur-[80px]" />
@@ -624,14 +738,14 @@ export default function ManshaEnterprisesWebsite() {
                 className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-[#e8d5b8] bg-white/80 px-4 py-2 text-sm text-[#8b6840] shadow-sm backdrop-blur-sm"
               >
                 <Heart size={14} className="text-[#b66b55]" fill="#b66b55" />
-                Natural Handmade Skincare
+                Natural Handmade Skincare &amp; Candles
               </motion.div>
 
               <motion.h1
                 variants={fadeUp}
                 className="max-w-3xl text-[2.15rem] font-bold leading-[1.08] tracking-tight sm:text-5xl md:text-6xl lg:text-[4.2rem]"
               >
-                Handmade soaps crafted with{" "}
+                Handmade soaps &amp; candles crafted with{" "}
                 <span className="italic text-[#8b5e3c]">
                   natural ingredients
                 </span>{" "}
@@ -642,7 +756,7 @@ export default function ManshaEnterprisesWebsite() {
                 variants={fadeUp}
                 className="mt-6 max-w-xl text-base leading-8 text-[#7a5d4a] sm:text-lg"
               >
-                Mansha Enterprises creates homemade soaps and handmade essentials
+                Mansha Enterprises creates homemade soaps and handpoured candles
                 with care, comfort, and a personal touch. Perfect for daily use,
                 thoughtful gifting, and small celebrations.
               </motion.p>
@@ -659,7 +773,6 @@ export default function ManshaEnterprisesWebsite() {
                   <MessageCircle size={18} />
                   Order on WhatsApp
                 </a>
-
                 <a
                   href="#about"
                   className="flex items-center gap-2 rounded-full border-2 border-[#d8b777] px-7 py-4 text-base font-semibold text-[#8b5e3c] transition hover:bg-[#f7eadb]"
@@ -677,21 +790,17 @@ export default function ManshaEnterprisesWebsite() {
                     <div
                       key={color}
                       className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white text-sm font-bold shadow-sm"
-                      style={{
-                        background: color,
-                        color: "#8b5e3c",
-                      }}
+                      style={{ background: color, color: "#8b5e3c" }}
                     >
                       {["P", "R", "A"][index]}
                     </div>
                   ))}
                 </div>
-
                 <div className="text-sm text-[#7a5d4a]">
                   <span className="font-bold text-[#8b5e3c]">
                     Happy Customers
                   </span>{" "}
-                  loved our handmade soaps
+                  loved our handmade products
                 </div>
               </motion.div>
             </motion.div>
@@ -699,10 +808,7 @@ export default function ManshaEnterprisesWebsite() {
             <motion.div
               initial={{ opacity: 0, scale: 0.94, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{
-                duration: 0.8,
-                ease: [0.22, 1, 0.36, 1] as const,
-              }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] as const }}
               className="relative flex justify-center"
             >
               <div className="relative mx-auto h-[300px] w-[300px] max-w-full sm:h-[380px] sm:w-[380px] lg:h-[480px] lg:w-[480px]">
@@ -714,14 +820,13 @@ export default function ManshaEnterprisesWebsite() {
                   className="absolute inset-0 rounded-full border border-[#f5e8d0] opacity-40"
                   style={{ transform: "scale(1.18)" }}
                 />
-
                 <div className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#fffaf3] via-[#f9edd8] to-[#f4e0c4] shadow-2xl ring-1 ring-[#eadfce]">
                   <img
-  src="/front photo.png"
-  alt="Natural Handmade Soap"
-  className="h-full w-full object-cover scale-122"
-  style={{ objectPosition: "50% 40%" }}
-/>
+                    src="/front photo.png"
+                    alt="Natural Handmade Soap"
+                    className="h-full w-full object-cover scale-122"
+                    style={{ objectPosition: "50% 40%" }}
+                  />
                 </div>
 
                 <motion.div
@@ -732,16 +837,10 @@ export default function ManshaEnterprisesWebsite() {
                 >
                   <div className="flex items-center gap-3">
                     <div className="rounded-xl bg-[#f7eadb] p-2.5">
-                      <Star
-                        size={18}
-                        className="text-[#8b5e3c]"
-                        fill="#8b5e3c"
-                      />
+                      <Star size={18} className="text-[#8b5e3c]" fill="#8b5e3c" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-[#3f2e24]">
-                        Handcrafted
-                      </p>
+                      <p className="text-sm font-bold text-[#3f2e24]">Handcrafted</p>
                       <p className="text-xs text-[#a08060]">Made with care</p>
                     </div>
                   </div>
@@ -752,19 +851,14 @@ export default function ManshaEnterprisesWebsite() {
                   animate={{ opacity: 1, x: 0, y: 0 }}
                   transition={{ delay: 0.75, duration: 0.5 }}
                   className="absolute -right-6 -top-4 rounded-2xl bg-white p-3 shadow-xl ring-1 ring-[#eadfce] sm:-right-10 sm:-top-6 sm:p-4"
-
                 >
                   <div className="flex items-center gap-3">
                     <div className="rounded-xl bg-[#edf7f0] p-2.5">
                       <Leaf size={18} className="text-[#4a7c59]" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-[#3f2e24]">
-                        100% Natural
-                      </p>
-                      <p className="text-xs text-[#a08060]">
-                        No harsh chemicals
-                      </p>
+                      <p className="text-sm font-bold text-[#3f2e24]">100% Natural</p>
+                      <p className="text-xs text-[#a08060]">No harsh chemicals</p>
                     </div>
                   </div>
                 </motion.div>
@@ -773,6 +867,7 @@ export default function ManshaEnterprisesWebsite() {
           </div>
         </section>
 
+        {/* ── OFFERINGS ──────────────────────────────────────── */}
         <section id="offerings" className="px-5 py-20">
           <div className="mx-auto max-w-7xl">
             <motion.div
@@ -788,7 +883,6 @@ export default function ManshaEnterprisesWebsite() {
               >
                 What We Offer
               </motion.p>
-
               <motion.h2
                 variants={fadeUp}
                 className="mt-3 text-3xl font-bold sm:text-4xl"
@@ -802,28 +896,21 @@ export default function ManshaEnterprisesWebsite() {
               initial="hidden"
               whileInView="show"
               viewport={{ once: true, margin: "-60px" }}
-              className="grid gap-6 md:grid-cols-3"
+              className="grid gap-6 sm:grid-cols-2 md:grid-cols-4"
             >
               {offerings.map((item) => {
                 const Icon = item.icon;
-
                 return (
                   <motion.div key={item.title} variants={fadeUp}>
                     <div className="group h-full rounded-3xl border border-[#eadfce] bg-white p-8 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-xl">
                       <div
                         className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl transition group-hover:scale-110"
-                        style={{
-                          background: item.bg,
-                          color: item.color,
-                        }}
+                        style={{ background: item.bg, color: item.color }}
                       >
                         <Icon size={24} />
                       </div>
-
                       <h3 className="text-xl font-bold">{item.title}</h3>
-                      <p className="mt-3 leading-7 text-[#7a5d4a]">
-                        {item.text}
-                      </p>
+                      <p className="mt-3 leading-7 text-[#7a5d4a]">{item.text}</p>
                     </div>
                   </motion.div>
                 );
@@ -832,6 +919,7 @@ export default function ManshaEnterprisesWebsite() {
           </div>
         </section>
 
+        {/* ── PRODUCTS ───────────────────────────────────────── */}
         <section
           id="products"
           className="relative px-5 py-20"
@@ -840,7 +928,8 @@ export default function ManshaEnterprisesWebsite() {
           }}
         >
           <div className="mx-auto max-w-7xl">
-            <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+            {/* Header row */}
+            <div className="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -849,9 +938,8 @@ export default function ManshaEnterprisesWebsite() {
                 <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#8b5e3c]">
                   Products
                 </p>
-
                 <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-                  Handmade soaps collection
+                  Our handmade collection
                 </h2>
               </motion.div>
 
@@ -860,7 +948,6 @@ export default function ManshaEnterprisesWebsite() {
                   className="absolute left-4 top-1/2 -translate-y-1/2 text-[#b09070]"
                   size={16}
                 />
-
                 <input
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
@@ -870,126 +957,206 @@ export default function ManshaEnterprisesWebsite() {
               </div>
             </div>
 
-            <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredProducts.map((product, index) => (
-                <motion.div
-                  key={product.name}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-40px" }}
-                  transition={{
-                    duration: 0.5,
-                    delay: index * 0.07,
-                    ease: [0.22, 1, 0.36, 1] as const,
-                  }}
-                >
-                  <div className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-[#f0e4d0] bg-white shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedProduct(product)}
-                      className="relative flex h-56 items-center justify-center overflow-hidden bg-white p-2 text-left sm:h-64 md:h-[380px] lg:h-[420px] md:p-4"
-                      style={{ background: product.bg }}
-                    >
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="h-full w-full object-contain p-2 md:p-0 transition duration-500 group-hover:scale-105"
+            {/* ── CATEGORY TABS ────────────────────────────── */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-10 flex flex-wrap gap-3"
+            >
+              {CATEGORY_TABS.map((tab) => {
+                const Icon = tab.icon;
+                const count =
+                  tab.value === "All"
+                    ? products.length
+                    : tab.value === "Soaps"
+                    ? soapCount
+                    : candleCount;
+                const isActive = activeCategory === tab.value;
+
+                return (
+                  <button
+                    key={tab.value}
+                    onClick={() => setActiveCategory(tab.value)}
+                    className="flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold shadow-sm transition-all duration-200"
+                    style={
+                      isActive
+                        ? {
+                            background: "#8b5e3c",
+                            borderColor: "#8b5e3c",
+                            color: "#fff",
+                            boxShadow: "0 4px 16px rgba(139,94,60,0.25)",
+                            transform: "scale(1.04)",
+                          }
+                        : {
+                            background: "#fff",
+                            borderColor: "#e0cdb4",
+                            color: "#5a4030",
+                          }
+                    }
+                  >
+                    {Icon && (
+                      <Icon
+                        size={14}
+                        style={{ color: isActive ? "#fff" : "#8b5e3c" }}
                       />
+                    )}
+                    {tab.label}
+                    <span
+                      className="rounded-full px-2 py-0.5 text-[11px] font-bold"
+                      style={
+                        isActive
+                          ? { background: "rgba(255,255,255,0.25)", color: "#fff" }
+                          : { background: "#f7eadb", color: "#8b5e3c" }
+                      }
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </motion.div>
 
-                      <div
-                        className="absolute right-4 top-4 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider"
-                        style={{
-                          background: product.bg,
-                          color: product.accent,
-                          border: `1px solid ${product.accent}22`,
-                        }}
-                      >
-                        {product.benefit}
-                      </div>
-                    </button>
-
-                    <div className="flex flex-1 flex-col p-6">
-                      <h3 className="text-xl font-bold">{product.name}</h3>
-
-                      <p className="mt-2 flex-1 text-sm leading-7 text-[#7a5d4a]">
-                        {product.description}
-                      </p>
-
-                      <div
-                        className="mt-4 rounded-2xl p-4"
+            {/* Product grid */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeCategory}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3 }}
+                className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3"
+              >
+                {filteredProducts.map((product, index) => (
+                  <motion.div
+                    key={product.name}
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.5,
+                      delay: index * 0.07,
+                      ease: [0.22, 1, 0.36, 1] as const,
+                    }}
+                  >
+                    <div className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-[#f0e4d0] bg-white shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedProduct(product)}
+                        className="relative flex h-56 items-center justify-center overflow-hidden p-2 text-left sm:h-64 md:h-[380px] lg:h-[420px] md:p-4"
                         style={{ background: product.bg }}
                       >
-                        <p
-                          className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em]"
-                          style={{ color: product.accent }}
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="h-full w-full object-contain p-2 md:p-0 transition duration-500 group-hover:scale-105"
+                        />
+                        {/* Category badge */}
+                        <div
+                          className="absolute left-4 top-4 flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
+                          style={{
+                            background: "rgba(255,255,255,0.85)",
+                            color: product.accent,
+                            border: `1px solid ${product.accent}33`,
+                          }}
                         >
-                          Ingredients
+                          {product.category === "Soaps" ? (
+                            <Leaf size={10} />
+                          ) : (
+                            <Flame size={10} />
+                          )}
+                          {product.category}
+                        </div>
+                        <div
+                          className="absolute right-4 top-4 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider"
+                          style={{
+                            background: product.bg,
+                            color: product.accent,
+                            border: `1px solid ${product.accent}22`,
+                          }}
+                        >
+                          {product.benefit}
+                        </div>
+                      </button>
+
+                      <div className="flex flex-1 flex-col p-6">
+                        <h3 className="text-xl font-bold">{product.name}</h3>
+                        <p className="mt-2 flex-1 text-sm leading-7 text-[#7a5d4a]">
+                          {product.description}
                         </p>
 
-                        <p className="text-sm leading-6 text-[#6f5a49]">
-                          {product.ingredients}
-                        </p>
+                        <div
+                          className="mt-4 rounded-2xl p-4"
+                          style={{ background: product.bg }}
+                        >
+                          <p
+                            className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em]"
+                            style={{ color: product.accent }}
+                          >
+                            Ingredients
+                          </p>
+                          <p className="text-sm leading-6 text-[#6f5a49]">
+                            {product.ingredients}
+                          </p>
+                        </div>
+
+                        <div className="mt-5 flex items-center justify-between gap-3">
+                          <span
+                            className="text-lg font-bold"
+                            style={{ color: product.accent }}
+                          >
+                            {product.priceLabel}
+                          </span>
+
+                          {getProductQuantity(product.name) === 0 ? (
+                            <button
+                              onClick={() => addToCart(product)}
+                              className="flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:scale-105 hover:shadow-lg"
+                              style={{ background: product.accent }}
+                            >
+                              <ShoppingCart size={14} />
+                              Add to Cart
+                            </button>
+                          ) : (
+                            <div
+                              className="flex items-center gap-2 rounded-full px-3 py-2 shadow-md"
+                              style={{ background: product.accent }}
+                            >
+                              <button
+                                onClick={() => decreaseQty(product.name)}
+                                className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#8b5e3c] transition hover:scale-105"
+                                aria-label={`Decrease ${product.name}`}
+                              >
+                                <Minus size={15} />
+                              </button>
+                              <span className="min-w-[26px] text-center text-base font-bold text-white">
+                                {getProductQuantity(product.name)}
+                              </span>
+                              <button
+                                onClick={() => increaseQty(product.name)}
+                                className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#8b5e3c] transition hover:scale-105"
+                                aria-label={`Increase ${product.name}`}
+                              >
+                                <Plus size={15} />
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
-
-                      <div className="mt-5 flex items-center justify-between gap-3">
-  <span
-    className="text-lg font-bold"
-    style={{ color: product.accent }}
-  >
-    {product.priceLabel}
-  </span>
-
-  {getProductQuantity(product.name) === 0 ? (
-    <button
-      onClick={() => addToCart(product)}
-      className="flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:scale-105 hover:shadow-lg"
-      style={{ background: product.accent }}
-    >
-      <ShoppingCart size={14} />
-      Add to Cart
-    </button>
-  ) : (
-    <div
-      className="flex items-center gap-2 rounded-full px-3 py-2 shadow-md"
-      style={{ background: product.accent }}
-    >
-      <button
-        onClick={() => decreaseQty(product.name)}
-        className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#8b5e3c] transition hover:scale-105"
-        aria-label={`Decrease ${product.name}`}
-      >
-        <Minus size={15} />
-      </button>
-
-      <span className="min-w-[26px] text-center text-base font-bold text-white">
-        {getProductQuantity(product.name)}
-      </span>
-
-      <button
-        onClick={() => increaseQty(product.name)}
-        className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#8b5e3c] transition hover:scale-105"
-        aria-label={`Increase ${product.name}`}
-      >
-        <Plus size={15} />
-      </button>
-    </div>
-  )}
-</div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </AnimatePresence>
 
             {filteredProducts.length === 0 && (
               <div className="mt-10 rounded-3xl bg-white p-10 text-center text-[#7a5d4a] shadow-sm">
-                No soaps found. Try searching by product name, ingredient, or
-                benefit.
+                No products found. Try searching by product name, ingredient, or benefit.
               </div>
             )}
           </div>
         </section>
 
+        {/* ── ABOUT ──────────────────────────────────────────── */}
         <section id="about" className="px-4 py-14 sm:px-5 sm:py-20">
           <div className="mx-auto grid max-w-7xl items-center gap-14 md:grid-cols-2">
             <motion.div
@@ -1018,7 +1185,6 @@ export default function ManshaEnterprisesWebsite() {
               >
                 Our Story
               </motion.p>
-
               <motion.h2
                 variants={fadeUp}
                 className="mt-3 text-3xl font-bold sm:text-4xl"
@@ -1035,10 +1201,9 @@ export default function ManshaEnterprisesWebsite() {
                   home-crafted brand built with care, simplicity, and
                   creativity. What started from making products for family and
                   close circles slowly grew into creating thoughtful handmade
-                  soaps and self-care products for people who value natural
-                  ingredients and a personal touch.
+                  soaps, scented candles, and self-care products for people who
+                  value natural ingredients and a personal touch.
                 </p>
-
                 <p>
                   Every product is prepared in small batches with attention to
                   quality, fragrance, texture, and presentation. We believe
@@ -1049,31 +1214,17 @@ export default function ManshaEnterprisesWebsite() {
 
               <motion.div variants={fadeUp} className="mt-8 grid grid-cols-2 gap-4">
                 {[
-                  {
-                    label: "Small Batch",
-                    sub: "Freshly made with attention to quality.",
-                  },
-                  {
-                    label: "Homemade Care",
-                    sub: "Simple products with a personal touch.",
-                  },
-                  {
-                    label: "Natural Ingredients",
-                    sub: "No harsh chemicals, ever.",
-                  },
-                  {
-                    label: "Thoughtful Gifting",
-                    sub: "Made beautiful for every occasion.",
-                  },
+                  { label: "Small Batch", sub: "Freshly made with attention to quality." },
+                  { label: "Homemade Care", sub: "Simple products with a personal touch." },
+                  { label: "Natural Ingredients", sub: "No harsh chemicals, ever." },
+                  { label: "Thoughtful Gifting", sub: "Made beautiful for every occasion." },
                 ].map((item) => (
                   <div
                     key={item.label}
                     className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-[#f0e4d0] transition hover:shadow-md"
                   >
                     <p className="font-bold text-[#8b5e3c]">{item.label}</p>
-                    <p className="mt-1.5 text-sm text-[#a08060]">
-                      {item.sub}
-                    </p>
+                    <p className="mt-1.5 text-sm text-[#a08060]">{item.sub}</p>
                   </div>
                 ))}
               </motion.div>
@@ -1081,11 +1232,10 @@ export default function ManshaEnterprisesWebsite() {
           </div>
         </section>
 
+        {/* ── TESTIMONIALS ───────────────────────────────────── */}
         <section
           className="px-5 py-20"
-          style={{
-            background: "linear-gradient(180deg, #fff 0%, #fffaf3 100%)",
-          }}
+          style={{ background: "linear-gradient(180deg, #fff 0%, #fffaf3 100%)" }}
         >
           <div className="mx-auto max-w-7xl">
             <motion.div
@@ -1101,7 +1251,6 @@ export default function ManshaEnterprisesWebsite() {
               >
                 Customer Love
               </motion.p>
-
               <motion.h2
                 variants={fadeUp}
                 className="mt-3 text-3xl font-bold sm:text-4xl"
@@ -1128,11 +1277,9 @@ export default function ManshaEnterprisesWebsite() {
                       <Star key={i} size={15} fill="currentColor" />
                     ))}
                   </div>
-
                   <p className="italic leading-7 text-[#7a5d4a]">
                     &quot;{testimonial.text}&quot;
                   </p>
-
                   <p className="mt-4 text-sm font-bold text-[#8b5e3c]">
                     — {testimonial.name}
                   </p>
@@ -1142,6 +1289,7 @@ export default function ManshaEnterprisesWebsite() {
           </div>
         </section>
 
+        {/* ── CONTACT CTA ────────────────────────────────────── */}
         <section id="contact" className="px-5 py-20">
           <div className="mx-auto max-w-5xl">
             <motion.div
@@ -1159,16 +1307,13 @@ export default function ManshaEnterprisesWebsite() {
               <div className="pointer-events-none absolute -bottom-20 -left-12 h-72 w-72 rounded-full bg-white/5" />
 
               <ShoppingBag className="mx-auto mb-5 opacity-80" size={40} />
-
               <h2 className="text-3xl font-bold md:text-4xl">
                 Want to place an order?
               </h2>
-
               <p className="mx-auto mt-4 max-w-xl leading-8 text-[#f5dfc0]">
                 Message us directly on WhatsApp for orders, availability,
                 prices, and custom handmade product requests.
               </p>
-
               <a
                 href={createWhatsAppLink(
                   "Hi, I want to place an order from Mansha Enterprises."
@@ -1185,6 +1330,7 @@ export default function ManshaEnterprisesWebsite() {
         </section>
       </main>
 
+      {/* ── FOOTER ─────────────────────────────────────────── */}
       <footer className="border-t border-[#eadfce] px-5 py-8">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-sm text-[#a08060] md:flex-row">
           <div className="flex items-center gap-3">
@@ -1193,14 +1339,13 @@ export default function ManshaEnterprisesWebsite() {
               alt="Mansha Enterprises logo"
               className="h-7 w-7 rounded-full ring-1 ring-[#d8b777]"
             />
-
-            <p>© 2026 Mansha Enterprises · Handmade soaps & candles.</p>
+            <p>© 2026 Mansha Enterprises · Handmade soaps &amp; candles.</p>
           </div>
-
           <p>Elevated essentials for cozy homes.</p>
         </div>
       </footer>
 
+      {/* ── PRODUCT DETAIL MODAL ───────────────────────────── */}
       <AnimatePresence>
         {selectedProduct && (
           <motion.div
@@ -1214,10 +1359,7 @@ export default function ManshaEnterprisesWebsite() {
               initial={{ opacity: 0, y: 24, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 24, scale: 0.96 }}
-              transition={{
-                duration: 0.3,
-                ease: [0.22, 1, 0.36, 1] as const,
-              }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] as const }}
               className="max-h-[90vh] w-full max-w-3xl overflow-auto rounded-[2rem] bg-[#fffaf3] shadow-2xl"
               onClick={(event) => event.stopPropagation()}
             >
@@ -1236,21 +1378,35 @@ export default function ManshaEnterprisesWebsite() {
                 <div className="p-8">
                   <div className="mb-4 flex items-start justify-between gap-4">
                     <div>
-                      <span
-                        className="rounded-full px-3 py-1 text-xs font-bold"
-                        style={{
-                          background: selectedProduct.bg,
-                          color: selectedProduct.accent,
-                        }}
-                      >
-                        {selectedProduct.benefit}
-                      </span>
-
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="rounded-full px-3 py-1 text-xs font-bold"
+                          style={{
+                            background: selectedProduct.bg,
+                            color: selectedProduct.accent,
+                          }}
+                        >
+                          {selectedProduct.benefit}
+                        </span>
+                        <span
+                          className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
+                          style={{
+                            background: "rgba(139,94,60,0.08)",
+                            color: "#8b5e3c",
+                          }}
+                        >
+                          {selectedProduct.category === "Soaps" ? (
+                            <Leaf size={9} />
+                          ) : (
+                            <Flame size={9} />
+                          )}
+                          {selectedProduct.category}
+                        </span>
+                      </div>
                       <h3 className="mt-2 text-2xl font-bold">
                         {selectedProduct.name}
                       </h3>
                     </div>
-
                     <button
                       onClick={() => setSelectedProduct(null)}
                       className="rounded-full bg-white p-2 shadow-sm transition hover:bg-[#f7eadb]"
@@ -1268,7 +1424,6 @@ export default function ManshaEnterprisesWebsite() {
                     <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#8b5e3c]">
                       Ingredients
                     </p>
-
                     <p className="text-sm leading-6 text-[#7a5d4a]">
                       {selectedProduct.ingredients}
                     </p>
@@ -1278,7 +1433,6 @@ export default function ManshaEnterprisesWebsite() {
                     <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#8b5e3c]">
                       Best for
                     </p>
-
                     <p className="text-sm leading-6 text-[#7a5d4a]">
                       {selectedProduct.bestFor}
                     </p>
@@ -1289,7 +1443,6 @@ export default function ManshaEnterprisesWebsite() {
                     style={{ background: selectedProduct.bg }}
                   >
                     <span className="text-sm text-[#7a5d4a]">Price</span>
-
                     <span
                       className="text-xl font-bold"
                       style={{ color: selectedProduct.accent }}
@@ -1332,6 +1485,7 @@ export default function ManshaEnterprisesWebsite() {
         )}
       </AnimatePresence>
 
+      {/* ── TOAST ──────────────────────────────────────────── */}
       <AnimatePresence>
         {cartMessage && (
           <motion.div
@@ -1347,6 +1501,7 @@ export default function ManshaEnterprisesWebsite() {
         )}
       </AnimatePresence>
 
+      {/* ── WHATSAPP FAB (mobile) ───────────────────────────── */}
       <a
         href={createWhatsAppLink(
           "Hi, I want to place an order from Mansha Enterprises."
