@@ -612,12 +612,12 @@ export default function ManshaEnterprisesWebsite() {
             <div className="absolute left-1/2 top-1/3 h-64 w-64 -translate-x-1/2 rounded-full bg-[#fce7c8] opacity-40 blur-[60px]" />
           </div>
 
-          <div className="relative mx-auto grid max-w-7xl items-center gap-10 md:min-h-[calc(100dvh-100px)] md:grid-cols-2">
+          <div className="relative mx-auto grid max-w-7xl items-center gap-6 md:min-h-[calc(100dvh-100px)] md:grid-cols-[0.82fr_1.18fr]">
             <motion.div
               variants={stagger}
               initial="hidden"
               animate="show"
-              className="flex flex-col"
+              className="flex flex-col pt-2 md:pt-0"
             >
               <motion.div
                 variants={fadeUp}
@@ -629,7 +629,7 @@ export default function ManshaEnterprisesWebsite() {
 
               <motion.h1
                 variants={fadeUp}
-                className="max-w-3xl text-[2.15rem] font-bold leading-[1.08] tracking-tight sm:text-5xl md:text-6xl lg:text-[4.2rem]"
+                className="max-w-xl text-[2rem] font-bold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-[4rem]"
               >
                 Handmade soaps crafted with{" "}
                 <span className="italic text-[#8b5e3c]">
@@ -640,7 +640,7 @@ export default function ManshaEnterprisesWebsite() {
 
               <motion.p
                 variants={fadeUp}
-                className="mt-6 max-w-xl text-base leading-8 text-[#7a5d4a] sm:text-lg"
+                className="mt-5 max-w-md text-[15px] leading-7 text-[#7a5d4a] sm:text-lg"
               >
                 Mansha Enterprises creates homemade soaps and handmade essentials
                 with care, comfort, and a personal touch. Perfect for daily use,
