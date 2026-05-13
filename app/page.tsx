@@ -730,21 +730,29 @@ export default function ManshaEnterprisesWebsite() {
                   transition={{ delay: 0.6, duration: 0.5 }}
                   className="absolute bottom-0 left-0 rounded-2xl bg-white p-3 shadow-xl ring-1 ring-[#eadfce] sm:-bottom-4 sm:-left-4 sm:p-4"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-xl bg-[#f7eadb] p-2.5">
-                      <Star
-                        size={18}
-                        className="text-[#8b5e3c]"
-                        fill="#8b5e3c"
-                      />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-[#3f2e24]">
-                        Handcrafted
-                      </p>
-                      <p className="text-xs text-[#a08060]">Made with care</p>
-                    </div>
-                  </div>
+                  {/* bottom card */}
+<div className="absolute bottom-[12%] right-[-10px] z-20 rounded-2xl bg-white/95 px-3 py-3 shadow-xl md:right-[-20px] md:px-5 md:py-4 lg:right-[-70px]">
+  <div className="flex items-center gap-3">
+
+    <div className="rounded-2xl bg-[#f7eadb] p-3">
+      <Star
+        size={18}
+        className="text-[#b67a3c] md:h-6 md:w-6"
+        fill="#b67a3c"
+      />
+    </div>
+
+    <div>
+      <p className="text-sm font-bold text-[#3f2e24] md:text-xl">
+        Handcrafted
+      </p>
+
+      <p className="text-xs text-[#8b6b52] md:text-base">
+        Made with care
+      </p>
+    </div>
+  </div>
+</div>
                 </motion.div>
 
                 <motion.div
@@ -753,19 +761,25 @@ export default function ManshaEnterprisesWebsite() {
                   transition={{ delay: 0.75, duration: 0.5 }}
                   className="absolute right-0 top-6 rounded-2xl bg-white p-3 shadow-xl ring-1 ring-[#eadfce] sm:-right-4 sm:top-10 sm:p-4"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-xl bg-[#edf7f0] p-2.5">
-                      <Leaf size={18} className="text-[#4a7c59]" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-[#3f2e24]">
-                        100% Natural
-                      </p>
-                      <p className="text-xs text-[#a08060]">
-                        No harsh chemicals
-                      </p>
-                    </div>
-                  </div>
+                  {/* top card */}
+<div className="absolute left-[-10px] top-[18%] z-20 rounded-2xl bg-white/95 px-3 py-3 shadow-xl md:left-[-30px] md:px-5 md:py-4 lg:left-[-70px]">
+  <div className="flex items-center gap-3">
+    
+    <div className="rounded-2xl bg-[#edf7f0] p-3">
+      <Leaf size={18} className="text-[#4a7c59] md:h-6 md:w-6" />
+    </div>
+
+    <div>
+      <p className="text-sm font-bold text-[#3f2e24] md:text-xl">
+        100% Natural
+      </p>
+
+      <p className="text-xs text-[#8b6b52] md:text-base">
+        No harsh chemicals
+      </p>
+    </div>
+  </div>
+</div>
                 </motion.div>
               </div>
             </motion.div>
