@@ -717,10 +717,11 @@ export default function ManshaEnterprisesWebsite() {
 
                 <div className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#fffaf3] via-[#f9edd8] to-[#f4e0c4] shadow-2xl ring-1 ring-[#eadfce]">
                   <img
-                    src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
-                    alt="Mansha Enterprises"
-                    className="h-[72%] w-[72%] object-contain drop-shadow-xl"
-                  />
+  src="/front photo.png"
+  alt="Natural Handmade Soap"
+  className="h-full w-full object-cover scale-122"
+  style={{ objectPosition: "50% 40%" }}
+/>
                 </div>
 
                 <motion.div
