@@ -758,7 +758,7 @@ const handleRazorpayPayment = async () => {
                   <div className="mb-4 flex items-start gap-2.5 rounded-2xl border border-[#f0dfc0] bg-[#fef9ec] px-4 py-3">
                     <Info size={14} className="mt-0.5 flex-shrink-0 text-[#b8861b]" />
                     <p className="text-xs leading-5 text-[#7a5d2e]">
-                      <span className="font-bold">Note:</span> Prices shown are exclusive of shipping charges. Delivery cost will be confirmed on WhatsApp before dispatch.
+                      <span className="font-bold">Note:</span> Prices shown are exclusive of shipping charges.
                     </p>
                   </div>
 
