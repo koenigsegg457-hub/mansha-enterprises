@@ -906,16 +906,12 @@ setCustomer({
 
               <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-4">
                 <a
-                  href={createWhatsAppLink(
-                    "Hi, I want to place an order from Mansha Enterprises."
-                  )}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded-full bg-[#8b5e3c] px-7 py-4 text-base font-bold text-white shadow-lg transition hover:scale-105 hover:bg-[#70472b] hover:shadow-xl"
-                >
-                  <MessageCircle size={18} />
-                  Order on WhatsApp
-                </a>
+  href="#products"
+  className="flex items-center gap-2 rounded-full bg-[#8b5e3c] px-7 py-4 text-base font-bold text-white shadow-lg transition hover:scale-105 hover:bg-[#70472b] hover:shadow-xl"
+>
+  <ShoppingBag size={18} />
+  Explore Products
+</a>
                 <a
                   href="#about"
                   className="flex items-center gap-2 rounded-full border-2 border-[#d8b777] px-7 py-4 text-base font-semibold text-[#8b5e3c] transition hover:bg-[#f7eadb]"
