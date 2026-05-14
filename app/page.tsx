@@ -305,6 +305,19 @@ export default function ManshaEnterprisesWebsite() {
   const [cartMessage, setCartMessage] = useState("");
   const [cartBounce, setCartBounce] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+const [shippingLoading, setShippingLoading] = useState(false);
+const [shippingCharge, setShippingCharge] = useState<number | null>(null);
+
+const [customer, setCustomer] = useState({
+  name: "",
+  phone: "",
+  email: "",
+  address: "",
+  city: "",
+  state: "",
+  pincode: "",
+});
 
   // Load Razorpay script
   useEffect(() => {
@@ -381,6 +394,7 @@ export default function ManshaEnterprisesWebsite() {
     (total, item) => total + item.price * item.quantity,
     0
   );
+  const finalTotal = cartTotal + (shippingCharge || 0);
 
   const cartCount = cartItems.reduce(
     (total, item) => total + item.quantity,
@@ -414,7 +428,7 @@ const handleRazorpayPayment = async () => {
     const res = await fetch("/api/razorpay-order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: cartTotal * 100 }),
+      body: JSON.stringify({ amount: finalTotal }),
     });
 
     if (!res.ok) throw new Error("Order creation failed");
@@ -432,10 +446,43 @@ const handleRazorpayPayment = async () => {
         const orderSummary = cartItems
           .map((item, i) => `${i + 1}. ${item.name} x${item.quantity} - ₹${item.price * item.quantity}`)
           .join("\n");
-        const msg = `Hi! I just paid online.\n\n💳 Payment ID: ${response.razorpay_payment_id}\n📦 Order:\n${orderSummary}\n💰 Total: ₹${cartTotal}\n\nPlease confirm and share delivery details!`;
-        window.open(createWhatsAppLink(msg), "_blank");
+        const msg = `Hi! I just paid online.
+
+👤 Customer Details:
+Name: ${customer.name}
+Phone: ${customer.phone}
+Email: ${customer.email || "Not provided"}
+
+📍 Delivery Address:
+${customer.address}
+${customer.city}, ${customer.state} - ${customer.pincode}
+
+💳 Payment ID: ${response.razorpay_payment_id}
+
+📦 Order:
+${orderSummary}
+
+🧾 Products Total: ₹${cartTotal}
+🚚 Shipping: ₹${shippingCharge || 0}
+💰 Final Total: ₹${finalTotal}
+
+Please confirm my order and delivery details.`;
+        alert("Payment successful! Redirecting to WhatsApp for order confirmation.");
+
+window.open(createWhatsAppLink(msg), "_blank");
         setCartItems([]);
         setCartOpen(false);
+        setShippingCharge(null);
+
+setCustomer({
+  name: "",
+  phone: "",
+  email: "",
+  address: "",
+  city: "",
+  state: "",
+  pincode: "",
+});
       },
       prefill: { name: "", contact: "", email: "" },
       theme: { color: "#8b5e3c" },
@@ -777,11 +824,11 @@ const handleRazorpayPayment = async () => {
 
                   {/* Pay Online via Razorpay */}
                   <button
-                    onClick={handleRazorpayPayment}
+                    onClick={() => setCheckoutOpen(true)}
                     className="flex w-full items-center justify-center gap-2.5 rounded-full bg-[#3f2e24] py-4 text-base font-bold text-white shadow-lg transition hover:scale-[1.02] hover:bg-[#2e1f14] hover:shadow-xl active:scale-[0.98]"
                   >
                     <CreditCard size={17} />
-                    Pay Online via Razorpay
+                    Proceed to Checkout
                   </button>
 
                   {/* Divider */}
@@ -1585,20 +1632,242 @@ const handleRazorpayPayment = async () => {
       </AnimatePresence>
 
       {/* ── TOAST ──────────────────────────────────────────── */}
-      <AnimatePresence>
-        {cartMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: 30, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ type: "spring", damping: 22, stiffness: 260 }}
-            className="fixed bottom-8 left-1/2 z-[9999] flex -translate-x-1/2 items-center gap-2.5 rounded-full bg-[#3f2e24] px-6 py-3.5 text-sm font-semibold text-white shadow-2xl"
+
+     {/* ── CHECKOUT MODAL ───────────────────────────── */}
+<AnimatePresence>
+  {checkoutOpen && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#3f2e24]/50 p-4 backdrop-blur-sm"
+      onClick={() => setCheckoutOpen(false)}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 24, scale: 0.96 }}
+        className="w-full max-w-lg rounded-[2rem] bg-[#fffaf3] p-6 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="mb-5 flex items-center justify-between">
+          <h2 className="text-xl font-bold">Checkout Details</h2>
+
+          <button
+            onClick={() => setCheckoutOpen(false)}
+            className="rounded-full bg-white p-2 shadow-sm"
           >
-            <ShoppingCart size={14} className="text-[#d8b777]" />
-            {cartMessage}
-          </motion.div>
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Inputs */}
+        <div className="grid gap-3">
+
+          <input
+            type="text"
+            placeholder="Full Name"
+            value={customer.name}
+            onChange={(e) => {
+  setCustomer({ ...customer, name: e.target.value });
+  setShippingCharge(null);
+}}
+            className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 text-sm outline-none"
+          />
+
+          <input
+            type="text"
+            placeholder="Phone Number"
+            value={customer.phone}
+            onChange={(e) =>
+              setCustomer({ ...customer, phone: e.target.value })
+            }
+            className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 text-sm outline-none"
+          />
+
+          <input
+            type="email"
+            placeholder="Email Address"
+            value={customer.email}
+            onChange={(e) =>
+              setCustomer({ ...customer, email: e.target.value })
+            }
+            className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 text-sm outline-none"
+          />
+
+          <textarea
+            placeholder="Full Address"
+            value={customer.address}
+            onChange={(e) =>
+              setCustomer({ ...customer, address: e.target.value })
+            }
+            className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 text-sm outline-none"
+          />
+
+          <div className="grid grid-cols-2 gap-3">
+
+            <input
+              type="text"
+              placeholder="City"
+              value={customer.city}
+              onChange={(e) =>
+                setCustomer({ ...customer, city: e.target.value })
+              }
+              className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 text-sm outline-none"
+            />
+
+            <input
+              type="text"
+              placeholder="State"
+              value={customer.state}
+              onChange={(e) =>
+                setCustomer({ ...customer, state: e.target.value })
+              }
+              className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 text-sm outline-none"
+            />
+
+          </div>
+
+          <input
+  type="text"
+  placeholder="Pincode"
+  value={customer.pincode}
+  onChange={(e) => {
+    setCustomer({ ...customer, pincode: e.target.value });
+    setShippingCharge(null);
+  }}
+  className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 text-sm outline-none"
+/>
+        </div>
+
+        {/* Shipping Button */}
+        <button
+          onClick={async () => {
+            if (
+              !customer.name ||
+              !customer.phone ||
+              !customer.address ||
+              !customer.pincode
+            ) {
+              alert("Please fill all required details");
+              return;
+            }
+
+            try {
+              setShippingLoading(true);
+
+              const res = await fetch("/api/shiprocket-rate", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  deliveryPincode: customer.pincode,
+                  weight: Math.max(0.5, cartCount * 0.25),
+                }),
+              });
+
+              const data = await res.json();
+
+              if (!res.ok) {
+                throw new Error(data.error);
+              }
+
+              setShippingCharge(data.shippingCharge);
+
+            } catch (error) {
+              alert("Could not calculate shipping");
+            } finally {
+              setShippingLoading(false);
+            }
+          }}
+          className="mt-5 w-full rounded-full bg-[#8b5e3c] py-4 text-sm font-bold text-white"
+        >
+          {shippingLoading
+            ? "Calculating Shipping..."
+            : "Calculate Shipping"}
+        </button>
+
+        {/* Final Amount */}
+        {shippingCharge !== null && (
+          <div className="mt-5 rounded-2xl bg-white p-5 shadow-sm">
+
+            <div className="flex justify-between text-sm">
+              <span>Products Total</span>
+              <strong>₹{cartTotal}</strong>
+            </div>
+
+            <div className="mt-2 flex justify-between text-sm">
+              <span>Shipping Charge</span>
+              <strong>₹{shippingCharge}</strong>
+            </div>
+
+            <div className="mt-4 border-t border-[#eadfce] pt-4 flex justify-between text-lg font-bold">
+              <span>Final Amount</span>
+              <span>₹{finalTotal}</span>
+            </div>
+
+            <button
+              onClick={() => {
+  if (shippingCharge === null) {
+    alert("Please calculate shipping first.");
+    return;
+  }
+
+  setCheckoutOpen(false);
+  handleRazorpayPayment();
+}}
+              className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#3f2e24] py-4 text-base font-bold text-white"
+            >
+              <CreditCard size={17} />
+              Pay ₹{finalTotal}
+            </button>
+
+          </div>
         )}
-      </AnimatePresence>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
+
+{/* ── FLOATING CART BAR ───────────────────────────── */}
+<AnimatePresence>
+  {cartCount > 0 && !cartOpen && (
+    <motion.button
+      initial={{ y: 100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: 100, opacity: 0 }}
+      transition={{ type: "spring", damping: 22, stiffness: 240 }}
+      onClick={() => setCartOpen(true)}
+      className="fixed bottom-20 left-1/2 z-[150] flex w-[92%] max-w-md -translate-x-1/2 items-center justify-between rounded-full bg-[#3f2e24] px-5 py-3.5 text-white shadow-2xl"
+    >
+      <div className="flex items-center gap-3">
+        <div className="relative">
+          <ShoppingCart size={20} />
+
+          <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#d8b777] text-[10px] font-bold text-[#3f2e24]">
+            {cartCount}
+          </span>
+        </div>
+
+        <div className="text-left">
+          <p className="text-sm font-bold">
+            {cartCount} item{cartCount > 1 ? "s" : ""}
+          </p>
+
+          <p className="text-xs text-[#f5dfc0]">
+            ₹{cartTotal}
+          </p>
+        </div>
+      </div>
+
+      <span className="rounded-full bg-white px-4 py-2 text-xs font-bold text-[#3f2e24]">
+        View Cart
+      </span>
+    </motion.button>
+  )}
+</AnimatePresence>
 
       {/* ── WHATSAPP FAB (mobile) ───────────────────────────── */}
       <a
