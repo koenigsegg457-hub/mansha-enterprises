@@ -1660,15 +1660,14 @@ setCustomer({
 
         {/* Inputs */}
         <div className="grid gap-3">
-
           <input
             type="text"
             placeholder="Full Name"
             value={customer.name}
             onChange={(e) => {
-  setCustomer({ ...customer, name: e.target.value });
-  setShippingCharge(null);
-}}
+              setCustomer({ ...customer, name: e.target.value });
+              setShippingCharge(null);
+            }}
             className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 text-sm outline-none"
           />
 
@@ -1701,40 +1700,65 @@ setCustomer({
             className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 text-sm outline-none"
           />
 
-          <div className="grid grid-cols-2 gap-3">
+          <input
+            type="text"
+            placeholder="Pincode"
+            value={customer.pincode}
+            maxLength={6}
+            onChange={async (e) => {
+              const pincode = e.target.value.replace(/\D/g, "");
 
+              setCustomer({
+                ...customer,
+                pincode,
+                city: "",
+                state: "",
+              });
+
+              setShippingCharge(null);
+
+              if (pincode.length === 6) {
+                try {
+                  const res = await fetch(
+                    `https://api.postalpincode.in/pincode/${pincode}`
+                  );
+
+                  const data = await res.json();
+
+                  if (data[0]?.Status === "Success") {
+                    const postOffice = data[0].PostOffice[0];
+
+                    setCustomer((prev) => ({
+                      ...prev,
+                      city: postOffice.District,
+                      state: postOffice.State,
+                    }));
+                  }
+                } catch (error) {
+                  console.log("Pincode lookup failed:", error);
+                }
+              }
+            }}
+            className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 text-sm outline-none"
+          />
+
+          <div className="grid grid-cols-2 gap-3">
             <input
               type="text"
               placeholder="City"
               value={customer.city}
-              onChange={(e) =>
-                setCustomer({ ...customer, city: e.target.value })
-              }
-              className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 text-sm outline-none"
+              readOnly
+              className="rounded-2xl border border-[#e0cdb4] bg-[#f7eadb] px-4 py-3 text-sm outline-none"
             />
 
             <input
               type="text"
               placeholder="State"
               value={customer.state}
-              onChange={(e) =>
-                setCustomer({ ...customer, state: e.target.value })
-              }
-              className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 text-sm outline-none"
+              readOnly
+              className="rounded-2xl border border-[#e0cdb4] bg-[#f7eadb] px-4 py-3 text-sm outline-none"
             />
-
           </div>
-
-          <input
-  type="text"
-  placeholder="Pincode"
-  value={customer.pincode}
-  onChange={(e) => {
-    setCustomer({ ...customer, pincode: e.target.value });
-    setShippingCharge(null);
-  }}
-  className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 text-sm outline-none"
-/>
         </div>
 
         {/* Shipping Button */}
