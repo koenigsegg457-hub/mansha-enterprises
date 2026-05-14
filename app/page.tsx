@@ -18,6 +18,8 @@ import {
   Plus,
   Trash2,
   Flame,
+  CreditCard,
+  Info,
 } from "lucide-react";
 
 type Category = "All" | "Soaps" | "Candles";
@@ -101,7 +103,6 @@ const products = [
     accent: "#5c3d2e",
     bg: "#f5ede8",
   },
-
   {
     name: "Panchavya Soap",
     category: "Soaps" as Category,
@@ -172,8 +173,8 @@ const products = [
       "A warm, comforting handpoured candle with a gentle rose and vanilla blend. Made with natural wax and a cotton wick - crafted to make every moment feel like a warm embrace.",
     ingredients:
       "Natural wax, rose & vanilla fragrance blend, cotton wick",
-    price: 100,
-    priceLabel: "₹100/- per item",
+    price: 50,
+    priceLabel: "₹50/- per item",
     image: "/Rise Candle Love.jpg",
     bestFor: "Gifting loved ones, cozy evenings, anniversaries, and heartfelt celebrations.",
     accent: "#a0522d",
@@ -187,8 +188,8 @@ const products = [
       "A handpoured festive candle blended with warm seasonal spices - cinnamon, clove, and a hint of citrus. Made with natural wax to celebrate every season with warmth and cheer.",
     ingredients:
       "Natural wax, cinnamon & clove fragrance blend, orange peel, cotton wick",
-    price: 100,
-    priceLabel: "₹100/- per item",
+    price: 150,
+    priceLabel: "₹150/- per item",
     image: "/Rise Candle Season.jpg",
     bestFor: "Festivals, Diwali, Christmas, home decoration, and gifting during celebrations.",
     accent: "#b8670a",
@@ -305,6 +306,19 @@ export default function ManshaEnterprisesWebsite() {
   const [cartBounce, setCartBounce] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  // Load Razorpay script
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     onScroll();
@@ -387,8 +401,53 @@ export default function ManshaEnterprisesWebsite() {
           }`
       )
       .join("\n");
-    return `Hi, I want to place an order from Mansha Enterprises.\n\nOrder Details:\n${lines}\n\nTotal Amount: ₹${cartTotal}\n\nPlease confirm availability and delivery details.`;
+    return `Hi, I want to place an order from Mansha Enterprises.\n\nOrder Details:\n${lines}\n\nTotal Amount: ₹${cartTotal} (+ shipping charges)\n\nPlease confirm availability and delivery details.`;
   };
+
+  // ── RAZORPAY HANDLER ─────────────────────────────────────
+const handleRazorpayPayment = async () => {
+  if (!(window as any).Razorpay) {
+    alert("Payment gateway loading, please try again.");
+    return;
+  }
+  try {
+    const res = await fetch("/api/razorpay-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: cartTotal * 100 }),
+    });
+
+    if (!res.ok) throw new Error("Order creation failed");
+    const order = await res.json();
+
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      order_id: order.id,
+      name: "Mansha Enterprises",
+      description: "Handmade Soaps & Candles",
+      image: "/a_logo_for_mansha_enterprises_is_centered_within_a.png",
+      handler: function (response: any) {
+        const orderSummary = cartItems
+          .map((item, i) => `${i + 1}. ${item.name} x${item.quantity} - ₹${item.price * item.quantity}`)
+          .join("\n");
+        const msg = `Hi! I just paid online.\n\n💳 Payment ID: ${response.razorpay_payment_id}\n📦 Order:\n${orderSummary}\n💰 Total: ₹${cartTotal}\n\nPlease confirm and share delivery details!`;
+        window.open(createWhatsAppLink(msg), "_blank");
+        setCartItems([]);
+        setCartOpen(false);
+      },
+      prefill: { name: "", contact: "", email: "" },
+      theme: { color: "#8b5e3c" },
+    };
+
+    const rzp = new (window as any).Razorpay(options);
+    rzp.open();
+  } catch (err) {
+    console.error(err);
+    alert("Could not initiate payment. Please use WhatsApp order instead.");
+  }
+};
 
   const navLinks = [
     { label: "Products", href: "#products" },
@@ -691,25 +750,62 @@ export default function ManshaEnterprisesWebsite() {
                 )}
               </div>
 
+              {/* ── CART FOOTER ──────────────────────────────── */}
               {cartItems.length > 0 && (
                 <div className="border-t border-[#eadfce] bg-white px-6 py-5">
+
+                  {/* Shipping charges note */}
+                  <div className="mb-4 flex items-start gap-2.5 rounded-2xl border border-[#f0dfc0] bg-[#fef9ec] px-4 py-3">
+                    <Info size={14} className="mt-0.5 flex-shrink-0 text-[#b8861b]" />
+                    <p className="text-xs leading-5 text-[#7a5d2e]">
+                      <span className="font-bold">Note:</span> Prices shown are exclusive of shipping charges. Delivery cost will be confirmed on WhatsApp before dispatch.
+                    </p>
+                  </div>
+
+                  {/* Total */}
                   <div className="mb-4 flex items-center justify-between">
-                    <span className="text-base text-[#6f5a49]">
-                      Total ({cartCount} items)
-                    </span>
+                    <div>
+                      <span className="text-base text-[#6f5a49]">
+                        Subtotal ({cartCount} {cartCount === 1 ? "item" : "items"})
+                      </span>
+                      <p className="text-[10px] text-[#a08060]">Excl. shipping</p>
+                    </div>
                     <span className="text-2xl font-bold text-[#3f2e24]">
                       ₹{cartTotal}
                     </span>
                   </div>
+
+                  {/* Pay Online via Razorpay */}
+                  <button
+                    onClick={handleRazorpayPayment}
+                    className="flex w-full items-center justify-center gap-2.5 rounded-full bg-[#3f2e24] py-4 text-base font-bold text-white shadow-lg transition hover:scale-[1.02] hover:bg-[#2e1f14] hover:shadow-xl active:scale-[0.98]"
+                  >
+                    <CreditCard size={17} />
+                    Pay Online via Razorpay
+                  </button>
+
+                  {/* Divider */}
+                  <div className="my-3 flex items-center gap-3">
+                    <div className="h-px flex-1 bg-[#eadfce]" />
+                    <span className="text-xs font-medium text-[#b09070]">or</span>
+                    <div className="h-px flex-1 bg-[#eadfce]" />
+                  </div>
+
+                  {/* WhatsApp Order */}
                   <a
                     href={createWhatsAppLink(cartWhatsAppMsg())}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex w-full items-center justify-center gap-2 rounded-full bg-[#8b5e3c] py-4 text-base font-bold text-white shadow-lg transition hover:scale-[1.02] hover:bg-[#70472b] hover:shadow-xl"
+                    className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-[#8b5e3c] py-3.5 text-base font-bold text-[#8b5e3c] transition hover:scale-[1.02] hover:bg-[#f7eadb]"
                   >
                     <MessageCircle size={18} />
                     Book Order on WhatsApp
                   </a>
+
+                  {/* Razorpay info note */}
+                  <p className="mt-3 text-center text-[10px] text-[#b09070]">
+                    🔒 Razorpay accepts UPI · Cards · Net Banking · Wallets
+                  </p>
                 </div>
               )}
             </motion.div>
@@ -1442,7 +1538,10 @@ export default function ManshaEnterprisesWebsite() {
                     className="mt-5 flex items-center justify-between rounded-2xl p-4"
                     style={{ background: selectedProduct.bg }}
                   >
-                    <span className="text-sm text-[#7a5d4a]">Price</span>
+                    <div>
+                      <span className="text-sm text-[#7a5d4a]">Price</span>
+                      <p className="text-[10px] text-[#a08060]">Excl. shipping</p>
+                    </div>
                     <span
                       className="text-xl font-bold"
                       style={{ color: selectedProduct.accent }}
