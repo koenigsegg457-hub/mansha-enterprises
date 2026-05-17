@@ -20,6 +20,9 @@ import {
   Flame,
   CreditCard,
   Info,
+  Truck,
+  Clock,
+  CheckCircle2,
 } from "lucide-react";
 
 type Category = "All" | "Soaps" | "Candles";
@@ -215,6 +218,12 @@ const products = [
 type Product = (typeof products)[number];
 type CartItem = Product & { quantity: number };
 
+type ShippingInfo = {
+  shippingCharge: number;
+  courierName: string;
+  estimatedDays: number | null;
+};
+
 const CATEGORY_TABS: { label: string; value: Category | "All"; icon?: React.ElementType }[] = [
   { label: "All Products", value: "All" },
   { label: "Soaps", value: "Soaps", icon: Leaf },
@@ -306,18 +315,20 @@ export default function ManshaEnterprisesWebsite() {
   const [cartBounce, setCartBounce] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
-const [shippingLoading, setShippingLoading] = useState(false);
-const [shippingCharge, setShippingCharge] = useState<number | null>(null);
+  const [shippingLoading, setShippingLoading] = useState(false);
+  const [shippingInfo, setShippingInfo] = useState<ShippingInfo | null>(null);
+  const [shippingError, setShippingError] = useState<string>("");
+  const [pincodeLoading, setPincodeLoading] = useState(false);
 
-const [customer, setCustomer] = useState({
-  name: "",
-  phone: "",
-  email: "",
-  address: "",
-  city: "",
-  state: "",
-  pincode: "",
-});
+  const [customer, setCustomer] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    address: "",
+    city: "",
+    state: "",
+    pincode: "",
+  });
 
   // Load Razorpay script
   useEffect(() => {
@@ -374,6 +385,9 @@ const [customer, setCustomer] = useState({
         item.name === name ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
+    // Reset shipping when cart changes
+    setShippingInfo(null);
+    setShippingError("");
   };
 
   const decreaseQty = (name: string) => {
@@ -384,17 +398,21 @@ const [customer, setCustomer] = useState({
         )
         .filter((item) => item.quantity > 0)
     );
+    setShippingInfo(null);
+    setShippingError("");
   };
 
   const removeItem = (name: string) => {
     setCartItems((prev) => prev.filter((item) => item.name !== name));
+    setShippingInfo(null);
+    setShippingError("");
   };
 
   const cartTotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
-  const finalTotal = cartTotal + (shippingCharge || 0);
+  const finalTotal = cartTotal + (shippingInfo?.shippingCharge ?? 0);
 
   const cartCount = cartItems.reduce(
     (total, item) => total + item.quantity,
@@ -418,83 +436,166 @@ const [customer, setCustomer] = useState({
     return `Hi, I want to place an order from Mansha Enterprises.\n\nOrder Details:\n${lines}\n\nTotal Amount: ₹${cartTotal} (+ shipping charges)\n\nPlease confirm availability and delivery details.`;
   };
 
+  // ── PINCODE LOOKUP ────────────────────────────────────────
+  const handlePincodeChange = async (pincode: string) => {
+    const clean = pincode.replace(/\D/g, "");
+    setCustomer((prev) => ({ ...prev, pincode: clean, city: "", state: "" }));
+    setShippingInfo(null);
+    setShippingError("");
+
+    if (clean.length === 6) {
+      setPincodeLoading(true);
+      try {
+        const res = await fetch(
+          `https://api.postalpincode.in/pincode/${clean}`
+        );
+        const data = await res.json();
+        if (data[0]?.Status === "Success") {
+          const po = data[0].PostOffice[0];
+          setCustomer((prev) => ({
+            ...prev,
+            city: po.District,
+            state: po.State,
+          }));
+        }
+      } catch {
+        // silently ignore — user can still type city/state
+      } finally {
+        setPincodeLoading(false);
+      }
+    }
+  };
+
+  // ── SHIPPING CALCULATION ──────────────────────────────────
+  const handleCalculateShipping = async () => {
+    if (!customer.name || !customer.phone || !customer.address || !customer.pincode) {
+      setShippingError("Please fill in Name, Phone, Address and Pincode first.");
+      return;
+    }
+    if (customer.pincode.length !== 6) {
+      setShippingError("Please enter a valid 6-digit pincode.");
+      return;
+    }
+
+    setShippingLoading(true);
+    setShippingInfo(null);
+    setShippingError("");
+
+    try {
+      // Weight: each item ~250g, minimum 500g
+      const weightKg = Math.max(0.5, cartCount * 0.25);
+
+      const res = await fetch("/api/shiprocket-rate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          deliveryPincode: customer.pincode,
+          weight: weightKg,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setShippingError(data.error ?? "Could not calculate shipping.");
+        return;
+      }
+
+      setShippingInfo({
+        shippingCharge: data.shippingCharge,
+        courierName: data.courierName,
+        estimatedDays: data.estimatedDays ?? null,
+      });
+    } catch {
+      setShippingError(
+        "Could not calculate shipping. Please try again or order via WhatsApp."
+      );
+    } finally {
+      setShippingLoading(false);
+    }
+  };
+
   // ── RAZORPAY HANDLER ─────────────────────────────────────
-const handleRazorpayPayment = async () => {
-  if (!(window as any).Razorpay) {
-    alert("Payment gateway loading, please try again.");
-    return;
-  }
-  try {
-    const res = await fetch("/api/razorpay-order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: finalTotal }),
-    });
+  const handleRazorpayPayment = async () => {
+    if (!(window as any).Razorpay) {
+      alert("Payment gateway loading, please try again.");
+      return;
+    }
+    try {
+      const res = await fetch("/api/razorpay-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: finalTotal }),
+      });
 
-    if (!res.ok) throw new Error("Order creation failed");
-    const order = await res.json();
+      if (!res.ok) throw new Error("Order creation failed");
+      const order = await res.json();
 
-    const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-      amount: order.amount,
-      currency: order.currency,
-      order_id: order.id,
-      name: "Mansha Enterprises",
-      description: "Handmade Soaps & Candles",
-      image: "/a_logo_for_mansha_enterprises_is_centered_within_a.png",
-      handler: function (response: any) {
-        const orderSummary = cartItems
-          .map((item, i) => `${i + 1}. ${item.name} x${item.quantity} - ₹${item.price * item.quantity}`)
-          .join("\n");
-        const msg = `Hi! I just paid online.
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        order_id: order.id,
+        name: "Mansha Enterprises",
+        description: "Handmade Soaps & Candles",
+        image: "/a_logo_for_mansha_enterprises_is_centered_within_a.png",
+        handler: function (response: any) {
+          const orderSummary = cartItems
+            .map(
+              (item, i) =>
+                `${i + 1}. ${item.name} x${item.quantity} - ₹${item.price * item.quantity}`
+            )
+            .join("\n");
+          const msg =
+            `Hi! I just paid online.\n\n` +
+            `👤 Customer Details:\n` +
+            `Name: ${customer.name}\n` +
+            `Phone: ${customer.phone}\n` +
+            `Email: ${customer.email || "Not provided"}\n\n` +
+            `📍 Delivery Address:\n${customer.address}\n` +
+            `${customer.city}, ${customer.state} - ${customer.pincode}\n\n` +
+            `💳 Payment ID: ${response.razorpay_payment_id}\n\n` +
+            `📦 Order:\n${orderSummary}\n\n` +
+            `🧾 Products Total: ₹${cartTotal}\n` +
+            `🚚 Shipping (${shippingInfo?.courierName ?? ""}): ₹${shippingInfo?.shippingCharge ?? 0}\n` +
+            `💰 Final Total: ₹${finalTotal}\n\n` +
+            `Please confirm my order and delivery details.`;
 
-👤 Customer Details:
-Name: ${customer.name}
-Phone: ${customer.phone}
-Email: ${customer.email || "Not provided"}
+          alert(
+            "Payment successful! Redirecting to WhatsApp for order confirmation."
+          );
+          window.open(createWhatsAppLink(msg), "_blank");
 
-📍 Delivery Address:
-${customer.address}
-${customer.city}, ${customer.state} - ${customer.pincode}
+          setCartItems([]);
+          setCartOpen(false);
+          setCheckoutOpen(false);
+          setShippingInfo(null);
+          setShippingError("");
+          setCustomer({
+            name: "",
+            phone: "",
+            email: "",
+            address: "",
+            city: "",
+            state: "",
+            pincode: "",
+          });
+        },
+        prefill: {
+          name: customer.name,
+          contact: customer.phone,
+          email: customer.email,
+        },
+        theme: { color: "#8b5e3c" },
+      };
 
-💳 Payment ID: ${response.razorpay_payment_id}
-
-📦 Order:
-${orderSummary}
-
-🧾 Products Total: ₹${cartTotal}
-🚚 Shipping: ₹${shippingCharge || 0}
-💰 Final Total: ₹${finalTotal}
-
-Please confirm my order and delivery details.`;
-        alert("Payment successful! Redirecting to WhatsApp for order confirmation.");
-
-window.open(createWhatsAppLink(msg), "_blank");
-        setCartItems([]);
-        setCartOpen(false);
-        setShippingCharge(null);
-
-setCustomer({
-  name: "",
-  phone: "",
-  email: "",
-  address: "",
-  city: "",
-  state: "",
-  pincode: "",
-});
-      },
-      prefill: { name: "", contact: "", email: "" },
-      theme: { color: "#8b5e3c" },
-    };
-
-    const rzp = new (window as any).Razorpay(options);
-    rzp.open();
-  } catch (err) {
-    console.error(err);
-    alert("Could not initiate payment. Please use WhatsApp order instead.");
-  }
-};
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error(err);
+      alert("Could not initiate payment. Please use WhatsApp order instead.");
+    }
+  };
 
   const navLinks = [
     { label: "Products", href: "#products" },
@@ -800,16 +901,13 @@ setCustomer({
               {/* ── CART FOOTER ──────────────────────────────── */}
               {cartItems.length > 0 && (
                 <div className="border-t border-[#eadfce] bg-white px-6 py-5">
-
-                  {/* Shipping charges note */}
                   <div className="mb-4 flex items-start gap-2.5 rounded-2xl border border-[#f0dfc0] bg-[#fef9ec] px-4 py-3">
                     <Info size={14} className="mt-0.5 flex-shrink-0 text-[#b8861b]" />
                     <p className="text-xs leading-5 text-[#7a5d2e]">
-                      <span className="font-bold">Note:</span> Prices shown are exclusive of shipping charges.
+                      <span className="font-bold">Note:</span> Prices shown are exclusive of shipping charges. Shipping is calculated at checkout based on your pincode.
                     </p>
                   </div>
 
-                  {/* Total */}
                   <div className="mb-4 flex items-center justify-between">
                     <div>
                       <span className="text-base text-[#6f5a49]">
@@ -822,7 +920,6 @@ setCustomer({
                     </span>
                   </div>
 
-                  {/* Pay Online via Razorpay */}
                   <button
                     onClick={() => setCheckoutOpen(true)}
                     className="flex w-full items-center justify-center gap-2.5 rounded-full bg-[#3f2e24] py-4 text-base font-bold text-white shadow-lg transition hover:scale-[1.02] hover:bg-[#2e1f14] hover:shadow-xl active:scale-[0.98]"
@@ -831,14 +928,12 @@ setCustomer({
                     Proceed to Checkout
                   </button>
 
-                  {/* Divider */}
                   <div className="my-3 flex items-center gap-3">
                     <div className="h-px flex-1 bg-[#eadfce]" />
                     <span className="text-xs font-medium text-[#b09070]">or</span>
                     <div className="h-px flex-1 bg-[#eadfce]" />
                   </div>
 
-                  {/* WhatsApp Order */}
                   <a
                     href={createWhatsAppLink(cartWhatsAppMsg())}
                     target="_blank"
@@ -849,7 +944,6 @@ setCustomer({
                     Book Order on WhatsApp
                   </a>
 
-                  {/* Razorpay info note */}
                   <p className="mt-3 text-center text-[10px] text-[#b09070]">
                     🔒 Razorpay accepts UPI · Cards · Net Banking · Wallets
                   </p>
@@ -906,12 +1000,12 @@ setCustomer({
 
               <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-4">
                 <a
-  href="#products"
-  className="flex items-center gap-2 rounded-full bg-[#8b5e3c] px-7 py-4 text-base font-bold text-white shadow-lg transition hover:scale-105 hover:bg-[#70472b] hover:shadow-xl"
->
-  <ShoppingBag size={18} />
-  Explore Products
-</a>
+                  href="#products"
+                  className="flex items-center gap-2 rounded-full bg-[#8b5e3c] px-7 py-4 text-base font-bold text-white shadow-lg transition hover:scale-105 hover:bg-[#70472b] hover:shadow-xl"
+                >
+                  <ShoppingBag size={18} />
+                  Explore Products
+                </a>
                 <a
                   href="#about"
                   className="flex items-center gap-2 rounded-full border-2 border-[#d8b777] px-7 py-4 text-base font-semibold text-[#8b5e3c] transition hover:bg-[#f7eadb]"
@@ -1067,7 +1161,6 @@ setCustomer({
           }}
         >
           <div className="mx-auto max-w-7xl">
-            {/* Header row */}
             <div className="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -1096,7 +1189,6 @@ setCustomer({
               </div>
             </div>
 
-            {/* ── CATEGORY TABS ────────────────────────────── */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -1156,7 +1248,6 @@ setCustomer({
               })}
             </motion.div>
 
-            {/* Product grid */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeCategory}
@@ -1189,7 +1280,6 @@ setCustomer({
                           alt={product.name}
                           className="h-full w-full object-contain p-2 md:p-0 transition duration-500 group-hover:scale-105"
                         />
-                        {/* Category badge */}
                         <div
                           className="absolute left-4 top-4 flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
                           style={{
@@ -1627,267 +1717,273 @@ setCustomer({
         )}
       </AnimatePresence>
 
-      {/* ── TOAST ──────────────────────────────────────────── */}
-
-     {/* ── CHECKOUT MODAL ───────────────────────────── */}
-<AnimatePresence>
-  {checkoutOpen && (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#3f2e24]/50 p-4 backdrop-blur-sm"
-      onClick={() => setCheckoutOpen(false)}
-    >
-      <motion.div
-        initial={{ opacity: 0, y: 24, scale: 0.96 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 24, scale: 0.96 }}
-        className="w-full max-w-lg rounded-[2rem] bg-[#fffaf3] p-6 shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-xl font-bold">Checkout Details</h2>
-
-          <button
+      {/* ── CHECKOUT MODAL ─────────────────────────────────── */}
+      <AnimatePresence>
+        {checkoutOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#3f2e24]/50 p-4 backdrop-blur-sm"
             onClick={() => setCheckoutOpen(false)}
-            className="rounded-full bg-white p-2 shadow-sm"
           >
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* Inputs */}
-        <div className="grid gap-3">
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={customer.name}
-            onChange={(e) => {
-              setCustomer({ ...customer, name: e.target.value });
-              setShippingCharge(null);
-            }}
-            className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 text-sm outline-none"
-          />
-
-          <input
-            type="text"
-            placeholder="Phone Number"
-            value={customer.phone}
-            onChange={(e) =>
-              setCustomer({ ...customer, phone: e.target.value })
-            }
-            className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 text-sm outline-none"
-          />
-
-          <input
-            type="email"
-            placeholder="Email Address"
-            value={customer.email}
-            onChange={(e) =>
-              setCustomer({ ...customer, email: e.target.value })
-            }
-            className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 text-sm outline-none"
-          />
-
-          <textarea
-            placeholder="Full Address"
-            value={customer.address}
-            onChange={(e) =>
-              setCustomer({ ...customer, address: e.target.value })
-            }
-            className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 text-sm outline-none"
-          />
-
-          <input
-            type="text"
-            placeholder="Pincode"
-            value={customer.pincode}
-            maxLength={6}
-            onChange={async (e) => {
-              const pincode = e.target.value.replace(/\D/g, "");
-
-              setCustomer({
-                ...customer,
-                pincode,
-                city: "",
-                state: "",
-              });
-
-              setShippingCharge(null);
-
-              if (pincode.length === 6) {
-                try {
-                  const res = await fetch(
-                    `https://api.postalpincode.in/pincode/${pincode}`
-                  );
-
-                  const data = await res.json();
-
-                  if (data[0]?.Status === "Success") {
-                    const postOffice = data[0].PostOffice[0];
-
-                    setCustomer((prev) => ({
-                      ...prev,
-                      city: postOffice.District,
-                      state: postOffice.State,
-                    }));
-                  }
-                } catch (error) {
-                  console.log("Pincode lookup failed:", error);
-                }
-              }
-            }}
-            className="rounded-2xl border border-[#e0cdb4] bg-white px-4 py-3 text-sm outline-none"
-          />
-
-          <div className="grid grid-cols-2 gap-3">
-            <input
-              type="text"
-              placeholder="City"
-              value={customer.city}
-              readOnly
-              className="rounded-2xl border border-[#e0cdb4] bg-[#f7eadb] px-4 py-3 text-sm outline-none"
-            />
-
-            <input
-              type="text"
-              placeholder="State"
-              value={customer.state}
-              readOnly
-              className="rounded-2xl border border-[#e0cdb4] bg-[#f7eadb] px-4 py-3 text-sm outline-none"
-            />
-          </div>
-        </div>
-
-        {/* Shipping Button */}
-        <button
-          onClick={async () => {
-            if (
-              !customer.name ||
-              !customer.phone ||
-              !customer.address ||
-              !customer.pincode
-            ) {
-              alert("Please fill all required details");
-              return;
-            }
-
-            try {
-              setShippingLoading(true);
-
-              const res = await fetch("/api/shiprocket-rate", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  deliveryPincode: customer.pincode,
-                  weight: Math.max(0.5, cartCount * 0.25),
-                }),
-              });
-
-              const data = await res.json();
-
-              if (!res.ok) {
-                throw new Error(data.error);
-              }
-
-              setShippingCharge(data.shippingCharge);
-
-            } catch (error) {
-              alert("Could not calculate shipping");
-            } finally {
-              setShippingLoading(false);
-            }
-          }}
-          className="mt-5 w-full rounded-full bg-[#8b5e3c] py-4 text-sm font-bold text-white"
-        >
-          {shippingLoading
-            ? "Calculating Shipping..."
-            : "Calculate Shipping"}
-        </button>
-
-        {/* Final Amount */}
-        {shippingCharge !== null && (
-          <div className="mt-5 rounded-2xl bg-white p-5 shadow-sm">
-
-            <div className="flex justify-between text-sm">
-              <span>Products Total</span>
-              <strong>₹{cartTotal}</strong>
-            </div>
-
-            <div className="mt-2 flex justify-between text-sm">
-              <span>Shipping Charge</span>
-              <strong>₹{shippingCharge}</strong>
-            </div>
-
-            <div className="mt-4 border-t border-[#eadfce] pt-4 flex justify-between text-lg font-bold">
-              <span>Final Amount</span>
-              <span>₹{finalTotal}</span>
-            </div>
-
-            <button
-              onClick={() => {
-  if (shippingCharge === null) {
-    alert("Please calculate shipping first.");
-    return;
-  }
-
-  setCheckoutOpen(false);
-  handleRazorpayPayment();
-}}
-              className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#3f2e24] py-4 text-base font-bold text-white"
+            <motion.div
+              initial={{ opacity: 0, y: 24, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 24, scale: 0.96 }}
+              className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-[2rem] bg-[#fffaf3] p-6 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
             >
-              <CreditCard size={17} />
-              Pay ₹{finalTotal}
-            </button>
+              {/* Header */}
+              <div className="mb-5 flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold">Checkout Details</h2>
+                  <p className="mt-0.5 text-xs text-[#a08060]">
+                    Fill your details to calculate shipping & pay
+                  </p>
+                </div>
+                <button
+                  onClick={() => setCheckoutOpen(false)}
+                  className="rounded-full bg-white p-2 shadow-sm"
+                >
+                  <X size={18} />
+                </button>
+              </div>
 
-          </div>
+              {/* ── Step 1: Customer Details ─────────────────── */}
+              <div className="mb-4 rounded-2xl border border-[#eadfce] bg-white p-4">
+                <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#8b5e3c]">
+                  Your Details
+                </p>
+                <div className="grid gap-3">
+                  <input
+                    type="text"
+                    placeholder="Full Name *"
+                    value={customer.name}
+                    onChange={(e) => {
+                      setCustomer({ ...customer, name: e.target.value });
+                      setShippingInfo(null);
+                      setShippingError("");
+                    }}
+                    className="rounded-2xl border border-[#e0cdb4] bg-[#fffaf3] px-4 py-3 text-sm outline-none focus:border-[#8b5e3c] focus:ring-1 focus:ring-[#e8d5b8]"
+                  />
+                  <input
+                    type="tel"
+                    placeholder="Phone Number *"
+                    value={customer.phone}
+                    onChange={(e) =>
+                      setCustomer({ ...customer, phone: e.target.value })
+                    }
+                    className="rounded-2xl border border-[#e0cdb4] bg-[#fffaf3] px-4 py-3 text-sm outline-none focus:border-[#8b5e3c] focus:ring-1 focus:ring-[#e8d5b8]"
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email Address (optional)"
+                    value={customer.email}
+                    onChange={(e) =>
+                      setCustomer({ ...customer, email: e.target.value })
+                    }
+                    className="rounded-2xl border border-[#e0cdb4] bg-[#fffaf3] px-4 py-3 text-sm outline-none focus:border-[#8b5e3c] focus:ring-1 focus:ring-[#e8d5b8]"
+                  />
+                </div>
+              </div>
+
+              {/* ── Step 2: Delivery Address ─────────────────── */}
+              <div className="mb-4 rounded-2xl border border-[#eadfce] bg-white p-4">
+                <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#8b5e3c]">
+                  Delivery Address
+                </p>
+                <div className="grid gap-3">
+                  <textarea
+                    placeholder="Full Address (House No, Street, Area) *"
+                    value={customer.address}
+                    rows={2}
+                    onChange={(e) => {
+                      setCustomer({ ...customer, address: e.target.value });
+                      setShippingInfo(null);
+                      setShippingError("");
+                    }}
+                    className="rounded-2xl border border-[#e0cdb4] bg-[#fffaf3] px-4 py-3 text-sm outline-none focus:border-[#8b5e3c] focus:ring-1 focus:ring-[#e8d5b8]"
+                  />
+
+                  {/* Pincode with inline loader */}
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Pincode * (6 digits)"
+                      value={customer.pincode}
+                      maxLength={6}
+                      onChange={(e) => handlePincodeChange(e.target.value)}
+                      className="w-full rounded-2xl border border-[#e0cdb4] bg-[#fffaf3] px-4 py-3 pr-10 text-sm outline-none focus:border-[#8b5e3c] focus:ring-1 focus:ring-[#e8d5b8]"
+                    />
+                    {pincodeLoading && (
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#8b5e3c] border-t-transparent" />
+                      </div>
+                    )}
+                    {customer.city && !pincodeLoading && (
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                        <CheckCircle2 size={16} className="text-[#4a7c59]" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <input
+                      type="text"
+                      placeholder="City"
+                      value={customer.city}
+                      readOnly
+                      className="rounded-2xl border border-[#e0cdb4] bg-[#f7eadb] px-4 py-3 text-sm text-[#7a5d4a] outline-none"
+                    />
+                    <input
+                      type="text"
+                      placeholder="State"
+                      value={customer.state}
+                      readOnly
+                      className="rounded-2xl border border-[#e0cdb4] bg-[#f7eadb] px-4 py-3 text-sm text-[#7a5d4a] outline-none"
+                    />
+                  </div>
+
+                  {customer.city && (
+                    <p className="text-xs text-[#4a7c59]">
+                      ✓ Delivering to {customer.city}, {customer.state}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* ── Step 3: Calculate Shipping ───────────────── */}
+              <button
+                onClick={handleCalculateShipping}
+                disabled={shippingLoading}
+                className="flex w-full items-center justify-center gap-2.5 rounded-full bg-[#8b5e3c] py-4 text-sm font-bold text-white shadow-md transition hover:bg-[#70472b] disabled:opacity-60"
+              >
+                {shippingLoading ? (
+                  <>
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    Calculating Shipping…
+                  </>
+                ) : (
+                  <>
+                    <Truck size={16} />
+                    {shippingInfo ? "Recalculate Shipping" : "Calculate Shipping"}
+                  </>
+                )}
+              </button>
+
+              {/* Error state */}
+              {shippingError && (
+                <div className="mt-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+                  {shippingError}
+                </div>
+              )}
+
+              {/* ── Step 4: Shipping Result + Pay ────────────── */}
+              <AnimatePresence>
+                {shippingInfo && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="mt-4 rounded-2xl border border-[#eadfce] bg-white p-5 shadow-sm"
+                  >
+                    {/* Courier info */}
+                    <div className="mb-4 flex items-center gap-3 rounded-xl bg-[#edf7f0] px-4 py-3">
+                      <Truck size={16} className="text-[#4a7c59]" />
+                      <div className="flex-1">
+                        <p className="text-sm font-bold text-[#3f2e24]">
+                          {shippingInfo.courierName}
+                        </p>
+                        {shippingInfo.estimatedDays && (
+                          <p className="flex items-center gap-1 text-xs text-[#4a7c59]">
+                            <Clock size={11} />
+                            Estimated delivery in {shippingInfo.estimatedDays}{" "}
+                            day{shippingInfo.estimatedDays > 1 ? "s" : ""}
+                          </p>
+                        )}
+                      </div>
+                      <span className="text-sm font-bold text-[#4a7c59]">
+                        ₹{shippingInfo.shippingCharge}
+                      </span>
+                    </div>
+
+                    {/* Breakup */}
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between text-[#6f5a49]">
+                        <span>
+                          Products ({cartCount} item{cartCount > 1 ? "s" : ""})
+                        </span>
+                        <span className="font-semibold">₹{cartTotal}</span>
+                      </div>
+                      <div className="flex justify-between text-[#6f5a49]">
+                        <span>Shipping</span>
+                        <span className="font-semibold">
+                          ₹{shippingInfo.shippingCharge}
+                        </span>
+                      </div>
+                      <div className="border-t border-[#eadfce] pt-3">
+                        <div className="flex justify-between text-lg font-bold text-[#3f2e24]">
+                          <span>Total Payable</span>
+                          <span>₹{finalTotal}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Pay button */}
+                    <button
+                      onClick={() => {
+                        setCheckoutOpen(false);
+                        handleRazorpayPayment();
+                      }}
+                      className="mt-5 flex w-full items-center justify-center gap-2.5 rounded-full bg-[#3f2e24] py-4 text-base font-bold text-white shadow-lg transition hover:scale-[1.02] hover:bg-[#2e1f14] hover:shadow-xl active:scale-[0.98]"
+                    >
+                      <CreditCard size={17} />
+                      Pay ₹{finalTotal}
+                    </button>
+
+                    <p className="mt-3 text-center text-[10px] text-[#b09070]">
+                      🔒 Razorpay · UPI · Cards · Net Banking · Wallets
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </motion.div>
         )}
-      </motion.div>
-    </motion.div>
-  )}
-</AnimatePresence>
+      </AnimatePresence>
 
-{/* ── FLOATING CART BAR ───────────────────────────── */}
-<AnimatePresence>
-  {cartCount > 0 && !cartOpen && (
-    <motion.button
-      initial={{ y: 100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      exit={{ y: 100, opacity: 0 }}
-      transition={{ type: "spring", damping: 22, stiffness: 240 }}
-      onClick={() => setCartOpen(true)}
-      className="fixed bottom-20 left-1/2 z-[150] flex w-[92%] max-w-md -translate-x-1/2 items-center justify-between rounded-full bg-[#3f2e24] px-5 py-3.5 text-white shadow-2xl"
-    >
-      <div className="flex items-center gap-3">
-        <div className="relative">
-          <ShoppingCart size={20} />
-
-          <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#d8b777] text-[10px] font-bold text-[#3f2e24]">
-            {cartCount}
-          </span>
-        </div>
-
-        <div className="text-left">
-          <p className="text-sm font-bold">
-            {cartCount} item{cartCount > 1 ? "s" : ""}
-          </p>
-
-          <p className="text-xs text-[#f5dfc0]">
-            ₹{cartTotal}
-          </p>
-        </div>
-      </div>
-
-      <span className="rounded-full bg-white px-4 py-2 text-xs font-bold text-[#3f2e24]">
-        View Cart
-      </span>
-    </motion.button>
-  )}
-</AnimatePresence>
+      {/* ── FLOATING CART BAR ──────────────────────────────── */}
+      <AnimatePresence>
+        {cartCount > 0 && !cartOpen && (
+          <motion.button
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ type: "spring", damping: 22, stiffness: 240 }}
+            onClick={() => setCartOpen(true)}
+            className="fixed bottom-20 left-1/2 z-[150] flex w-[92%] max-w-md -translate-x-1/2 items-center justify-between rounded-full bg-[#3f2e24] px-5 py-3.5 text-white shadow-2xl"
+          >
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <ShoppingCart size={20} />
+                <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#d8b777] text-[10px] font-bold text-[#3f2e24]">
+                  {cartCount}
+                </span>
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-bold">
+                  {cartCount} item{cartCount > 1 ? "s" : ""}
+                </p>
+                <p className="text-xs text-[#f5dfc0]">₹{cartTotal}</p>
+              </div>
+            </div>
+            <span className="rounded-full bg-white px-4 py-2 text-xs font-bold text-[#3f2e24]">
+              View Cart
+            </span>
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       {/* ── WHATSAPP FAB (mobile) ───────────────────────────── */}
       <a
