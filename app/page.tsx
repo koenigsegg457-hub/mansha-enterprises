@@ -230,27 +230,34 @@ type ShippingZone = {
 
 const SHIPPING_ZONES: Record<string, ShippingZone> = {
   LOCAL: {
+    label: "Local Delivery",
     charge: 90,
     minDays: 2,
     maxDays: 2,
     color: "#4a7c59",
     bg: "#edf7f0",
   },
+
   NCR: {
+    label: "NCR Delivery",
     charge: 100,
     minDays: 2,
     maxDays: 3,
     color: "#3a7d6e",
     bg: "#eaf5f3",
   },
+
   NORTH_INDIA: {
+    label: "North India Delivery",
     charge: 200,
     minDays: 3,
     maxDays: 4,
     color: "#b8861b",
     bg: "#fef9e7",
   },
+
   REST_OF_INDIA: {
+    label: "Delivery",
     charge: 200,
     minDays: 4,
     maxDays: 5,
