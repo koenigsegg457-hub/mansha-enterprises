@@ -5,7 +5,7 @@ export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   try {
-    const { amount, currency = "INR" } = await req.json();
+    const { amount } = await req.json();
 
     if (!amount || Number(amount) <= 0) {
       return NextResponse.json(
@@ -26,11 +26,9 @@ export async function POST(req: NextRequest) {
       key_secret: process.env.RAZORPAY_KEY_SECRET,
     });
 
-    console.log("Received amount in rupees:", amount);
-
     const order = await razorpay.orders.create({
       amount: Math.round(Number(amount) * 100),
-      currency,
+      currency: "INR",
       receipt: `receipt_${Date.now()}`,
     });
 

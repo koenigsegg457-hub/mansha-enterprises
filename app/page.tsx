@@ -23,6 +23,7 @@ import {
   Truck,
   Clock,
   CheckCircle2,
+  MapPin,
 } from "lucide-react";
 
 type Category = "All" | "Soaps" | "Candles";
@@ -218,10 +219,117 @@ const products = [
 type Product = (typeof products)[number];
 type CartItem = Product & { quantity: number };
 
+type ShippingZone = {
+  label: string;
+  charge: number;
+  minDays: number;
+  maxDays: number;
+  color: string;
+  bg: string;
+};
+
+const SHIPPING_ZONES: Record<string, ShippingZone> = {
+  LOCAL: {
+    charge: 90,
+    minDays: 2,
+    maxDays: 2,
+    color: "#4a7c59",
+    bg: "#edf7f0",
+  },
+  NCR: {
+    charge: 100,
+    minDays: 2,
+    maxDays: 3,
+    color: "#3a7d6e",
+    bg: "#eaf5f3",
+  },
+  NORTH_INDIA: {
+    charge: 200,
+    minDays: 3,
+    maxDays: 4,
+    color: "#b8861b",
+    bg: "#fef9e7",
+  },
+  REST_OF_INDIA: {
+    charge: 200,
+    minDays: 4,
+    maxDays: 5,
+    color: "#8b5e3c",
+    bg: "#f7eadb",
+  },
+};
+
+// Local = Faridabad pincode family. Change this if your pickup city changes.
+const LOCAL_PREFIXES = ["121"];
+
+const NCR_PREFIXES = [
+  "110","111","112","113","114","115","116","117","118","119","120",
+  "122","123","124","125","126","127","128","129","130","131",
+  "201","202","203","204","205","206","207","208","209","210",
+];
+
+const NORTH_INDIA_PREFIXES = [
+  "200","211","212","213","214","215","216","217","218","219","220","221","222","223","224","225","226","227","228","229","230","231","232","233","234","235","236","237","238","239","240","241","242","243","244","245","246","247","248","249","250","251","252","253","254","255","256","257","258","259","260","261","262","263","264","265","266","267","268","269","270","271","272","273","274","275","276","277","278","279","280","281","282","283","284","285",
+  "132","133","134","135","136","137","138","139","140","141","142","143","144","145","146","147","148","149","150","151","152","153","154","155","156","157","158","159","160","161","162","163","164","165","166","167","168",
+  "301","302","303","304","305","306","307","308","309","310","311","312","313","314","315","316","317","318","319","320","321","322","323","324","325","326","327","328","329","330","331","332","333","334","335","336","337","338","339","340","341","342","343","344","345","346","347","348","349","350","351","352","353","354","355","356","357","358","359","360",
+  "170","171","172","173","174","175","176","177","178","179","180","181","182","183","184","185","186","187","188","189","190","191","192","193","194","195","196","197","198","199","246","247","248","249",
+];
+
+function getShippingZone(
+  pincode: string,
+  state: string,
+  city: string
+): ShippingZone {
+  const prefix3 = pincode.slice(0, 3);
+  const cityLower = city.toLowerCase();
+  const stateLower = state.toLowerCase();
+
+  // Local dispatch area: Faridabad
+  if (pincode.startsWith("121") || cityLower.includes("faridabad")) {
+    return SHIPPING_ZONES.LOCAL;
+  }
+
+  // NCR / Delhi region
+  if (
+    stateLower === "delhi" ||
+    cityLower.includes("gurugram") ||
+    cityLower.includes("gurgaon") ||
+    cityLower.includes("noida") ||
+    cityLower.includes("ghaziabad") ||
+    prefix3 === "110" ||
+    prefix3 === "122" ||
+    prefix3 === "201"
+  ) {
+    return SHIPPING_ZONES.NCR;
+  }
+
+  // North India
+  const northIndiaStates = [
+    "haryana",
+    "punjab",
+    "uttar pradesh",
+    "uttarakhand",
+    "himachal pradesh",
+    "rajasthan",
+    "chandigarh",
+    "jammu and kashmir",
+    "ladakh",
+    "delhi",
+  ];
+
+  if (northIndiaStates.includes(stateLower)) {
+    return SHIPPING_ZONES.NORTH_INDIA;
+  }
+
+  // All other Indian locations
+  return SHIPPING_ZONES.REST_OF_INDIA;
+}
+
 type ShippingInfo = {
-  shippingCharge: number;
-  courierName: string;
-  estimatedDays: number | null;
+  zone: ShippingZone;
+  pincode: string;
+  city: string;
+  state: string;
 };
 
 const CATEGORY_TABS: { label: string; value: Category | "All"; icon?: React.ElementType }[] = [
@@ -304,7 +412,7 @@ const stagger = {
   },
 };
 
-export default function ManshaEnterprisesWebsite() {
+export default function GlowraNaturalsWebsite() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -315,10 +423,9 @@ export default function ManshaEnterprisesWebsite() {
   const [cartBounce, setCartBounce] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const [shippingLoading, setShippingLoading] = useState(false);
   const [shippingInfo, setShippingInfo] = useState<ShippingInfo | null>(null);
   const [shippingError, setShippingError] = useState<string>("");
-  const [pincodeLoading, setPincodeLoading] = useState(false);
+
 
   const [customer, setCustomer] = useState({
     name: "",
@@ -330,7 +437,6 @@ export default function ManshaEnterprisesWebsite() {
     pincode: "",
   });
 
-  // Load Razorpay script
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -385,7 +491,6 @@ export default function ManshaEnterprisesWebsite() {
         item.name === name ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
-    // Reset shipping when cart changes
     setShippingInfo(null);
     setShippingError("");
   };
@@ -412,7 +517,7 @@ export default function ManshaEnterprisesWebsite() {
     (total, item) => total + item.price * item.quantity,
     0
   );
-  const finalTotal = cartTotal + (shippingInfo?.shippingCharge ?? 0);
+  const finalTotal = cartTotal + (shippingInfo?.zone.charge ?? 0);
 
   const cartCount = cartItems.reduce(
     (total, item) => total + item.quantity,
@@ -433,90 +538,77 @@ export default function ManshaEnterprisesWebsite() {
           }`
       )
       .join("\n");
-    return `Hi, I want to place an order from Mansha Enterprises.\n\nOrder Details:\n${lines}\n\nTotal Amount: ₹${cartTotal} (+ shipping charges)\n\nPlease confirm availability and delivery details.`;
+    const shippingLine = shippingInfo
+      ? `\nShipping: ${shippingInfo.zone.label} - ₹${shippingInfo.zone.charge}\nEstimated Delivery: ${shippingInfo.zone.minDays}${
+          shippingInfo.zone.minDays !== shippingInfo.zone.maxDays
+            ? `-${shippingInfo.zone.maxDays}`
+            : ""
+        } working days\nFinal Amount: ₹${finalTotal}`
+      : "\nShipping will be confirmed after pincode check.";
+
+    return `Hi, I want to place an order from Glowra Natural's Homemade Soap.\n\nOrder Details:\n${lines}\n\nProducts Total: ₹${cartTotal}${shippingLine}\n\nPlease confirm availability and delivery details.`;
   };
 
-  // ── PINCODE LOOKUP ────────────────────────────────────────
+  // ── PINCODE LOOKUP + LOCAL SHIPPING ESTIMATION ──────────────
   const handlePincodeChange = async (pincode: string) => {
-    const clean = pincode.replace(/\D/g, "");
-    setCustomer((prev) => ({ ...prev, pincode: clean, city: "", state: "" }));
+    const clean = pincode.replace(/\D/g, "").slice(0, 6);
+
+    setCustomer((prev) => ({
+      ...prev,
+      pincode: clean,
+      city: "",
+      state: "",
+    }));
+
     setShippingInfo(null);
     setShippingError("");
 
-    if (clean.length === 6) {
-      setPincodeLoading(true);
-      try {
-        const res = await fetch(
-          `https://api.postalpincode.in/pincode/${clean}`
-        );
-        const data = await res.json();
-        if (data[0]?.Status === "Success") {
-          const po = data[0].PostOffice[0];
-          setCustomer((prev) => ({
-            ...prev,
-            city: po.District,
-            state: po.State,
-          }));
-        }
-      } catch {
-        // silently ignore — user can still type city/state
-      } finally {
-        setPincodeLoading(false);
-      }
-    }
-  };
-
-  // ── SHIPPING CALCULATION ──────────────────────────────────
-  const handleCalculateShipping = async () => {
-    if (!customer.name || !customer.phone || !customer.address || !customer.pincode) {
-      setShippingError("Please fill in Name, Phone, Address and Pincode first.");
+    if (clean.length !== 6) {
       return;
     }
-    if (customer.pincode.length !== 6) {
-      setShippingError("Please enter a valid 6-digit pincode.");
-      return;
-    }
-
-    setShippingLoading(true);
-    setShippingInfo(null);
-    setShippingError("");
 
     try {
-      // Weight: each item ~250g, minimum 500g
-      const weightKg = Math.max(0.5, cartCount * 0.25);
-
-      const res = await fetch("/api/shiprocket-rate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          deliveryPincode: customer.pincode,
-          weight: weightKg,
-        }),
-      });
-
+      const res = await fetch(`/api/pincode?code=${clean}`);
       const data = await res.json();
 
-      if (!res.ok) {
-        setShippingError(data.error ?? "Could not calculate shipping.");
-        return;
-      }
+      if (data.success) {
+  const city = data.city;
+  const state = data.state;
+        const zone = getShippingZone(clean, state, city);
 
-      setShippingInfo({
-        shippingCharge: data.shippingCharge,
-        courierName: data.courierName,
-        estimatedDays: data.estimatedDays ?? null,
-      });
-    } catch {
-      setShippingError(
-        "Could not calculate shipping. Please try again or order via WhatsApp."
-      );
-    } finally {
-      setShippingLoading(false);
+        setCustomer((prev) => ({
+          ...prev,
+          city,
+          state,
+        }));
+
+        setShippingInfo({
+          zone,
+          pincode: clean,
+          city,
+          state,
+        });
+      } else {
+        setShippingError("Invalid pincode. Please enter a correct Indian pincode.");
+      }
+    } catch (error) {
+      console.error("Pincode lookup failed:", error);
+      setShippingError("Could not detect this pincode. Please check your internet and try again.");
     }
   };
 
   // ── RAZORPAY HANDLER ─────────────────────────────────────
   const handleRazorpayPayment = async () => {
+    if (!shippingInfo) {
+      alert("Please enter a valid 6-digit pincode before payment.");
+      return;
+    }
+
+    if (!customer.name || !customer.phone || !customer.address) {
+      alert("Please fill your name, phone number, and delivery address.");
+      return;
+    }
+
     if (!(window as any).Razorpay) {
       alert("Payment gateway loading, please try again.");
       return;
@@ -536,7 +628,7 @@ export default function ManshaEnterprisesWebsite() {
         amount: order.amount,
         currency: order.currency,
         order_id: order.id,
-        name: "Mansha Enterprises",
+        name: "Glowra Natural's Homemade Soap",
         description: "Handmade Soaps & Candles",
         image: "/a_logo_for_mansha_enterprises_is_centered_within_a.png",
         handler: function (response: any) {
@@ -557,7 +649,12 @@ export default function ManshaEnterprisesWebsite() {
             `💳 Payment ID: ${response.razorpay_payment_id}\n\n` +
             `📦 Order:\n${orderSummary}\n\n` +
             `🧾 Products Total: ₹${cartTotal}\n` +
-            `🚚 Shipping (${shippingInfo?.courierName ?? ""}): ₹${shippingInfo?.shippingCharge ?? 0}\n` +
+            `🚚 Shipping (${shippingInfo?.zone.label ?? ""}): ₹${shippingInfo?.zone.charge ?? 0}\n` +
+            `⏱️ Estimated Delivery: ${shippingInfo?.zone.minDays ?? ""}${
+              shippingInfo?.zone.minDays !== shippingInfo?.zone.maxDays
+                ? `-${shippingInfo?.zone.maxDays}`
+                : ""
+            } working days\n` +
             `💰 Final Total: ₹${finalTotal}\n\n` +
             `Please confirm my order and delivery details.`;
 
@@ -631,15 +728,15 @@ export default function ManshaEnterprisesWebsite() {
           <a href="#" className="group flex items-center gap-3">
             <img
               src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
-              alt="Mansha Enterprises logo"
+              alt="Glowra Natural's Homemade Soap logo"
               className="h-11 w-11 rounded-full object-cover shadow-sm ring-2 ring-[#d8b777] transition group-hover:scale-105"
             />
             <div>
               <p className="text-lg font-bold leading-tight tracking-wide sm:text-xl">
-                Mansha Enterprises
+                Glowra Natural&apos;s
               </p>
               <p className="text-xs tracking-wide text-[#a08060]">
-                Handmade with love
+                Homemade Soap
               </p>
             </div>
           </a>
@@ -683,7 +780,7 @@ export default function ManshaEnterprisesWebsite() {
 
             <a
               href={createWhatsAppLink(
-                "Hi, I want to place an order from Mansha Enterprises."
+                "Hi, I want to place an order from Glowra Natural's Homemade Soap."
               )}
               target="_blank"
               rel="noopener noreferrer"
@@ -726,7 +823,7 @@ export default function ManshaEnterprisesWebsite() {
                 <div className="flex items-center gap-3">
                   <img
                     src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
-                    alt="Mansha Enterprises logo"
+                    alt="Glowra Natural's logo"
                     className="h-10 w-10 rounded-full ring-1 ring-[#d8b777]"
                   />
                   <p className="text-lg font-bold">Menu</p>
@@ -766,7 +863,7 @@ export default function ManshaEnterprisesWebsite() {
                 </button>
                 <a
                   href={createWhatsAppLink(
-                    "Hi, I want to place an order from Mansha Enterprises."
+                    "Hi, I want to place an order from Glowra Natural's Homemade Soap."
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -993,9 +1090,7 @@ export default function ManshaEnterprisesWebsite() {
                 variants={fadeUp}
                 className="mt-6 max-w-xl text-base leading-8 text-[#7a5d4a] sm:text-lg"
               >
-                Mansha Enterprises creates homemade soaps and handpoured candles
-                with care, comfort, and a personal touch. Perfect for daily use,
-                thoughtful gifting, and small celebrations.
+                Glowra Natural's Homemade Soap crafts handmade soaps and hand-poured candles with warmth, care, and a personal touch. Thoughtfully made for everyday self-care, meaningful gifts, and the little moments worth celebrating.
               </motion.p>
 
               <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-4">
@@ -1397,7 +1492,7 @@ export default function ManshaEnterprisesWebsite() {
             >
               <img
                 src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
-                alt="Mansha Enterprises brand logo"
+                alt="Glowra Natural's brand logo"
                 className="mx-auto max-h-72 object-contain drop-shadow-lg"
               />
             </motion.div>
@@ -1426,18 +1521,18 @@ export default function ManshaEnterprisesWebsite() {
                 className="mt-6 space-y-5 leading-8 text-[#7a5d4a]"
               >
                 <p>
-                  Mansha Enterprises is a small handmade skincare and
-                  home-crafted brand built with care, simplicity, and
-                  creativity. What started from making products for family and
-                  close circles slowly grew into creating thoughtful handmade
-                  soaps, scented candles, and self-care products for people who
-                  value natural ingredients and a personal touch.
+                  Glowra Natural&apos;s Homemade Soap is a small handmade
+                  skincare and home-crafted brand built with care, simplicity,
+                  and creativity. What started from making products for family
+                  and close circles slowly grew into creating thoughtful
+                  handmade soaps, scented candles, and self-care products for
+                  people who value natural ingredients and a personal touch.
                 </p>
                 <p>
                   Every product is prepared in small batches with attention to
                   quality, fragrance, texture, and presentation. We believe
-                  handmade products feel more personal, more meaningful, and more
-                  comforting than mass-produced alternatives.
+                  handmade products feel more personal, more meaningful, and
+                  more comforting than mass-produced alternatives.
                 </p>
               </motion.div>
 
@@ -1545,7 +1640,7 @@ export default function ManshaEnterprisesWebsite() {
               </p>
               <a
                 href={createWhatsAppLink(
-                  "Hi, I want to place an order from Mansha Enterprises."
+                  "Hi, I want to place an order from Glowra Natural's Homemade Soap."
                 )}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -1565,10 +1660,10 @@ export default function ManshaEnterprisesWebsite() {
           <div className="flex items-center gap-3">
             <img
               src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
-              alt="Mansha Enterprises logo"
+              alt="Glowra Natural's logo"
               className="h-7 w-7 rounded-full ring-1 ring-[#d8b777]"
             />
-            <p>© 2026 Mansha Enterprises · Handmade soaps &amp; candles.</p>
+            <p>© 2026 Glowra Natural&apos;s Homemade Soap · Handmade with love.</p>
           </div>
           <p>Elevated essentials for cozy homes.</p>
         </div>
@@ -1697,7 +1792,7 @@ export default function ManshaEnterprisesWebsite() {
 
                   <a
                     href={createWhatsAppLink(
-                      `Hi, I want to order ${selectedProduct.name} from Mansha Enterprises.`
+                      `Hi, I want to order ${selectedProduct.name} from Glowra Natural's Homemade Soap.`
                     )}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -1739,7 +1834,7 @@ export default function ManshaEnterprisesWebsite() {
                 <div>
                   <h2 className="text-xl font-bold">Checkout Details</h2>
                   <p className="mt-0.5 text-xs text-[#a08060]">
-                    Fill your details to calculate shipping & pay
+                    Enter your pincode to see shipping cost &amp; delivery days
                   </p>
                 </div>
                 <button
@@ -1760,11 +1855,9 @@ export default function ManshaEnterprisesWebsite() {
                     type="text"
                     placeholder="Full Name *"
                     value={customer.name}
-                    onChange={(e) => {
-                      setCustomer({ ...customer, name: e.target.value });
-                      setShippingInfo(null);
-                      setShippingError("");
-                    }}
+                    onChange={(e) =>
+                      setCustomer({ ...customer, name: e.target.value })
+                    }
                     className="rounded-2xl border border-[#e0cdb4] bg-[#fffaf3] px-4 py-3 text-sm outline-none focus:border-[#8b5e3c] focus:ring-1 focus:ring-[#e8d5b8]"
                   />
                   <input
@@ -1798,15 +1891,12 @@ export default function ManshaEnterprisesWebsite() {
                     placeholder="Full Address (House No, Street, Area) *"
                     value={customer.address}
                     rows={2}
-                    onChange={(e) => {
-                      setCustomer({ ...customer, address: e.target.value });
-                      setShippingInfo(null);
-                      setShippingError("");
-                    }}
+                    onChange={(e) =>
+                      setCustomer({ ...customer, address: e.target.value })
+                    }
                     className="rounded-2xl border border-[#e0cdb4] bg-[#fffaf3] px-4 py-3 text-sm outline-none focus:border-[#8b5e3c] focus:ring-1 focus:ring-[#e8d5b8]"
                   />
 
-                  {/* Pincode with inline loader */}
                   <div className="relative">
                     <input
                       type="text"
@@ -1816,12 +1906,8 @@ export default function ManshaEnterprisesWebsite() {
                       onChange={(e) => handlePincodeChange(e.target.value)}
                       className="w-full rounded-2xl border border-[#e0cdb4] bg-[#fffaf3] px-4 py-3 pr-10 text-sm outline-none focus:border-[#8b5e3c] focus:ring-1 focus:ring-[#e8d5b8]"
                     />
-                    {pincodeLoading && (
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#8b5e3c] border-t-transparent" />
-                      </div>
-                    )}
-                    {customer.city && !pincodeLoading && (
+                    
+                    {customer.city && (
                       <div className="absolute right-4 top-1/2 -translate-y-1/2">
                         <CheckCircle2 size={16} className="text-[#4a7c59]" />
                       </div>
@@ -1846,69 +1932,62 @@ export default function ManshaEnterprisesWebsite() {
                   </div>
 
                   {customer.city && (
-                    <p className="text-xs text-[#4a7c59]">
-                      ✓ Delivering to {customer.city}, {customer.state}
+                    <p className="flex items-center gap-1.5 text-xs text-[#4a7c59]">
+                      <MapPin size={11} />
+                      Delivering to {customer.city}, {customer.state}
                     </p>
                   )}
                 </div>
               </div>
 
-              {/* ── Step 3: Calculate Shipping ───────────────── */}
-              <button
-                onClick={handleCalculateShipping}
-                disabled={shippingLoading}
-                className="flex w-full items-center justify-center gap-2.5 rounded-full bg-[#8b5e3c] py-4 text-sm font-bold text-white shadow-md transition hover:bg-[#70472b] disabled:opacity-60"
-              >
-                {shippingLoading ? (
-                  <>
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                    Calculating Shipping…
-                  </>
-                ) : (
-                  <>
-                    <Truck size={16} />
-                    {shippingInfo ? "Recalculate Shipping" : "Calculate Shipping"}
-                  </>
-                )}
-              </button>
-
               {/* Error state */}
               {shippingError && (
-                <div className="mt-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+                <div className="mb-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
                   {shippingError}
                 </div>
               )}
 
-              {/* ── Step 4: Shipping Result + Pay ────────────── */}
+              {/* ── Shipping Result ── */}
               <AnimatePresence>
                 {shippingInfo && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    className="mt-4 rounded-2xl border border-[#eadfce] bg-white p-5 shadow-sm"
+                    className="mb-4 rounded-2xl border border-[#eadfce] bg-white p-5 shadow-sm"
                   >
-                    {/* Courier info */}
-                    <div className="mb-4 flex items-center gap-3 rounded-xl bg-[#edf7f0] px-4 py-3">
-                      <Truck size={16} className="text-[#4a7c59]" />
+                    <div
+                      className="mb-4 flex items-center gap-3 rounded-xl px-4 py-3"
+                      style={{ background: shippingInfo.zone.bg }}
+                    >
+                      <Truck size={16} style={{ color: shippingInfo.zone.color }} />
                       <div className="flex-1">
-                        <p className="text-sm font-bold text-[#3f2e24]">
-                          {shippingInfo.courierName}
+                        <p
+                          className="text-sm font-bold"
+                          style={{ color: shippingInfo.zone.color }}
+                        >
+                          {shippingInfo.zone.label}
                         </p>
-                        {shippingInfo.estimatedDays && (
-                          <p className="flex items-center gap-1 text-xs text-[#4a7c59]">
-                            <Clock size={11} />
-                            Estimated delivery in {shippingInfo.estimatedDays}{" "}
-                            day{shippingInfo.estimatedDays > 1 ? "s" : ""}
-                          </p>
-                        )}
+                        <p
+                          className="flex items-center gap-1 text-xs"
+                          style={{ color: shippingInfo.zone.color, opacity: 0.85 }}
+                        >
+                          <Clock size={11} />
+                          Delivered in {shippingInfo.zone.minDays}
+                          {shippingInfo.zone.minDays !== shippingInfo.zone.maxDays
+                            ? `–${shippingInfo.zone.maxDays}`
+                            : ""}{" "}
+                          working day{shippingInfo.zone.maxDays > 1 ? "s" : ""}
+                        </p>
                       </div>
-                      <span className="text-sm font-bold text-[#4a7c59]">
-                        ₹{shippingInfo.shippingCharge}
+                      <span
+                        className="text-base font-bold"
+                        style={{ color: shippingInfo.zone.color }}
+                      >
+                        ₹{shippingInfo.zone.charge}
                       </span>
                     </div>
 
-                    {/* Breakup */}
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between text-[#6f5a49]">
                         <span>
@@ -1917,10 +1996,8 @@ export default function ManshaEnterprisesWebsite() {
                         <span className="font-semibold">₹{cartTotal}</span>
                       </div>
                       <div className="flex justify-between text-[#6f5a49]">
-                        <span>Shipping</span>
-                        <span className="font-semibold">
-                          ₹{shippingInfo.shippingCharge}
-                        </span>
+                        <span>Shipping ({shippingInfo.zone.label})</span>
+                        <span className="font-semibold">₹{shippingInfo.zone.charge}</span>
                       </div>
                       <div className="border-t border-[#eadfce] pt-3">
                         <div className="flex justify-between text-lg font-bold text-[#3f2e24]">
@@ -1930,21 +2007,27 @@ export default function ManshaEnterprisesWebsite() {
                       </div>
                     </div>
 
-                    {/* Pay button */}
-                    <button
-                      onClick={() => {
-                        setCheckoutOpen(false);
-                        handleRazorpayPayment();
-                      }}
-                      className="mt-5 flex w-full items-center justify-center gap-2.5 rounded-full bg-[#3f2e24] py-4 text-base font-bold text-white shadow-lg transition hover:scale-[1.02] hover:bg-[#2e1f14] hover:shadow-xl active:scale-[0.98]"
-                    >
-                      <CreditCard size={17} />
-                      Pay ₹{finalTotal}
-                    </button>
-
-                    <p className="mt-3 text-center text-[10px] text-[#b09070]">
-                      🔒 Razorpay · UPI · Cards · Net Banking · Wallets
-                    </p>
+                    {customer.name && customer.phone && customer.address && shippingInfo ? (
+                      <>
+                        <button
+                          onClick={() => {
+                            setCheckoutOpen(false);
+                            handleRazorpayPayment();
+                          }}
+                          className="mt-5 flex w-full items-center justify-center gap-2.5 rounded-full bg-[#3f2e24] py-4 text-base font-bold text-white shadow-lg transition hover:scale-[1.02] hover:bg-[#2e1f14] hover:shadow-xl active:scale-[0.98]"
+                        >
+                          <CreditCard size={17} />
+                          Pay ₹{finalTotal}
+                        </button>
+                        <p className="mt-3 text-center text-[10px] text-[#b09070]">
+                          🔒 Razorpay · UPI · Cards · Net Banking · Wallets
+                        </p>
+                      </>
+                    ) : (
+                      <p className="mt-4 rounded-xl bg-[#fef9ec] px-4 py-3 text-center text-xs text-[#7a5d2e]">
+                        Please fill in your Name, Phone &amp; Address above to proceed to payment.
+                      </p>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -1988,7 +2071,7 @@ export default function ManshaEnterprisesWebsite() {
       {/* ── WHATSAPP FAB (mobile) ───────────────────────────── */}
       <a
         href={createWhatsAppLink(
-          "Hi, I want to place an order from Mansha Enterprises."
+          "Hi, I want to place an order from Glowra Natural's Homemade Soap."
         )}
         target="_blank"
         rel="noopener noreferrer"
