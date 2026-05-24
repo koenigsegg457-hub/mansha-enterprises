@@ -736,7 +736,7 @@ export default function GlowraNaturalsWebsite() {
             <img
               src="/logo.png"
               alt="Glowra Natural's Homemade Soap logo"
-              className="h-16 w-16 rounded-full object-cover scale-[1.7] bg-[#fffaf3] shadow-md ring-2 ring-[#d8b777]"
+              className="h-11 w-11 rounded-full object-cover shadow-sm ring-2 ring-[#d8b777] transition group-hover:scale-105"
             />
             <div>
               <p className="text-lg font-bold leading-tight tracking-wide sm:text-xl">
