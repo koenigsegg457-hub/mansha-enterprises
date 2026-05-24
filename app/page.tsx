@@ -637,7 +637,7 @@ export default function GlowraNaturalsWebsite() {
         order_id: order.id,
         name: "Glowra Natural's Homemade Soap",
         description: "Handmade Soaps & Candles",
-        image: "/a_logo_for_mansha_enterprises_is_centered_within_a.png",
+        image: "/logo.png",
         handler: function (response: any) {
           const orderSummary = cartItems
             .map(
@@ -734,9 +734,9 @@ export default function GlowraNaturalsWebsite() {
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
           <a href="#" className="group flex items-center gap-3">
             <img
-              src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
+              src="/logo.png"
               alt="Glowra Natural's Homemade Soap logo"
-              className="h-11 w-11 rounded-full object-cover shadow-sm ring-2 ring-[#d8b777] transition group-hover:scale-105"
+              className="h-16 w-16 rounded-full object-cover scale-[1.7] bg-[#fffaf3] shadow-md ring-2 ring-[#d8b777]"
             />
             <div>
               <p className="text-lg font-bold leading-tight tracking-wide sm:text-xl">
@@ -829,7 +829,7 @@ export default function GlowraNaturalsWebsite() {
               <div className="mb-8 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <img
-                    src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
+                    src="/logo.png"
                     alt="Glowra Natural's logo"
                     className="h-10 w-10 rounded-full ring-1 ring-[#d8b777]"
                   />
@@ -1498,7 +1498,7 @@ export default function GlowraNaturalsWebsite() {
               className="overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#f7eadb] to-[#fdf4e8] p-10 shadow-xl ring-1 ring-[#eadfce]"
             >
               <img
-                src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
+                src="/logo.png"
                 alt="Glowra Natural's brand logo"
                 className="mx-auto max-h-72 object-contain drop-shadow-lg"
               />
@@ -1666,7 +1666,7 @@ export default function GlowraNaturalsWebsite() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-sm text-[#a08060] md:flex-row">
           <div className="flex items-center gap-3">
             <img
-              src="/a_logo_for_mansha_enterprises_is_centered_within_a.png"
+              src="/logo.png"
               alt="Glowra Natural's logo"
               className="h-7 w-7 rounded-full ring-1 ring-[#d8b777]"
             />
