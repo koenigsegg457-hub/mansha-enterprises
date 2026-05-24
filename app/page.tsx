@@ -546,7 +546,7 @@ export default function GlowraNaturalsWebsite() {
       )
       .join("\n");
     const shippingLine = shippingInfo
-      ? `\nShipping: ${shippingInfo.zone.label} - ₹${shippingInfo.zone.charge}\nEstimated Delivery: ${shippingInfo.zone.minDays}${
+      ? `\nShipping: ${shippingInfo.city} - ₹${shippingInfo.zone.charge}\nEstimated Delivery: ${shippingInfo.zone.minDays}${
           shippingInfo.zone.minDays !== shippingInfo.zone.maxDays
             ? `-${shippingInfo.zone.maxDays}`
             : ""
@@ -1973,7 +1973,7 @@ export default function GlowraNaturalsWebsite() {
                           className="text-sm font-bold"
                           style={{ color: shippingInfo.zone.color }}
                         >
-                          {shippingInfo.zone.label}
+                          {shippingInfo.city}
                         </p>
                         <p
                           className="flex items-center gap-1 text-xs"
@@ -2003,7 +2003,7 @@ export default function GlowraNaturalsWebsite() {
                         <span className="font-semibold">₹{cartTotal}</span>
                       </div>
                       <div className="flex justify-between text-[#6f5a49]">
-                        <span>Shipping ({shippingInfo.zone.label})</span>
+                        <span>Shipping ({shippingInfo.city})</span>
                         <span className="font-semibold">₹{shippingInfo.zone.charge}</span>
                       </div>
                       <div className="border-t border-[#eadfce] pt-3">
