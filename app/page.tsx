@@ -638,7 +638,14 @@ export default function GlowraNaturalsWebsite() {
         name: "Glowra Natural's Homemade Soap",
         description: "Handmade Soaps & Candles",
         image: "/logo.png",
-        handler: function (response: any) {
+        modal: {
+  ondismiss: function () {
+    alert("Payment window closed. If payment was deducted, please contact us with your UPI reference ID.");
+  },
+},
+        handler: async function (response: any) {
+          alert("Payment successful! Your order has been placed.");
+          
           const orderSummary = cartItems
             .map(
               (item, i) =>
