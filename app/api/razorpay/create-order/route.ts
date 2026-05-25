@@ -1,25 +1,40 @@
 import { NextResponse } from "next/server";
-import Razorpay from "razorpay";
-
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
-});
+import crypto from "crypto";
 
 export async function POST(req: Request) {
   try {
-    const { amount } = await req.json();
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+    } = await req.json();
 
-    const order = await razorpay.orders.create({
-      amount: amount * 100,
-      currency: "INR",
-      receipt: `receipt_${Date.now()}`,
-    });
+    // Guard: all three fields are required
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return NextResponse.json(
+        { success: false, error: "Missing required payment fields" },
+        { status: 400 }
+      );
+    }
 
-    return NextResponse.json(order);
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
+
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+      .update(body)
+      .digest("hex");
+
+    if (expectedSignature === razorpay_signature) {
+      return NextResponse.json({ success: true });
+    }
+
+    return NextResponse.json(
+      { success: false, error: "Invalid payment signature" },
+      { status: 400 }
+    );
   } catch (error) {
     return NextResponse.json(
-      { error: "Could not create Razorpay order" },
+      { success: false, error: "Payment verification failed" },
       { status: 500 }
     );
   }

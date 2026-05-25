@@ -24,6 +24,7 @@ import {
   Clock,
   CheckCircle2,
   MapPin,
+  AlertTriangle,
 } from "lucide-react";
 
 type Category = "All" | "Soaps" | "Candles";
@@ -237,7 +238,6 @@ const SHIPPING_ZONES: Record<string, ShippingZone> = {
     color: "#4a7c59",
     bg: "#edf7f0",
   },
-
   NCR: {
     label: "NCR Delivery",
     charge: 100,
@@ -246,7 +246,6 @@ const SHIPPING_ZONES: Record<string, ShippingZone> = {
     color: "#3a7d6e",
     bg: "#eaf5f3",
   },
-
   NORTH_INDIA: {
     label: "North India Delivery",
     charge: 200,
@@ -255,7 +254,6 @@ const SHIPPING_ZONES: Record<string, ShippingZone> = {
     color: "#b8861b",
     bg: "#fef9e7",
   },
-
   REST_OF_INDIA: {
     label: "Delivery",
     charge: 200,
@@ -266,37 +264,19 @@ const SHIPPING_ZONES: Record<string, ShippingZone> = {
   },
 };
 
-// Local = Faridabad pincode family. Change this if your pickup city changes.
-const LOCAL_PREFIXES = ["121"];
-
-const NCR_PREFIXES = [
-  "110","111","112","113","114","115","116","117","118","119","120",
-  "122","123","124","125","126","127","128","129","130","131",
-  "201","202","203","204","205","206","207","208","209","210",
-];
-
-const NORTH_INDIA_PREFIXES = [
-  "200","211","212","213","214","215","216","217","218","219","220","221","222","223","224","225","226","227","228","229","230","231","232","233","234","235","236","237","238","239","240","241","242","243","244","245","246","247","248","249","250","251","252","253","254","255","256","257","258","259","260","261","262","263","264","265","266","267","268","269","270","271","272","273","274","275","276","277","278","279","280","281","282","283","284","285",
-  "132","133","134","135","136","137","138","139","140","141","142","143","144","145","146","147","148","149","150","151","152","153","154","155","156","157","158","159","160","161","162","163","164","165","166","167","168",
-  "301","302","303","304","305","306","307","308","309","310","311","312","313","314","315","316","317","318","319","320","321","322","323","324","325","326","327","328","329","330","331","332","333","334","335","336","337","338","339","340","341","342","343","344","345","346","347","348","349","350","351","352","353","354","355","356","357","358","359","360",
-  "170","171","172","173","174","175","176","177","178","179","180","181","182","183","184","185","186","187","188","189","190","191","192","193","194","195","196","197","198","199","246","247","248","249",
-];
-
 function getShippingZone(
   pincode: string,
   state: string,
   city: string
 ): ShippingZone {
-  const prefix3 = pincode.slice(0, 3);
   const cityLower = city.toLowerCase();
   const stateLower = state.toLowerCase();
 
-  // Local dispatch area: Faridabad
   if (pincode.startsWith("121") || cityLower.includes("faridabad")) {
     return SHIPPING_ZONES.LOCAL;
   }
 
-  // NCR / Delhi region
+  const prefix3 = pincode.slice(0, 3);
   if (
     stateLower === "delhi" ||
     cityLower.includes("gurugram") ||
@@ -310,25 +290,15 @@ function getShippingZone(
     return SHIPPING_ZONES.NCR;
   }
 
-  // North India
   const northIndiaStates = [
-    "haryana",
-    "punjab",
-    "uttar pradesh",
-    "uttarakhand",
-    "himachal pradesh",
-    "rajasthan",
-    "chandigarh",
-    "jammu and kashmir",
-    "ladakh",
-    "delhi",
+    "haryana", "punjab", "uttar pradesh", "uttarakhand",
+    "himachal pradesh", "rajasthan", "chandigarh",
+    "jammu and kashmir", "ladakh", "delhi",
   ];
-
   if (northIndiaStates.includes(stateLower)) {
     return SHIPPING_ZONES.NORTH_INDIA;
   }
 
-  // All other Indian locations
   return SHIPPING_ZONES.REST_OF_INDIA;
 }
 
@@ -339,7 +309,11 @@ type ShippingInfo = {
   state: string;
 };
 
-const CATEGORY_TABS: { label: string; value: Category | "All"; icon?: React.ElementType }[] = [
+const CATEGORY_TABS: {
+  label: string;
+  value: Category | "All";
+  icon?: React.ElementType;
+}[] = [
   { label: "All Products", value: "All" },
   { label: "Soaps", value: "Soaps", icon: Leaf },
   { label: "Candles", value: "Candles", icon: Flame },
@@ -404,19 +378,12 @@ const fadeUp = {
   show: {
     opacity: 1,
     y: 0,
-    transition: {
-      duration: 0.55,
-      ease: [0.22, 1, 0.36, 1] as const,
-    },
+    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const },
   },
 };
 
 const stagger = {
-  show: {
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
+  show: { transition: { staggerChildren: 0.1 } },
 };
 
 export default function GlowraNaturalsWebsite() {
@@ -433,7 +400,6 @@ export default function GlowraNaturalsWebsite() {
   const [shippingInfo, setShippingInfo] = useState<ShippingInfo | null>(null);
   const [shippingError, setShippingError] = useState<string>("");
 
-
   const [customer, setCustomer] = useState({
     name: "",
     phone: "",
@@ -444,15 +410,14 @@ export default function GlowraNaturalsWebsite() {
     pincode: "",
   });
 
+  // ── Load Razorpay script ──────────────────────────────
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
     document.body.appendChild(script);
     return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
+      if (document.body.contains(script)) document.body.removeChild(script);
     };
   }, []);
 
@@ -525,11 +490,7 @@ export default function GlowraNaturalsWebsite() {
     0
   );
   const finalTotal = cartTotal + (shippingInfo?.zone.charge ?? 0);
-
-  const cartCount = cartItems.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
+  const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   const getProductQuantity = (name: string) => {
     const item = cartItems.find((cartItem) => cartItem.name === name);
@@ -540,9 +501,7 @@ export default function GlowraNaturalsWebsite() {
     const lines = cartItems
       .map(
         (item, index) =>
-          `${index + 1}. ${item.name} - Qty: ${item.quantity} - ₹${
-            item.price * item.quantity
-          }`
+          `${index + 1}. ${item.name} - Qty: ${item.quantity} - ₹${item.price * item.quantity}`
       )
       .join("\n");
     const shippingLine = shippingInfo
@@ -556,79 +515,112 @@ export default function GlowraNaturalsWebsite() {
     return `Hi, I want to place an order from Glowra Natural's Homemade Soap.\n\nOrder Details:\n${lines}\n\nProducts Total: ₹${cartTotal}${shippingLine}\n\nPlease confirm availability and delivery details.`;
   };
 
-  // ── PINCODE LOOKUP + LOCAL SHIPPING ESTIMATION ──────────────
+  // ── Pincode lookup ────────────────────────────────────
   const handlePincodeChange = async (pincode: string) => {
     const clean = pincode.replace(/\D/g, "").slice(0, 6);
-
-    setCustomer((prev) => ({
-      ...prev,
-      pincode: clean,
-      city: "",
-      state: "",
-    }));
-
+    setCustomer((prev) => ({ ...prev, pincode: clean, city: "", state: "" }));
     setShippingInfo(null);
     setShippingError("");
 
-    if (clean.length !== 6) {
-      return;
-    }
+    if (clean.length !== 6) return;
 
     try {
       const res = await fetch(`/api/pincode?code=${clean}`);
       const data = await res.json();
-
       if (data.success) {
-  const city = data.city;
-  const state = data.state;
+        const { city, state } = data;
         const zone = getShippingZone(clean, state, city);
-
-        setCustomer((prev) => ({
-          ...prev,
-          city,
-          state,
-        }));
-
-        setShippingInfo({
-          zone,
-          pincode: clean,
-          city,
-          state,
-        });
+        setCustomer((prev) => ({ ...prev, city, state }));
+        setShippingInfo({ zone, pincode: clean, city, state });
       } else {
         setShippingError("Invalid pincode. Please enter a correct Indian pincode.");
       }
-    } catch (error) {
-      console.error("Pincode lookup failed:", error);
+    } catch {
       setShippingError("Could not detect this pincode. Please check your internet and try again.");
     }
   };
 
-  // ── RAZORPAY HANDLER ─────────────────────────────────────
+  // ── FIXED: Razorpay payment handler ──────────────────
   const handleRazorpayPayment = async () => {
     if (!shippingInfo) {
       alert("Please enter a valid 6-digit pincode before payment.");
       return;
     }
-
     if (!customer.name || !customer.phone || !customer.address) {
       alert("Please fill your name, phone number, and delivery address.");
       return;
     }
-
     if (!(window as any).Razorpay) {
-      alert("Payment gateway loading, please try again.");
+      alert("Payment gateway is loading. Please wait a moment and try again.");
       return;
     }
+
     try {
       const res = await fetch("/api/razorpay-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: finalTotal }),
       });
-
       if (!res.ok) throw new Error("Order creation failed");
       const order = await res.json();
+
+      // Snapshot cart state so callbacks always have fresh data
+      const cartSnapshot = [...cartItems];
+      const customerSnapshot = { ...customer };
+      const shippingSnapshot = { ...shippingInfo };
+      const cartTotalSnapshot = cartTotal;
+      const finalTotalSnapshot = finalTotal;
+
+      const buildWhatsAppMsg = (paymentId: string, status: "success" | "pending") => {
+        const orderSummary = cartSnapshot
+          .map((item, i) => `${i + 1}. ${item.name} x${item.quantity} - ₹${item.price * item.quantity}`)
+          .join("\n");
+
+        const deliveryRange = `${shippingSnapshot.zone.minDays}${
+          shippingSnapshot.zone.minDays !== shippingSnapshot.zone.maxDays
+            ? `–${shippingSnapshot.zone.maxDays}`
+            : ""
+        } working days`;
+
+        if (status === "success") {
+          return (
+            `Hi! I just paid online.\n\n` +
+            `👤 Customer Details:\n` +
+            `Name: ${customerSnapshot.name}\n` +
+            `Phone: ${customerSnapshot.phone}\n` +
+            `Email: ${customerSnapshot.email || "Not provided"}\n\n` +
+            `📍 Delivery Address:\n${customerSnapshot.address}\n` +
+            `${customerSnapshot.city}, ${customerSnapshot.state} - ${customerSnapshot.pincode}\n\n` +
+            `💳 Payment ID: ${paymentId}\n\n` +
+            `📦 Order:\n${orderSummary}\n\n` +
+            `🧾 Products Total: ₹${cartTotalSnapshot}\n` +
+            `🚚 Shipping (${shippingSnapshot.zone.label}): ₹${shippingSnapshot.zone.charge}\n` +
+            `⏱️ Estimated Delivery: ${deliveryRange}\n` +
+            `💰 Final Total: ₹${finalTotalSnapshot}\n\n` +
+            `Please confirm my order and delivery details.`
+          );
+        } else {
+          return (
+            `Hi! My UPI payment was debited but the order didn't confirm automatically.\n\n` +
+            `👤 Customer Details:\n` +
+            `Name: ${customerSnapshot.name}\n` +
+            `Phone: ${customerSnapshot.phone}\n\n` +
+            `💳 Payment/Reference ID: ${paymentId}\n\n` +
+            `📦 Order:\n${orderSummary}\n\n` +
+            `💰 Amount Paid: ₹${finalTotalSnapshot}\n\n` +
+            `Please verify and confirm my order.`
+          );
+        }
+      };
+
+      const resetOrder = () => {
+        setCartItems([]);
+        setCartOpen(false);
+        setCheckoutOpen(false);
+        setShippingInfo(null);
+        setShippingError("");
+        setCustomer({ name: "", phone: "", email: "", address: "", city: "", state: "", pincode: "" });
+      };
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -638,60 +630,84 @@ export default function GlowraNaturalsWebsite() {
         name: "Glowra Natural's Homemade Soap",
         description: "Handmade Soaps & Candles",
         image: "/logo.png",
+
         modal: {
-  ondismiss: function () {
-    alert("Payment window closed. If payment was deducted, please contact us with your UPI reference ID.");
-  },
-},
-        handler: async function (response: any) {
-          alert("Payment successful! Your order has been placed.");
-          
-          const orderSummary = cartItems
-            .map(
-              (item, i) =>
-                `${i + 1}. ${item.name} x${item.quantity} - ₹${item.price * item.quantity}`
-            )
-            .join("\n");
-          const msg =
-            `Hi! I just paid online.\n\n` +
-            `👤 Customer Details:\n` +
-            `Name: ${customer.name}\n` +
-            `Phone: ${customer.phone}\n` +
-            `Email: ${customer.email || "Not provided"}\n\n` +
-            `📍 Delivery Address:\n${customer.address}\n` +
-            `${customer.city}, ${customer.state} - ${customer.pincode}\n\n` +
-            `💳 Payment ID: ${response.razorpay_payment_id}\n\n` +
-            `📦 Order:\n${orderSummary}\n\n` +
-            `🧾 Products Total: ₹${cartTotal}\n` +
-            `🚚 Shipping (${shippingInfo?.zone.label ?? ""}): ₹${shippingInfo?.zone.charge ?? 0}\n` +
-            `⏱️ Estimated Delivery: ${shippingInfo?.zone.minDays ?? ""}${
-              shippingInfo?.zone.minDays !== shippingInfo?.zone.maxDays
-                ? `-${shippingInfo?.zone.maxDays}`
-                : ""
-            } working days\n` +
-            `💰 Final Total: ₹${finalTotal}\n\n` +
-            `Please confirm my order and delivery details.`;
-
-          alert(
-            "Payment successful! Redirecting to WhatsApp for order confirmation."
-          );
-          window.open(createWhatsAppLink(msg), "_blank");
-
-          setCartItems([]);
-          setCartOpen(false);
-          setCheckoutOpen(false);
-          setShippingInfo(null);
-          setShippingError("");
-          setCustomer({
-            name: "",
-            phone: "",
-            email: "",
-            address: "",
-            city: "",
-            state: "",
-            pincode: "",
-          });
+          // FIX 1: handleback prevents silent close on Android back button
+          handleback: true,
+          // FIX 2: escape:false prevents accidental backdrop dismissal mid-UPI flow
+          escape: false,
+          ondismiss: function () {
+            // This fires when user explicitly closes the modal.
+            // We warn them without assuming payment failed — it may still be processing.
+            const msg =
+              `Hi! I closed the Razorpay payment window — not sure if payment went through.\n\n` +
+              `👤 Name: ${customerSnapshot.name}\n` +
+              `📱 Phone: ${customerSnapshot.phone}\n` +
+              `💰 Amount: ₹${finalTotalSnapshot}\n\n` +
+              `Please check and let me know if the order was placed.`;
+            if (confirm(
+              "Payment window was closed.\n\n" +
+              "If money was debited from your account, it is safe — " +
+              "tap OK to message us on WhatsApp with your details so we can confirm your order manually."
+            )) {
+              window.open(createWhatsAppLink(msg), "_blank");
+            }
+          },
         },
+
+        // FIX 3: Success handler — verify signature server-side before confirming
+        handler: async function (response: any) {
+          try {
+            const verifyRes = await fetch("/api/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            });
+
+            const verifyData = await verifyRes.json();
+
+            if (!verifyRes.ok || !verifyData.success) {
+              // Signature mismatch — payment may still be real, redirect to WhatsApp
+              window.open(
+                createWhatsAppLink(buildWhatsAppMsg(response.razorpay_payment_id, "pending")),
+                "_blank"
+              );
+              alert(
+                "Payment verification failed on our end. " +
+                "We've opened WhatsApp — please send us your Payment ID so we can confirm manually."
+              );
+              return;
+            }
+
+            // Verified successfully
+            alert("Payment successful! Redirecting to WhatsApp for order confirmation.");
+            window.open(
+              createWhatsAppLink(buildWhatsAppMsg(response.razorpay_payment_id, "success")),
+              "_blank"
+            );
+            resetOrder();
+          } catch {
+            // Network error during verification — don't punish the user
+            window.open(
+              createWhatsAppLink(buildWhatsAppMsg(response.razorpay_payment_id, "pending")),
+              "_blank"
+            );
+            alert(
+              "Payment was received but we couldn't verify it automatically. " +
+              "We've opened WhatsApp — please share your Payment ID with us."
+            );
+            resetOrder();
+          }
+        },
+
+        // FIX 4: payment.failed event — catches UPI timeout / debited-but-unconfirmed
+        // This is the primary fix for your reported issue.
+        // When UPI polling times out, Razorpay fires this event instead of the handler.
+
         prefill: {
           name: customer.name,
           contact: customer.phone,
@@ -701,6 +717,52 @@ export default function GlowraNaturalsWebsite() {
       };
 
       const rzp = new (window as any).Razorpay(options);
+
+      // FIX 4 (cont): Must attach AFTER instantiation, not inside options
+      rzp.on("payment.failed", function (response: any) {
+        const paymentId =
+          response.error?.metadata?.payment_id ??
+          response.error?.reason ??
+          "N/A";
+        const orderId =
+          response.error?.metadata?.order_id ?? order.id ?? "N/A";
+        const reason = response.error?.description ?? "Unknown";
+        const code = response.error?.code ?? "";
+
+        // UPI timeout codes: BAD_REQUEST_ERROR + specific descriptions
+        const isUpiTimeout =
+          code === "BAD_REQUEST_ERROR" &&
+          (reason.toLowerCase().includes("timeout") ||
+            reason.toLowerCase().includes("pending") ||
+            reason.toLowerCase().includes("vpa") ||
+            reason.toLowerCase().includes("upi"));
+
+        if (isUpiTimeout) {
+          // Money may already be debited — show calm, helpful message
+          const msg =
+            `Hi! My UPI payment is showing as failed/timed out but money may have been debited.\n\n` +
+            `👤 Name: ${customerSnapshot.name}\n` +
+            `📱 Phone: ${customerSnapshot.phone}\n` +
+            `💳 Payment ID: ${paymentId}\n` +
+            `📋 Order ID: ${orderId}\n` +
+            `💰 Amount: ₹${finalTotalSnapshot}\n\n` +
+            `Please check and confirm if my order went through.`;
+          alert(
+            "Your UPI payment is pending or timed out.\n\n" +
+            "If money was debited from your bank account, it is safe and will be refunded within 5-7 days " +
+            "if the order doesn't go through.\n\n" +
+            "Tap OK to message us on WhatsApp with your payment details."
+          );
+          window.open(createWhatsAppLink(msg), "_blank");
+        } else {
+          // Genuine failure (wrong UPI ID, rejected, etc.)
+          alert(
+            `Payment failed: ${reason}\n\n` +
+            "Please try again or use the 'Order on WhatsApp' option below."
+          );
+        }
+      });
+
       rzp.open();
     } catch (err) {
       console.error(err);
@@ -732,9 +794,7 @@ export default function GlowraNaturalsWebsite() {
             : "rgba(255,250,243,0.75)",
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
-          borderBottom: scrolled
-            ? "1px solid #eadfce"
-            : "1px solid transparent",
+          borderBottom: scrolled ? "1px solid #eadfce" : "1px solid transparent",
           boxShadow: scrolled ? "0 2px 24px rgba(63,46,36,0.07)" : "none",
         }}
       >
@@ -749,9 +809,7 @@ export default function GlowraNaturalsWebsite() {
               <p className="text-lg font-bold leading-tight tracking-wide sm:text-xl">
                 Glowra Natural&apos;s
               </p>
-              <p className="text-xs tracking-wide text-[#a08060]">
-                Homemade Soap
-              </p>
+              <p className="text-xs tracking-wide text-[#a08060]">Homemade Soap</p>
             </div>
           </a>
 
@@ -935,9 +993,7 @@ export default function GlowraNaturalsWebsite() {
                     <div className="mb-4 rounded-full bg-[#f7eadb] p-6">
                       <ShoppingBag size={36} className="text-[#c4a47e]" />
                     </div>
-                    <p className="text-lg font-semibold text-[#5a4030]">
-                      Your cart is empty
-                    </p>
+                    <p className="text-lg font-semibold text-[#5a4030]">Your cart is empty</p>
                     <p className="mt-2 text-sm text-[#a08060]">
                       Add your favourite handmade products to get started.
                     </p>
@@ -965,12 +1021,8 @@ export default function GlowraNaturalsWebsite() {
                           className="h-16 w-16 flex-shrink-0 rounded-xl bg-[#fffaf3] object-contain p-1"
                         />
                         <div className="min-w-0 flex-1">
-                          <p className="truncate font-bold text-[#3f2e24]">
-                            {item.name}
-                          </p>
-                          <p className="text-xs text-[#a08060]">
-                            ₹{item.price} each
-                          </p>
+                          <p className="truncate font-bold text-[#3f2e24]">{item.name}</p>
+                          <p className="text-xs text-[#a08060]">₹{item.price} each</p>
                           <p className="mt-0.5 text-sm font-semibold text-[#8b5e3c]">
                             ₹{item.price * item.quantity}
                           </p>
@@ -1009,7 +1061,6 @@ export default function GlowraNaturalsWebsite() {
                 )}
               </div>
 
-              {/* ── CART FOOTER ──────────────────────────────── */}
               {cartItems.length > 0 && (
                 <div className="border-t border-[#eadfce] bg-white px-6 py-5">
                   <div className="mb-4 flex items-start gap-2.5 rounded-2xl border border-[#f0dfc0] bg-[#fef9ec] px-4 py-3">
@@ -1026,9 +1077,7 @@ export default function GlowraNaturalsWebsite() {
                       </span>
                       <p className="text-[10px] text-[#a08060]">Excl. shipping</p>
                     </div>
-                    <span className="text-2xl font-bold text-[#3f2e24]">
-                      ₹{cartTotal}
-                    </span>
+                    <span className="text-2xl font-bold text-[#3f2e24]">₹{cartTotal}</span>
                   </div>
 
                   <button
@@ -1075,12 +1124,7 @@ export default function GlowraNaturalsWebsite() {
           </div>
 
           <div className="relative mx-auto grid max-w-7xl items-center gap-10 md:min-h-[calc(100dvh-100px)] md:grid-cols-2">
-            <motion.div
-              variants={stagger}
-              initial="hidden"
-              animate="show"
-              className="flex flex-col"
-            >
+            <motion.div variants={stagger} initial="hidden" animate="show" className="flex flex-col">
               <motion.div
                 variants={fadeUp}
                 className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-[#e8d5b8] bg-white/80 px-4 py-2 text-sm text-[#8b6840] shadow-sm backdrop-blur-sm"
@@ -1094,16 +1138,11 @@ export default function GlowraNaturalsWebsite() {
                 className="max-w-3xl text-[2.15rem] font-bold leading-[1.08] tracking-tight sm:text-5xl md:text-6xl lg:text-[4.2rem]"
               >
                 Handmade soaps &amp; candles crafted with{" "}
-                <span className="italic text-[#8b5e3c]">
-                  natural ingredients
-                </span>{" "}
+                <span className="italic text-[#8b5e3c]">natural ingredients</span>{" "}
                 and everyday care.
               </motion.h1>
 
-              <motion.p
-                variants={fadeUp}
-                className="mt-6 max-w-xl text-base leading-8 text-[#7a5d4a] sm:text-lg"
-              >
+              <motion.p variants={fadeUp} className="mt-6 max-w-xl text-base leading-8 text-[#7a5d4a] sm:text-lg">
                 Glowra Natural's Homemade Soap crafts handmade soaps and hand-poured candles with warmth, care, and a personal touch. Thoughtfully made for everyday self-care, meaningful gifts, and the little moments worth celebrating.
               </motion.p>
 
@@ -1123,10 +1162,7 @@ export default function GlowraNaturalsWebsite() {
                 </a>
               </motion.div>
 
-              <motion.div
-                variants={fadeUp}
-                className="mt-10 flex items-center gap-5"
-              >
+              <motion.div variants={fadeUp} className="mt-10 flex items-center gap-5">
                 <div className="flex -space-x-2">
                   {["#f7eadb", "#edf7f0", "#fef9e7"].map((color, index) => (
                     <div
@@ -1139,9 +1175,7 @@ export default function GlowraNaturalsWebsite() {
                   ))}
                 </div>
                 <div className="text-sm text-[#7a5d4a]">
-                  <span className="font-bold text-[#8b5e3c]">
-                    Happy Customers
-                  </span>{" "}
+                  <span className="font-bold text-[#8b5e3c]">Happy Customers</span>{" "}
                   loved our handmade products
                 </div>
               </motion.div>
@@ -1154,14 +1188,8 @@ export default function GlowraNaturalsWebsite() {
               className="relative flex justify-center"
             >
               <div className="relative mx-auto h-[300px] w-[300px] max-w-full sm:h-[380px] sm:w-[380px] lg:h-[480px] lg:w-[480px]">
-                <div
-                  className="absolute inset-0 rounded-full border-2 border-dashed border-[#e8d5b8] opacity-60"
-                  style={{ transform: "scale(1.08)" }}
-                />
-                <div
-                  className="absolute inset-0 rounded-full border border-[#f5e8d0] opacity-40"
-                  style={{ transform: "scale(1.18)" }}
-                />
+                <div className="absolute inset-0 rounded-full border-2 border-dashed border-[#e8d5b8] opacity-60" style={{ transform: "scale(1.08)" }} />
+                <div className="absolute inset-0 rounded-full border border-[#f5e8d0] opacity-40" style={{ transform: "scale(1.18)" }} />
                 <div className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#fffaf3] via-[#f9edd8] to-[#f4e0c4] shadow-2xl ring-1 ring-[#eadfce]">
                   <img
                     src="/front photo.png"
@@ -1219,16 +1247,10 @@ export default function GlowraNaturalsWebsite() {
               viewport={{ once: true, margin: "-80px" }}
               className="mb-12 text-center"
             >
-              <motion.p
-                variants={fadeUp}
-                className="text-xs font-bold uppercase tracking-[0.3em] text-[#8b5e3c]"
-              >
+              <motion.p variants={fadeUp} className="text-xs font-bold uppercase tracking-[0.3em] text-[#8b5e3c]">
                 What We Offer
               </motion.p>
-              <motion.h2
-                variants={fadeUp}
-                className="mt-3 text-3xl font-bold sm:text-4xl"
-              >
+              <motion.h2 variants={fadeUp} className="mt-3 text-3xl font-bold sm:text-4xl">
                 Handmade care with a personal touch
               </motion.h2>
             </motion.div>
@@ -1265,30 +1287,17 @@ export default function GlowraNaturalsWebsite() {
         <section
           id="products"
           className="relative px-5 py-20"
-          style={{
-            background: "linear-gradient(180deg, #f7eadb 0%, #fdf4e8 100%)",
-          }}
+          style={{ background: "linear-gradient(180deg, #f7eadb 0%, #fdf4e8 100%)" }}
         >
           <div className="mx-auto max-w-7xl">
             <div className="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-              >
-                <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#8b5e3c]">
-                  Products
-                </p>
-                <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-                  Our handmade collection
-                </h2>
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+                <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#8b5e3c]">Products</p>
+                <h2 className="mt-3 text-3xl font-bold sm:text-4xl">Our handmade collection</h2>
               </motion.div>
 
               <div className="relative w-full max-w-sm">
-                <Search
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-[#b09070]"
-                  size={16}
-                />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#b09070]" size={16} />
                 <input
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
@@ -1307,13 +1316,8 @@ export default function GlowraNaturalsWebsite() {
               {CATEGORY_TABS.map((tab) => {
                 const Icon = tab.icon;
                 const count =
-                  tab.value === "All"
-                    ? products.length
-                    : tab.value === "Soaps"
-                    ? soapCount
-                    : candleCount;
+                  tab.value === "All" ? products.length : tab.value === "Soaps" ? soapCount : candleCount;
                 const isActive = activeCategory === tab.value;
-
                 return (
                   <button
                     key={tab.value}
@@ -1321,34 +1325,15 @@ export default function GlowraNaturalsWebsite() {
                     className="flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold shadow-sm transition-all duration-200"
                     style={
                       isActive
-                        ? {
-                            background: "#8b5e3c",
-                            borderColor: "#8b5e3c",
-                            color: "#fff",
-                            boxShadow: "0 4px 16px rgba(139,94,60,0.25)",
-                            transform: "scale(1.04)",
-                          }
-                        : {
-                            background: "#fff",
-                            borderColor: "#e0cdb4",
-                            color: "#5a4030",
-                          }
+                        ? { background: "#8b5e3c", borderColor: "#8b5e3c", color: "#fff", boxShadow: "0 4px 16px rgba(139,94,60,0.25)", transform: "scale(1.04)" }
+                        : { background: "#fff", borderColor: "#e0cdb4", color: "#5a4030" }
                     }
                   >
-                    {Icon && (
-                      <Icon
-                        size={14}
-                        style={{ color: isActive ? "#fff" : "#8b5e3c" }}
-                      />
-                    )}
+                    {Icon && <Icon size={14} style={{ color: isActive ? "#fff" : "#8b5e3c" }} />}
                     {tab.label}
                     <span
                       className="rounded-full px-2 py-0.5 text-[11px] font-bold"
-                      style={
-                        isActive
-                          ? { background: "rgba(255,255,255,0.25)", color: "#fff" }
-                          : { background: "#f7eadb", color: "#8b5e3c" }
-                      }
+                      style={isActive ? { background: "rgba(255,255,255,0.25)", color: "#fff" } : { background: "#f7eadb", color: "#8b5e3c" }}
                     >
                       {count}
                     </span>
@@ -1371,11 +1356,7 @@ export default function GlowraNaturalsWebsite() {
                     key={product.name}
                     initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.5,
-                      delay: index * 0.07,
-                      ease: [0.22, 1, 0.36, 1] as const,
-                    }}
+                    transition={{ duration: 0.5, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] as const }}
                   >
                     <div className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-[#f0e4d0] bg-white shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
                       <button
@@ -1391,26 +1372,14 @@ export default function GlowraNaturalsWebsite() {
                         />
                         <div
                           className="absolute left-4 top-4 flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
-                          style={{
-                            background: "rgba(255,255,255,0.85)",
-                            color: product.accent,
-                            border: `1px solid ${product.accent}33`,
-                          }}
+                          style={{ background: "rgba(255,255,255,0.85)", color: product.accent, border: `1px solid ${product.accent}33` }}
                         >
-                          {product.category === "Soaps" ? (
-                            <Leaf size={10} />
-                          ) : (
-                            <Flame size={10} />
-                          )}
+                          {product.category === "Soaps" ? <Leaf size={10} /> : <Flame size={10} />}
                           {product.category}
                         </div>
                         <div
                           className="absolute right-4 top-4 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider"
-                          style={{
-                            background: product.bg,
-                            color: product.accent,
-                            border: `1px solid ${product.accent}22`,
-                          }}
+                          style={{ background: product.bg, color: product.accent, border: `1px solid ${product.accent}22` }}
                         >
                           {product.benefit}
                         </div>
@@ -1418,30 +1387,17 @@ export default function GlowraNaturalsWebsite() {
 
                       <div className="flex flex-1 flex-col p-6">
                         <h3 className="text-xl font-bold">{product.name}</h3>
-                        <p className="mt-2 flex-1 text-sm leading-7 text-[#7a5d4a]">
-                          {product.description}
-                        </p>
+                        <p className="mt-2 flex-1 text-sm leading-7 text-[#7a5d4a]">{product.description}</p>
 
-                        <div
-                          className="mt-4 rounded-2xl p-4"
-                          style={{ background: product.bg }}
-                        >
-                          <p
-                            className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em]"
-                            style={{ color: product.accent }}
-                          >
+                        <div className="mt-4 rounded-2xl p-4" style={{ background: product.bg }}>
+                          <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: product.accent }}>
                             Ingredients
                           </p>
-                          <p className="text-sm leading-6 text-[#6f5a49]">
-                            {product.ingredients}
-                          </p>
+                          <p className="text-sm leading-6 text-[#6f5a49]">{product.ingredients}</p>
                         </div>
 
                         <div className="mt-5 flex items-center justify-between gap-3">
-                          <span
-                            className="text-lg font-bold"
-                            style={{ color: product.accent }}
-                          >
+                          <span className="text-lg font-bold" style={{ color: product.accent }}>
                             {product.priceLabel}
                           </span>
 
@@ -1511,42 +1467,20 @@ export default function GlowraNaturalsWebsite() {
               />
             </motion.div>
 
-            <motion.div
-              variants={stagger}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-            >
-              <motion.p
-                variants={fadeUp}
-                className="text-xs font-bold uppercase tracking-[0.3em] text-[#8b5e3c]"
-              >
+            <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}>
+              <motion.p variants={fadeUp} className="text-xs font-bold uppercase tracking-[0.3em] text-[#8b5e3c]">
                 Our Story
               </motion.p>
-              <motion.h2
-                variants={fadeUp}
-                className="mt-3 text-3xl font-bold sm:text-4xl"
-              >
+              <motion.h2 variants={fadeUp} className="mt-3 text-3xl font-bold sm:text-4xl">
                 Homemade and shared with care.
               </motion.h2>
 
-              <motion.div
-                variants={fadeUp}
-                className="mt-6 space-y-5 leading-8 text-[#7a5d4a]"
-              >
+              <motion.div variants={fadeUp} className="mt-6 space-y-5 leading-8 text-[#7a5d4a]">
                 <p>
-                  Glowra Natural&apos;s Homemade Soap is a small handmade
-                  skincare and home-crafted brand built with care, simplicity,
-                  and creativity. What started from making products for family
-                  and close circles slowly grew into creating thoughtful
-                  handmade soaps, scented candles, and self-care products for
-                  people who value natural ingredients and a personal touch.
+                  Glowra Natural&apos;s Homemade Soap is a small handmade skincare and home-crafted brand built with care, simplicity, and creativity. What started from making products for family and close circles slowly grew into creating thoughtful handmade soaps, scented candles, and self-care products for people who value natural ingredients and a personal touch.
                 </p>
                 <p>
-                  Every product is prepared in small batches with attention to
-                  quality, fragrance, texture, and presentation. We believe
-                  handmade products feel more personal, more meaningful, and
-                  more comforting than mass-produced alternatives.
+                  Every product is prepared in small batches with attention to quality, fragrance, texture, and presentation. We believe handmade products feel more personal, more meaningful, and more comforting than mass-produced alternatives.
                 </p>
               </motion.div>
 
@@ -1557,10 +1491,7 @@ export default function GlowraNaturalsWebsite() {
                   { label: "Natural Ingredients", sub: "No harsh chemicals, ever." },
                   { label: "Thoughtful Gifting", sub: "Made beautiful for every occasion." },
                 ].map((item) => (
-                  <div
-                    key={item.label}
-                    className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-[#f0e4d0] transition hover:shadow-md"
-                  >
+                  <div key={item.label} className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-[#f0e4d0] transition hover:shadow-md">
                     <p className="font-bold text-[#8b5e3c]">{item.label}</p>
                     <p className="mt-1.5 text-sm text-[#a08060]">{item.sub}</p>
                   </div>
@@ -1571,10 +1502,7 @@ export default function GlowraNaturalsWebsite() {
         </section>
 
         {/* ── TESTIMONIALS ───────────────────────────────────── */}
-        <section
-          className="px-5 py-20"
-          style={{ background: "linear-gradient(180deg, #fff 0%, #fffaf3 100%)" }}
-        >
+        <section className="px-5 py-20" style={{ background: "linear-gradient(180deg, #fff 0%, #fffaf3 100%)" }}>
           <div className="mx-auto max-w-7xl">
             <motion.div
               variants={stagger}
@@ -1583,16 +1511,10 @@ export default function GlowraNaturalsWebsite() {
               viewport={{ once: true }}
               className="mb-12 text-center"
             >
-              <motion.p
-                variants={fadeUp}
-                className="text-xs font-bold uppercase tracking-[0.3em] text-[#8b5e3c]"
-              >
+              <motion.p variants={fadeUp} className="text-xs font-bold uppercase tracking-[0.3em] text-[#8b5e3c]">
                 Customer Love
               </motion.p>
-              <motion.h2
-                variants={fadeUp}
-                className="mt-3 text-3xl font-bold sm:text-4xl"
-              >
+              <motion.h2 variants={fadeUp} className="mt-3 text-3xl font-bold sm:text-4xl">
                 Simple things, made beautifully
               </motion.h2>
             </motion.div>
@@ -1608,19 +1530,15 @@ export default function GlowraNaturalsWebsite() {
                 <motion.div
                   key={testimonial.name}
                   variants={fadeUp}
-                  className="rounded-3xl bg-white p-7 shadow-sm ring-1 ring-[#f0e4d0] transition hover:-translate-y-1 hover:shadow-lg"
+                  className="rounded-3xl bg-white p-7 shadow-sm ring-1 ring-[#f0e4d0] transition hover:-translate-y-1 hover:hover:shadow-lg"
                 >
                   <div className="mb-4 flex gap-1 text-[#d4a843]">
                     {Array.from({ length: testimonial.stars }).map((_, i) => (
                       <Star key={i} size={15} fill="currentColor" />
                     ))}
                   </div>
-                  <p className="italic leading-7 text-[#7a5d4a]">
-                    &quot;{testimonial.text}&quot;
-                  </p>
-                  <p className="mt-4 text-sm font-bold text-[#8b5e3c]">
-                    — {testimonial.name}
-                  </p>
+                  <p className="italic leading-7 text-[#7a5d4a]">&quot;{testimonial.text}&quot;</p>
+                  <p className="mt-4 text-sm font-bold text-[#8b5e3c]">— {testimonial.name}</p>
                 </motion.div>
               ))}
             </motion.div>
@@ -1636,26 +1554,18 @@ export default function GlowraNaturalsWebsite() {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
               className="relative overflow-hidden rounded-[2.5rem] p-10 text-center text-white shadow-2xl md:p-16"
-              style={{
-                background:
-                  "linear-gradient(135deg, #6b3f22 0%, #8b5e3c 50%, #a87347 100%)",
-              }}
+              style={{ background: "linear-gradient(135deg, #6b3f22 0%, #8b5e3c 50%, #a87347 100%)" }}
             >
               <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/5" />
               <div className="pointer-events-none absolute -bottom-20 -left-12 h-72 w-72 rounded-full bg-white/5" />
 
               <ShoppingBag className="mx-auto mb-5 opacity-80" size={40} />
-              <h2 className="text-3xl font-bold md:text-4xl">
-                Want to place an order?
-              </h2>
+              <h2 className="text-3xl font-bold md:text-4xl">Want to place an order?</h2>
               <p className="mx-auto mt-4 max-w-xl leading-8 text-[#f5dfc0]">
-                Message us directly on WhatsApp for orders, availability,
-                prices, and custom handmade product requests.
+                Message us directly on WhatsApp for orders, availability, prices, and custom handmade product requests.
               </p>
               <a
-                href={createWhatsAppLink(
-                  "Hi, I want to place an order from Glowra Natural's Homemade Soap."
-                )}
+                href={createWhatsAppLink("Hi, I want to place an order from Glowra Natural's Homemade Soap.")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-8 inline-flex items-center gap-2.5 rounded-full bg-white px-9 py-4 text-base font-bold text-[#8b5e3c] shadow-lg transition hover:scale-105 hover:shadow-xl"
@@ -1672,11 +1582,7 @@ export default function GlowraNaturalsWebsite() {
       <footer className="border-t border-[#eadfce] px-5 py-8">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-sm text-[#a08060] md:flex-row">
           <div className="flex items-center gap-3">
-            <img
-              src="/logo.png"
-              alt="Glowra Natural's logo"
-              className="h-7 w-7 rounded-full ring-1 ring-[#d8b777]"
-            />
+            <img src="/logo.png" alt="Glowra Natural's logo" className="h-7 w-7 rounded-full ring-1 ring-[#d8b777]" />
             <p>© 2026 Glowra Natural&apos;s Homemade Soap · Handmade with love.</p>
           </div>
           <p>Elevated essentials for cozy homes.</p>
@@ -1719,31 +1625,19 @@ export default function GlowraNaturalsWebsite() {
                       <div className="flex items-center gap-2">
                         <span
                           className="rounded-full px-3 py-1 text-xs font-bold"
-                          style={{
-                            background: selectedProduct.bg,
-                            color: selectedProduct.accent,
-                          }}
+                          style={{ background: selectedProduct.bg, color: selectedProduct.accent }}
                         >
                           {selectedProduct.benefit}
                         </span>
                         <span
                           className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
-                          style={{
-                            background: "rgba(139,94,60,0.08)",
-                            color: "#8b5e3c",
-                          }}
+                          style={{ background: "rgba(139,94,60,0.08)", color: "#8b5e3c" }}
                         >
-                          {selectedProduct.category === "Soaps" ? (
-                            <Leaf size={9} />
-                          ) : (
-                            <Flame size={9} />
-                          )}
+                          {selectedProduct.category === "Soaps" ? <Leaf size={9} /> : <Flame size={9} />}
                           {selectedProduct.category}
                         </span>
                       </div>
-                      <h3 className="mt-2 text-2xl font-bold">
-                        {selectedProduct.name}
-                      </h3>
+                      <h3 className="mt-2 text-2xl font-bold">{selectedProduct.name}</h3>
                     </div>
                     <button
                       onClick={() => setSelectedProduct(null)}
@@ -1754,26 +1648,16 @@ export default function GlowraNaturalsWebsite() {
                     </button>
                   </div>
 
-                  <p className="leading-7 text-[#7a5d4a]">
-                    {selectedProduct.description}
-                  </p>
+                  <p className="leading-7 text-[#7a5d4a]">{selectedProduct.description}</p>
 
                   <div className="mt-4 rounded-2xl bg-white p-4">
-                    <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#8b5e3c]">
-                      Ingredients
-                    </p>
-                    <p className="text-sm leading-6 text-[#7a5d4a]">
-                      {selectedProduct.ingredients}
-                    </p>
+                    <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#8b5e3c]">Ingredients</p>
+                    <p className="text-sm leading-6 text-[#7a5d4a]">{selectedProduct.ingredients}</p>
                   </div>
 
                   <div className="mt-3 rounded-2xl bg-white p-4">
-                    <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#8b5e3c]">
-                      Best for
-                    </p>
-                    <p className="text-sm leading-6 text-[#7a5d4a]">
-                      {selectedProduct.bestFor}
-                    </p>
+                    <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#8b5e3c]">Best for</p>
+                    <p className="text-sm leading-6 text-[#7a5d4a]">{selectedProduct.bestFor}</p>
                   </div>
 
                   <div
@@ -1784,19 +1668,13 @@ export default function GlowraNaturalsWebsite() {
                       <span className="text-sm text-[#7a5d4a]">Price</span>
                       <p className="text-[10px] text-[#a08060]">Excl. shipping</p>
                     </div>
-                    <span
-                      className="text-xl font-bold"
-                      style={{ color: selectedProduct.accent }}
-                    >
+                    <span className="text-xl font-bold" style={{ color: selectedProduct.accent }}>
                       {selectedProduct.priceLabel}
                     </span>
                   </div>
 
                   <button
-                    onClick={() => {
-                      addToCart(selectedProduct);
-                      setSelectedProduct(null);
-                    }}
+                    onClick={() => { addToCart(selectedProduct); setSelectedProduct(null); }}
                     className="mt-4 flex w-full items-center justify-center gap-2 rounded-full py-4 text-base font-bold text-white shadow-md transition hover:scale-[1.02] hover:shadow-lg"
                     style={{ background: selectedProduct.accent }}
                   >
@@ -1805,16 +1683,11 @@ export default function GlowraNaturalsWebsite() {
                   </button>
 
                   <a
-                    href={createWhatsAppLink(
-                      `Hi, I want to order ${selectedProduct.name} from Glowra Natural's Homemade Soap.`
-                    )}
+                    href={createWhatsAppLink(`Hi, I want to order ${selectedProduct.name} from Glowra Natural's Homemade Soap.`)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border-2 py-3.5 text-sm font-bold transition hover:bg-[#f0fdf4]"
-                    style={{
-                      borderColor: selectedProduct.accent,
-                      color: selectedProduct.accent,
-                    }}
+                    style={{ borderColor: selectedProduct.accent, color: selectedProduct.accent }}
                   >
                     <MessageCircle size={15} />
                     Order on WhatsApp
@@ -1843,7 +1716,6 @@ export default function GlowraNaturalsWebsite() {
               className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-[2rem] bg-[#fffaf3] p-6 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header */}
               <div className="mb-5 flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-bold">Checkout Details</h2>
@@ -1851,63 +1723,48 @@ export default function GlowraNaturalsWebsite() {
                     Enter your pincode to see shipping cost &amp; delivery days
                   </p>
                 </div>
-                <button
-                  onClick={() => setCheckoutOpen(false)}
-                  className="rounded-full bg-white p-2 shadow-sm"
-                >
+                <button onClick={() => setCheckoutOpen(false)} className="rounded-full bg-white p-2 shadow-sm">
                   <X size={18} />
                 </button>
               </div>
 
-              {/* ── Step 1: Customer Details ─────────────────── */}
+              {/* Customer Details */}
               <div className="mb-4 rounded-2xl border border-[#eadfce] bg-white p-4">
-                <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#8b5e3c]">
-                  Your Details
-                </p>
+                <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#8b5e3c]">Your Details</p>
                 <div className="grid gap-3">
                   <input
                     type="text"
                     placeholder="Full Name *"
                     value={customer.name}
-                    onChange={(e) =>
-                      setCustomer({ ...customer, name: e.target.value })
-                    }
+                    onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
                     className="rounded-2xl border border-[#e0cdb4] bg-[#fffaf3] px-4 py-3 text-sm outline-none focus:border-[#8b5e3c] focus:ring-1 focus:ring-[#e8d5b8]"
                   />
                   <input
                     type="tel"
                     placeholder="Phone Number *"
                     value={customer.phone}
-                    onChange={(e) =>
-                      setCustomer({ ...customer, phone: e.target.value })
-                    }
+                    onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
                     className="rounded-2xl border border-[#e0cdb4] bg-[#fffaf3] px-4 py-3 text-sm outline-none focus:border-[#8b5e3c] focus:ring-1 focus:ring-[#e8d5b8]"
                   />
                   <input
                     type="email"
                     placeholder="Email Address (optional)"
                     value={customer.email}
-                    onChange={(e) =>
-                      setCustomer({ ...customer, email: e.target.value })
-                    }
+                    onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
                     className="rounded-2xl border border-[#e0cdb4] bg-[#fffaf3] px-4 py-3 text-sm outline-none focus:border-[#8b5e3c] focus:ring-1 focus:ring-[#e8d5b8]"
                   />
                 </div>
               </div>
 
-              {/* ── Step 2: Delivery Address ─────────────────── */}
+              {/* Delivery Address */}
               <div className="mb-4 rounded-2xl border border-[#eadfce] bg-white p-4">
-                <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#8b5e3c]">
-                  Delivery Address
-                </p>
+                <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#8b5e3c]">Delivery Address</p>
                 <div className="grid gap-3">
                   <textarea
                     placeholder="Full Address (House No, Street, Area) *"
                     value={customer.address}
                     rows={2}
-                    onChange={(e) =>
-                      setCustomer({ ...customer, address: e.target.value })
-                    }
+                    onChange={(e) => setCustomer({ ...customer, address: e.target.value })}
                     className="rounded-2xl border border-[#e0cdb4] bg-[#fffaf3] px-4 py-3 text-sm outline-none focus:border-[#8b5e3c] focus:ring-1 focus:ring-[#e8d5b8]"
                   />
 
@@ -1920,7 +1777,6 @@ export default function GlowraNaturalsWebsite() {
                       onChange={(e) => handlePincodeChange(e.target.value)}
                       className="w-full rounded-2xl border border-[#e0cdb4] bg-[#fffaf3] px-4 py-3 pr-10 text-sm outline-none focus:border-[#8b5e3c] focus:ring-1 focus:ring-[#e8d5b8]"
                     />
-                    
                     {customer.city && (
                       <div className="absolute right-4 top-1/2 -translate-y-1/2">
                         <CheckCircle2 size={16} className="text-[#4a7c59]" />
@@ -1954,14 +1810,13 @@ export default function GlowraNaturalsWebsite() {
                 </div>
               </div>
 
-              {/* Error state */}
               {shippingError && (
                 <div className="mb-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
                   {shippingError}
                 </div>
               )}
 
-              {/* ── Shipping Result ── */}
+              {/* Shipping Result + Payment */}
               <AnimatePresence>
                 {shippingInfo && (
                   <motion.div
@@ -1976,10 +1831,7 @@ export default function GlowraNaturalsWebsite() {
                     >
                       <Truck size={16} style={{ color: shippingInfo.zone.color }} />
                       <div className="flex-1">
-                        <p
-                          className="text-sm font-bold"
-                          style={{ color: shippingInfo.zone.color }}
-                        >
+                        <p className="text-sm font-bold" style={{ color: shippingInfo.zone.color }}>
                           {shippingInfo.city}
                         </p>
                         <p
@@ -1988,25 +1840,18 @@ export default function GlowraNaturalsWebsite() {
                         >
                           <Clock size={11} />
                           Delivered in {shippingInfo.zone.minDays}
-                          {shippingInfo.zone.minDays !== shippingInfo.zone.maxDays
-                            ? `–${shippingInfo.zone.maxDays}`
-                            : ""}{" "}
+                          {shippingInfo.zone.minDays !== shippingInfo.zone.maxDays ? `–${shippingInfo.zone.maxDays}` : ""}{" "}
                           working day{shippingInfo.zone.maxDays > 1 ? "s" : ""}
                         </p>
                       </div>
-                      <span
-                        className="text-base font-bold"
-                        style={{ color: shippingInfo.zone.color }}
-                      >
+                      <span className="text-base font-bold" style={{ color: shippingInfo.zone.color }}>
                         ₹{shippingInfo.zone.charge}
                       </span>
                     </div>
 
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between text-[#6f5a49]">
-                        <span>
-                          Products ({cartCount} item{cartCount > 1 ? "s" : ""})
-                        </span>
+                        <span>Products ({cartCount} item{cartCount > 1 ? "s" : ""})</span>
                         <span className="font-semibold">₹{cartTotal}</span>
                       </div>
                       <div className="flex justify-between text-[#6f5a49]">
@@ -2019,6 +1864,14 @@ export default function GlowraNaturalsWebsite() {
                           <span>₹{finalTotal}</span>
                         </div>
                       </div>
+                    </div>
+
+                    {/* ── UPI Warning Banner ── */}
+                    <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                      <AlertTriangle size={14} className="mt-0.5 flex-shrink-0 text-amber-600" />
+                      <p className="text-[11px] leading-5 text-amber-700">
+                        <span className="font-bold">UPI users:</span> After scanning the QR, do not close the payment window until you see a confirmation. If money is debited and the screen is stuck, your money is safe — we will confirm your order via WhatsApp.
+                      </p>
                     </div>
 
                     {customer.name && customer.phone && customer.address && shippingInfo ? (
@@ -2069,24 +1922,18 @@ export default function GlowraNaturalsWebsite() {
                 </span>
               </div>
               <div className="text-left">
-                <p className="text-sm font-bold">
-                  {cartCount} item{cartCount > 1 ? "s" : ""}
-                </p>
+                <p className="text-sm font-bold">{cartCount} item{cartCount > 1 ? "s" : ""}</p>
                 <p className="text-xs text-[#f5dfc0]">₹{cartTotal}</p>
               </div>
             </div>
-            <span className="rounded-full bg-white px-4 py-2 text-xs font-bold text-[#3f2e24]">
-              View Cart
-            </span>
+            <span className="rounded-full bg-white px-4 py-2 text-xs font-bold text-[#3f2e24]">View Cart</span>
           </motion.button>
         )}
       </AnimatePresence>
 
-      {/* ── WHATSAPP FAB (mobile) ───────────────────────────── */}
+      {/* ── WHATSAPP FAB ───────────────────────────────────── */}
       <a
-        href={createWhatsAppLink(
-          "Hi, I want to place an order from Glowra Natural's Homemade Soap."
-        )}
+        href={createWhatsAppLink("Hi, I want to place an order from Glowra Natural's Homemade Soap.")}
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-5 right-5 z-[100] flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-2xl transition hover:scale-110 md:hidden"
