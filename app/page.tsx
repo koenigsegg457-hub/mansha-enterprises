@@ -643,6 +643,30 @@ export default function GlowraNaturalsWebsite() {
         setCustomer({ name: "", phone: "", email: "", address: "", city: "", state: "", pincode: "" });
       };
 
+      const sendOrderEmail = async (paymentId: string, orderId?: string) => {
+        try {
+          const emailRes = await fetch("/api/send-order-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              customer: customerSnapshot,
+              cartItems: cartSnapshot,
+              cartTotal: cartTotalSnapshot,
+              shippingInfo: shippingSnapshot,
+              finalTotal: finalTotalSnapshot,
+              paymentId,
+              orderId: orderId || order.id,
+            }),
+          });
+
+          if (!emailRes.ok) {
+            console.error("Order email API failed");
+          }
+        } catch (emailError) {
+          console.error("Order email failed:", emailError);
+        }
+      };
+
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: order.amount,
@@ -658,85 +682,28 @@ export default function GlowraNaturalsWebsite() {
           // Prevents accidental backdrop dismissal mid-UPI flow
           escape: false,
           ondismiss: function () {
-            const msg =
-              `Hi! I closed the Razorpay payment window — not sure if payment went through.\n\n` +
-              `👤 Name: ${customerSnapshot.name}\n` +
-              `📱 Phone: ${customerSnapshot.phone}\n` +
-              `💰 Amount: ₹${finalTotalSnapshot}\n\n` +
-              `Please check and let me know if the order was placed.`;
-            if (confirm(
+            alert(
               "Payment window was closed.\n\n" +
-              "If money was debited from your account, it is safe — " +
-              "tap OK to message us on WhatsApp with your details so we can confirm your order manually."
-            )) {
-              // ondismiss is synchronous so window.open is safe here
-              window.open(createWhatsAppLink(msg), "_blank");
-            }
+              "If money was debited from your account, it is safe and will be refunded automatically if the order was not completed."
+            );
           },
         },
 
-        // ── SUCCESS HANDLER (FIXED) ───────────────────────────────────────
-        // We open a blank window synchronously at the very start of the handler
-        // (before any await), so the browser treats it as user-initiated.
-        // After async verification, we redirect that pre-opened window to WhatsApp.
+        // ── SUCCESS HANDLER ────────────────────────────────────────────────
+        // Razorpay calls this only after successful payment.
+        // We send the complete order details to the owner by email.
         handler: async function (response: any) {
-          // STEP 1: Open blank window synchronously — NOT blocked by browser
-          const waWindow = window.open("", "_blank");
+          await sendOrderEmail(
+            response.razorpay_payment_id,
+            response.razorpay_order_id
+          );
 
-          try {
-            const verifyRes = await fetch("/api/verify-payment", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-              }),
-            });
+          alert(
+            "Payment successful! Your order has been placed.\n\n" +
+            "We have received your order details and will contact you shortly to confirm delivery."
+          );
 
-            const verifyData = await verifyRes.json();
-
-            if (!verifyRes.ok || !verifyData.success) {
-              // Signature mismatch — payment may still be real, redirect to WhatsApp
-              openWhatsApp(waWindow, buildWhatsAppMsg(response.razorpay_payment_id, "pending"));
-              alert(
-                "Payment verification failed on our end. " +
-                "We've opened WhatsApp — please send us your Payment ID so we can confirm manually."
-              );
-              return;
-            }
-
-            // STEP 2: Verified — send order email to manufacturer
-            try {
-              await fetch("/api/send-order-email", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  customer: customerSnapshot,
-                  cartItems: cartSnapshot,
-                  cartTotal: cartTotalSnapshot,
-                  shippingInfo: shippingSnapshot,
-                  finalTotal: finalTotalSnapshot,
-                  paymentId: response.razorpay_payment_id,
-                }),
-              });
-            } catch (emailError) {
-              console.error("Order email failed:", emailError);
-            }
-
-            // STEP 3: Verified — redirect the pre-opened blank window to WhatsApp
-            openWhatsApp(waWindow, buildWhatsAppMsg(response.razorpay_payment_id, "success"));
-            alert("Payment successful! Your order has been placed. We have received your order details.");
-            resetOrder();
-          } catch {
-            // Network error during verification — don't punish the user
-            openWhatsApp(waWindow, buildWhatsAppMsg(response.razorpay_payment_id, "pending"));
-            alert(
-              "Payment was received but we couldn't verify it automatically. " +
-              "We've opened WhatsApp — please share your Payment ID with us."
-            );
-            resetOrder();
-          }
+          resetOrder();
         },
 
         prefill: {
@@ -782,8 +749,7 @@ export default function GlowraNaturalsWebsite() {
             "if the order doesn't go through.\n\n" +
             "Tap OK to message us on WhatsApp with your payment details."
           );
-          // payment.failed is synchronous — window.open is safe here
-          window.open(createWhatsAppLink(msg), "_blank");
+          console.log(msg);
         } else {
           alert(
             `Payment failed: ${reason}\n\n` +
