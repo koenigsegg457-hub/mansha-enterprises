@@ -706,9 +706,27 @@ export default function GlowraNaturalsWebsite() {
               return;
             }
 
-            // STEP 2: Verified — redirect the pre-opened blank window to WhatsApp
+            // STEP 2: Verified — send order email to manufacturer
+            try {
+              await fetch("/api/send-order-email", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  customer: customerSnapshot,
+                  cartItems: cartSnapshot,
+                  cartTotal: cartTotalSnapshot,
+                  shippingInfo: shippingSnapshot,
+                  finalTotal: finalTotalSnapshot,
+                  paymentId: response.razorpay_payment_id,
+                }),
+              });
+            } catch (emailError) {
+              console.error("Order email failed:", emailError);
+            }
+
+            // STEP 3: Verified — redirect the pre-opened blank window to WhatsApp
             openWhatsApp(waWindow, buildWhatsAppMsg(response.razorpay_payment_id, "success"));
-            alert("Payment successful! Your order details have been sent to us on WhatsApp.");
+            alert("Payment successful! Your order has been placed. We have received your order details.");
             resetOrder();
           } catch {
             // Network error during verification — don't punish the user
