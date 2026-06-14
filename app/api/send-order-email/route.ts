@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     await resend.emails.send({
       from: "Glowra Orders <onboarding@resend.dev>",
       to: process.env.ORDER_EMAIL_TO,
-      subject: `New Paid Order - ₹${finalTotal}`,
+      subject: `🛒 Order ${paymentId} - ₹${finalTotal}`,
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6;">
           <h2>New Paid Order Received</h2>
