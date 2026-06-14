@@ -541,6 +541,9 @@ export default function GlowraNaturalsWebsite() {
   };
 
   // ── FIXED: Razorpay payment handler ──────────────────
+  // ROOT CAUSE: window.open() called inside an async callback is blocked by
+  // desktop browsers as an unsolicited popup. Fix: open a blank window
+  // synchronously BEFORE the async fetch, then set its URL after verification.
   const handleRazorpayPayment = async () => {
     if (!shippingInfo) {
       alert("Please enter a valid 6-digit pincode before payment.");
@@ -613,6 +616,24 @@ export default function GlowraNaturalsWebsite() {
         }
       };
 
+      // ── openWhatsApp helper ───────────────────────────────────────────────
+      // Uses a pre-opened blank window to avoid popup blocking on desktop.
+      // Call openBlankWindow() synchronously (before any await), then pass
+      // the returned handle into openWhatsApp() after the async work is done.
+      const openWhatsApp = (waWindow: Window | null, msg: string) => {
+        const url = createWhatsAppLink(msg);
+        if (waWindow && !waWindow.closed) {
+          waWindow.location.href = url;
+        } else {
+          // Fallback: try open again (works on mobile, may be blocked on desktop)
+          const fallback = window.open(url, "_blank");
+          if (!fallback) {
+            // Last resort: navigate current tab
+            window.location.href = url;
+          }
+        }
+      };
+
       const resetOrder = () => {
         setCartItems([]);
         setCartOpen(false);
@@ -632,13 +653,11 @@ export default function GlowraNaturalsWebsite() {
         image: "/logo.png",
 
         modal: {
-          // FIX 1: handleback prevents silent close on Android back button
+          // Prevents silent close on Android back button
           handleback: true,
-          // FIX 2: escape:false prevents accidental backdrop dismissal mid-UPI flow
+          // Prevents accidental backdrop dismissal mid-UPI flow
           escape: false,
           ondismiss: function () {
-            // This fires when user explicitly closes the modal.
-            // We warn them without assuming payment failed — it may still be processing.
             const msg =
               `Hi! I closed the Razorpay payment window — not sure if payment went through.\n\n` +
               `👤 Name: ${customerSnapshot.name}\n` +
@@ -650,13 +669,20 @@ export default function GlowraNaturalsWebsite() {
               "If money was debited from your account, it is safe — " +
               "tap OK to message us on WhatsApp with your details so we can confirm your order manually."
             )) {
+              // ondismiss is synchronous so window.open is safe here
               window.open(createWhatsAppLink(msg), "_blank");
             }
           },
         },
 
-        // FIX 3: Success handler — verify signature server-side before confirming
+        // ── SUCCESS HANDLER (FIXED) ───────────────────────────────────────
+        // We open a blank window synchronously at the very start of the handler
+        // (before any await), so the browser treats it as user-initiated.
+        // After async verification, we redirect that pre-opened window to WhatsApp.
         handler: async function (response: any) {
+          // STEP 1: Open blank window synchronously — NOT blocked by browser
+          const waWindow = window.open("", "_blank");
+
           try {
             const verifyRes = await fetch("/api/verify-payment", {
               method: "POST",
@@ -672,10 +698,7 @@ export default function GlowraNaturalsWebsite() {
 
             if (!verifyRes.ok || !verifyData.success) {
               // Signature mismatch — payment may still be real, redirect to WhatsApp
-              window.open(
-                createWhatsAppLink(buildWhatsAppMsg(response.razorpay_payment_id, "pending")),
-                "_blank"
-              );
+              openWhatsApp(waWindow, buildWhatsAppMsg(response.razorpay_payment_id, "pending"));
               alert(
                 "Payment verification failed on our end. " +
                 "We've opened WhatsApp — please send us your Payment ID so we can confirm manually."
@@ -683,19 +706,13 @@ export default function GlowraNaturalsWebsite() {
               return;
             }
 
-            // Verified successfully
-            alert("Payment successful! Redirecting to WhatsApp for order confirmation.");
-            window.open(
-              createWhatsAppLink(buildWhatsAppMsg(response.razorpay_payment_id, "success")),
-              "_blank"
-            );
+            // STEP 2: Verified — redirect the pre-opened blank window to WhatsApp
+            openWhatsApp(waWindow, buildWhatsAppMsg(response.razorpay_payment_id, "success"));
+            alert("Payment successful! Your order details have been sent to us on WhatsApp.");
             resetOrder();
           } catch {
             // Network error during verification — don't punish the user
-            window.open(
-              createWhatsAppLink(buildWhatsAppMsg(response.razorpay_payment_id, "pending")),
-              "_blank"
-            );
+            openWhatsApp(waWindow, buildWhatsAppMsg(response.razorpay_payment_id, "pending"));
             alert(
               "Payment was received but we couldn't verify it automatically. " +
               "We've opened WhatsApp — please share your Payment ID with us."
@@ -703,10 +720,6 @@ export default function GlowraNaturalsWebsite() {
             resetOrder();
           }
         },
-
-        // FIX 4: payment.failed event — catches UPI timeout / debited-but-unconfirmed
-        // This is the primary fix for your reported issue.
-        // When UPI polling times out, Razorpay fires this event instead of the handler.
 
         prefill: {
           name: customer.name,
@@ -718,7 +731,7 @@ export default function GlowraNaturalsWebsite() {
 
       const rzp = new (window as any).Razorpay(options);
 
-      // FIX 4 (cont): Must attach AFTER instantiation, not inside options
+      // ── PAYMENT FAILED (UPI timeout / debited-but-unconfirmed) ───────────
       rzp.on("payment.failed", function (response: any) {
         const paymentId =
           response.error?.metadata?.payment_id ??
@@ -729,7 +742,6 @@ export default function GlowraNaturalsWebsite() {
         const reason = response.error?.description ?? "Unknown";
         const code = response.error?.code ?? "";
 
-        // UPI timeout codes: BAD_REQUEST_ERROR + specific descriptions
         const isUpiTimeout =
           code === "BAD_REQUEST_ERROR" &&
           (reason.toLowerCase().includes("timeout") ||
@@ -738,7 +750,6 @@ export default function GlowraNaturalsWebsite() {
             reason.toLowerCase().includes("upi"));
 
         if (isUpiTimeout) {
-          // Money may already be debited — show calm, helpful message
           const msg =
             `Hi! My UPI payment is showing as failed/timed out but money may have been debited.\n\n` +
             `👤 Name: ${customerSnapshot.name}\n` +
@@ -753,9 +764,9 @@ export default function GlowraNaturalsWebsite() {
             "if the order doesn't go through.\n\n" +
             "Tap OK to message us on WhatsApp with your payment details."
           );
+          // payment.failed is synchronous — window.open is safe here
           window.open(createWhatsAppLink(msg), "_blank");
         } else {
-          // Genuine failure (wrong UPI ID, rejected, etc.)
           alert(
             `Payment failed: ${reason}\n\n` +
             "Please try again or use the 'Order on WhatsApp' option below."
